@@ -1,0 +1,18 @@
+import ApiResponse, {ApiResponseContent} from "./response/ApiResponse";
+import {BeanContents} from "../../datastructures/Bean";
+import ApiActionParams from "./params/ApiActionParams";
+
+// Command pattern - interface Command
+abstract class ApiAction<TResponseContent extends ApiResponseContent, TParamsContent extends BeanContents>
+{
+    protected params: ApiActionParams<TParamsContent>;
+
+    public setParams(params: ApiActionParams<TParamsContent>)
+    {
+        this.params = params;
+    }
+
+    public abstract execute(): Promise<ApiResponse<TResponseContent>>;
+}
+
+export default ApiAction;

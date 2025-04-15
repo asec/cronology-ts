@@ -1,0 +1,14 @@
+name: cronology-test-v2-n${NODE_VERSION_CANONICAL}
+services:
+    api:
+        image: cronology-api:test-2.0.0-n${NODE_VERSION_CANONICAL}
+        build:
+            context: .
+            args:
+                node_version: ${NODE_VERSION}
+        tty: true
+        volumes:
+            -   C:\dev-cert\localhost.key:/etc/cert/cronology.key
+            -   C:\dev-cert\localhost.crt:/etc/cert/cronology.crt
+            -   ./tests:/app/tests
+            -   ./src:/app/src
