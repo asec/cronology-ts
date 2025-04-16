@@ -1,6 +1,6 @@
 import fs from "fs";
 import Config from "../config/Config";
-import {program} from "commander";
+import {Command} from "commander";
 
 type CliCommandArgument = {
     name: string,
@@ -8,31 +8,51 @@ type CliCommandArgument = {
     defaultValue?: any
 };
 
-class CliCommand
+abstract class CliCommand
 {
-    public static commandName: string;
-    public static description: string;
-    public static args: CliCommandArgument[];
-    public static options: CliCommandArgument[];
+    public commandName: string;
+    public description: string;
+    public args: CliCommandArgument[] = [];
+    public options: CliCommandArgument[] = [];
 
-    public static doWithInitialization(...args)
+    public constructor(
+        protected config: Config,
+        protected program: Command,
+        protected process: NodeJS.Process
+    )
     {
-        Config.setEnvironmentToCli();
-        this.do(...args);
+        this.registerCliParams();
     }
 
-    protected static do(...args)
+    protected registerCliParams()
+    {}
+
+    protected initialise(...args)
+    {
+        this.config.setEnvironmentToCli();
+    }
+
+    public execute(...args)
+    {
+        try
+        {
+            this.initialise(...args);
+            this.do(...args);
+        }
+        catch (e: unknown)
+        {
+            const error = <Error> e;
+            this.error(`${error.name}: ${error.message}`);
+        }
+    }
+
+    protected do(...args)
     {
         console.log(`API action called: ${this.commandName}`, args);
     }
 
-    protected static addArgument(name: string, description?: string, defaultValue?: any)
+    protected addArgument(name: string, description?: string, defaultValue?: any)
     {
-        if (typeof this.args === "undefined")
-        {
-            this.args = [];
-        }
-
         this.args.push({
             name,
             description,
@@ -40,13 +60,8 @@ class CliCommand
         });
     }
 
-    protected static addOption(name: string, description?: string, defaultValue?: any)
+    protected addOption(name: string, description?: string, defaultValue?: any)
     {
-        if (typeof this.options === "undefined")
-        {
-            this.options = [];
-        }
-
         this.options.push({
             name,
             description,
@@ -54,9 +69,9 @@ class CliCommand
         });
     }
 
-    protected static inputChar(): string
+    protected inputChar(): string
     {
-        process.stdin.setRawMode(true);
+        this.process.stdin.setRawMode(true);
         let buffer = Buffer.alloc(1);
         let read = 0;
         do
@@ -79,14 +94,14 @@ class CliCommand
         return buffer.toString("utf8");
     }
 
-    protected static output(output: any, extraLineBefore: boolean = true, extraLineAfter: boolean = true)
+    protected output(output: any, extraLineBefore: boolean = true, extraLineAfter: boolean = true)
     {
         console.log(`${extraLineBefore ? "\n" : ""}[api-cli]`, output, extraLineAfter ? "\n" : "");
     }
 
-    protected static error(message: string)
+    protected error(message: string)
     {
-        program.error(message);
+        this.program.error(message);
     }
 }
 

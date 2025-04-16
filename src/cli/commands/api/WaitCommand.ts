@@ -1,4 +1,4 @@
-import CliAction, {createCliCommand} from "../../../lib/cli/CliAction";
+import CliApiAction from "../../../lib/cli/CliApiAction";
 import WaitAction from "../../../api/actions/wait/WaitAction";
 import WaitActionParams from "../../../api/actions/wait/params/WaitActionParams";
 import {BeanProps} from "../../../lib/datastructures/Bean";
@@ -8,13 +8,13 @@ interface WaitCommandOptions extends BeanProps
     ms: string,
 }
 
-class WaitCommand extends CliAction
+export default class WaitCommand extends CliApiAction
 {
-    static
-    {
-        this.commandName = "action:get-wait";
-        this.description = "Wait for a specified amount of time then send a successful response.";
+    public commandName = "action:get-wait";
+    public description = "Wait for a specified amount of time then send a successful response.";
 
+    protected registerCliParams()
+    {
         this.addOption(
             "-m, --ms <milliseconds>",
             "Time to wait in milliseconds. Must be an integer between 0 and 30000. Default: 1000.",
@@ -22,10 +22,8 @@ class WaitCommand extends CliAction
         );
     }
 
-    static createAction(options: WaitCommandOptions): WaitAction
+    protected createAction(options: WaitCommandOptions)
     {
-        return createCliCommand(WaitAction, WaitActionParams, options);
+        return this.createCliCommand(this.services.resolve(WaitAction), new WaitActionParams(), options);
     }
 }
-
-export default WaitCommand;

@@ -3,27 +3,29 @@ import * as fs from "fs";
 import {createServer} from "https";
 import cors from "cors";
 import bodyParser from "body-parser";
-import Api from "../lib/api/Api";
-import PingAction from "./actions/ping/PingAction";
-import WaitAction from "./actions/wait/WaitAction";
-import WaitActionParams from "./actions/wait/params/WaitActionParams";
-import ApiActionParams from "../lib/api/action/params/ApiActionParams";
 import {BeanContents} from "../lib/datastructures/Bean";
 import ApiAction from "../lib/api/action/ApiAction";
-import EmptyActionParams from "../lib/api/action/params/EmptyActionParams";
-import {ApiResponseContent} from "../lib/api/action/response/ApiResponse";
-require("./Routes");
+import ApiResponse, {ApiResponseContent} from "../lib/api/action/response/ApiResponse";
+import Config, {EnvType} from "../lib/config/Config";
+import {HttpMethod} from "../lib/api/Http";
+import IServer, {ParamsParserClass} from "../lib/server/IServer";
+import ApiErrorResponse from "../lib/api/action/response/ApiErrorResponse";
 
-class WebServer
+export default class WebServer implements IServer
 {
-    static #app: Express = express();
+    private app: Express = express();
 
-    static #createServer()
+    public constructor(
+        private config: Config
+    )
+    {}
+
+    private createServer()
     {
-        const app = this.#app;
+        const app = this.app;
         const credentials = {
-            key: fs.readFileSync(process.env.CONF_API_HTTPS_PRIVATEKEY, 'utf8'),
-            cert: fs.readFileSync(process.env.CONF_API_HTTPS_CERTIFICATE, 'utf8')
+            key: fs.readFileSync(this.config.get("CONF_API_HTTPS_PRIVATEKEY"), 'utf8'),
+            cert: fs.readFileSync(this.config.get("CONF_API_HTTPS_CERTIFICATE"), 'utf8')
         };
         const server = createServer(credentials, app);
         app.use(cors());
@@ -32,52 +34,65 @@ class WebServer
         return server;
     }
 
-    static start()
+    private createRequestHandler<TRequest extends Request, TResponseContent extends ApiResponseContent, TParamsContent extends BeanContents>(
+        action: ApiAction<TResponseContent, TParamsContent>,
+        paramsParserClass: ParamsParserClass<TRequest, TParamsContent> = null
+    )
     {
-        const app = this.#app;
-        const server = this.#createServer();
+        return async (req: TRequest, res: Response<TResponseContent>) => {
+            let result: ApiResponse<any>;
+            try
+            {
+                if (paramsParserClass !== null)
+                {
+                    const paramsParser = new paramsParserClass(req);
+                    const params = paramsParser.parse();
+                    params.validate();
+                    action.setParams(params);
+                }
 
-        server.listen(process.env.CONF_API_PORT, () => {
-            console.log("[api-server]", "info", {message: "Server started on " + process.env.CONF_API_PORT});
+                result = await action.execute();
+            }
+            catch (error: unknown)
+            {
+                result = new ApiErrorResponse({
+                    success: false,
+                    error: (<Error> error).message
+                });
+                if (this.config.isCurrentEnv(EnvType.Prod))
+                {
+                    (<ApiErrorResponse> result).set("error", (<ApiErrorResponse> result).displayMessage);
+                }
+            }
+
+            res.status(result.status);
+            res.json(result.toObject());
+        }
+    }
+
+    public start(errorHandler?: (error: Error) => void)
+    {
+        const server = this.createServer();
+
+        server.listen(this.config.get("CONF_API_PORT"), () => {
+            console.log("[api-server]", "info", {message: `Server started on ${this.config.get("CONF_API_PORT")}`});
         });
 
-        const routes = Api.getRoutes();
-        console.log(routes);
-        /*for (let endpoint in routes)
+        if (typeof errorHandler !== "undefined")
         {
-            for (let i = 0; i < routes[endpoint].)
-            routes[endpoint].forEach(route => {
-                console.log(endpoint, route);
+            server.on("error", (err: Error) => {
+                errorHandler(err);
             });
-        }*/
-        app["get"]("/", createRequestHandler(PingAction));
-        app["get"]("/wait", createRequestHandler(WaitAction, WaitActionParams));
-    }
-}
-
-function createRequestHandler<
-    TRequest extends Request,
-    TResponseContent extends ApiResponseContent,
-    TParamsContent extends BeanContents
->(
-    actionClass: new() => ApiAction<TResponseContent, TParamsContent>,
-    actionParamsClass: new() => ApiActionParams<TParamsContent> = null
-): (req: TRequest, res: Response<TResponseContent>) => Promise<void>
-{
-    return async (req: TRequest, res: Response<TResponseContent>) => {
-        const action = new actionClass();
-        if (actionParamsClass !== null && actionParamsClass !== EmptyActionParams)
-        {
-            const params = new actionParamsClass();
-            params.parseRequest(req);
-            action.setParams(params);
         }
+    }
 
-        const result = await Api.executeCommand(action);
-        res.status(result.status);
-        res.json(result.toObject());
+    public defineRoute<TResponseContent extends ApiResponseContent, TParamsContent extends BeanContents>(
+        method: HttpMethod,
+        endpoint: string,
+        action: ApiAction<TResponseContent, TParamsContent>,
+        paramsParserClass: ParamsParserClass<Request, TParamsContent> = null
+    ): void
+    {
+        this.app[method](endpoint, this.createRequestHandler(action, paramsParserClass));
     }
 }
-
-export {createRequestHandler};
-export default WebServer;

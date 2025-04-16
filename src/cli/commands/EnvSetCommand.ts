@@ -2,29 +2,33 @@ import CliCommand from "../../lib/cli/CliCommand";
 import Config, {EnvType} from "../../lib/config/Config";
 import path from "path";
 import fs from "fs";
+import {Command} from "commander";
 
 class EnvSetCommand extends CliCommand
 {
-    static
-    {
-        this.commandName = "cli-env-set";
-        this.description  = `Sets the CLI environment to one of the following: ${Object.values(EnvType).join(", ")}.` +
-            ` This affects (among other things possibly) which db it will use.`;
+    public commandName = "cli-env-set";
+    public description = `Sets the CLI environment to one of the following: ${Object.values(EnvType).join(", ")}.` +
+        ` This affects (among other things possibly) which db it will use.`;
 
+    protected registerCliParams()
+    {
         this.addArgument(
-            "<environment>",
+            "<env>",
             `The identifier of the environment to set. Possible values: ${Object.values(EnvType).join(", ")}.`
         );
     }
 
-    protected static envKeysToCopy: string[] = [
+    protected envKeysToCopy: string[] = [
         "APP_ENV",
         "CONF_DB_URI",
         "CONF_CRYPTO_APPKEYS",
         "CONF_LOG_DIR",
     ];
 
-    public static doWithInitialization(env: EnvType)
+    protected initialise(env: EnvType)
+    {}
+
+    public do(env: EnvType)
     {
         const possibleEnvValues = Object.values(EnvType);
         if (possibleEnvValues.indexOf(env) === -1)
@@ -32,7 +36,7 @@ class EnvSetCommand extends CliCommand
             this.error(`Invalid parameter: 'env'. The possible values are: ${Object.values(EnvType).join(", ")}.`);
         }
 
-        Config.setEnvironment(env);
+        this.config.setEnvironment(env);
 
         const variables = this.#extractVariablesFromCurrentEnv();
         let content: string[] = [];
@@ -89,28 +93,28 @@ class EnvSetCommand extends CliCommand
         );
     }
 
-    static #getLocalFileName(): string
+    #getLocalFileName(): string
     {
         return path.resolve("./.env.cli.local");
     }
 
-    static #localFileExists(): boolean
+    #localFileExists(): boolean
     {
         return fs.existsSync(this.#getLocalFileName());
     }
 
-    static #extractVariablesFromCurrentEnv(): {[key: string]: string}
+    #extractVariablesFromCurrentEnv(): {[key: string]: string}
     {
         const keys = {};
         for (let i = 0; i < this.envKeysToCopy.length; i++)
         {
             const key = this.envKeysToCopy[i];
-            keys[key] = process.env[key];
+            keys[key] = this.config.get(key);
         }
         return keys;
     }
 
-    static #makeVariableString(name: string, value: any): string
+    #makeVariableString(name: string, value: any): string
     {
         return `${name}=${value}`;
     }

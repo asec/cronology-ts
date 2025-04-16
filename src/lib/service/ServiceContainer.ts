@@ -5,10 +5,29 @@ export default class ServiceContainer
 {
     protected bindings = new Map<string, () => any>();
 
-    register<T>(type: Token<T>, factory: () => T)
+    register<T>(type: Token<T>, factory: () => T, singleton: boolean = false)
     {
         const token = typeof type === "symbol" ? type.toString() : (<Constructor<T>> type).name;
-        this.bindings.set(token, factory);
+
+        if (singleton)
+        {
+            let singletonFactory = (() => {
+                let instance = null;
+                return () => {
+                    if (instance === null)
+                    {
+                        instance = factory();
+                    }
+
+                    return instance;
+                };
+            })();
+            this.bindings.set(token, singletonFactory);
+        }
+        else
+        {
+            this.bindings.set(token, factory);
+        }
     }
 
     resolve<T>(type: Token<T>): T

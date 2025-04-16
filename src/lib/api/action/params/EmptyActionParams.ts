@@ -14,6 +14,8 @@ class EmptyActionParams extends ApiActionParams<EmptyActionParamsContent>
     bind(props: {}): void {}
 
     parseRequest(req: Request<any, any, any, any, any>): void {}
+
+    validate(): void {}
 }
 
 export {EmptyActionParamsContent};

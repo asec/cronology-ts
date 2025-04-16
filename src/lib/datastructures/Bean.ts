@@ -1,9 +1,9 @@
-type BeanProps = Record<string, any>;
+export type BeanProps = Record<string, any>;
 
-class BeanContents implements BeanProps
+export class BeanContents implements BeanProps
 {}
 
-class Bean<ContentType extends BeanContents>
+export default class Bean<ContentType extends BeanContents>
 {
     protected data: ContentType;
 
@@ -65,10 +65,7 @@ class Bean<ContentType extends BeanContents>
     }
 }
 
-function bean<ContentType extends BeanContents>(c: new() => ContentType, props?: ContentType): Bean<ContentType>
+export function bean<ContentType extends BeanContents>(c: new() => ContentType, props?: ContentType): Bean<ContentType>
 {
     return new Bean<ContentType>(c, props);
 }
-
-export {BeanContents, BeanProps, bean};
-export default Bean;

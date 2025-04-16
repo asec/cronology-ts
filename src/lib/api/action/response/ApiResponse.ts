@@ -1,12 +1,12 @@
 import Bean, {BeanContents} from "../../../datastructures/Bean";
 import {HttpStatus} from "../../Http";
 
-class ApiResponseContent extends BeanContents
+export class ApiResponseContent extends BeanContents
 {
     public success: boolean = undefined;
 }
 
-class ApiResponse<TResponseContent extends ApiResponseContent> extends Bean<TResponseContent>
+export default class ApiResponse<TResponseContent extends ApiResponseContent> extends Bean<TResponseContent>
 {
     public status: HttpStatus = HttpStatus.Ok;
 
@@ -19,6 +19,3 @@ class ApiResponse<TResponseContent extends ApiResponseContent> extends Bean<TRes
         }
     }
 }
-
-export {ApiResponseContent}
-export default ApiResponse;

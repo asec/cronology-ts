@@ -3,8 +3,15 @@ import Config, {EnvType} from "../../../lib/config/Config";
 import PingActionResponse, {PingActionResponseContent} from "./response/PingActionResponse";
 import {EmptyActionParamsContent} from "../../../lib/api/action/params/EmptyActionParams";
 
-class PingAction extends ApiAction<PingActionResponseContent, EmptyActionParamsContent>
+export default class PingAction extends ApiAction<PingActionResponseContent, EmptyActionParamsContent>
 {
+    public constructor(
+        protected config: Config
+    )
+    {
+        super();
+    }
+
     public async execute(): Promise<PingActionResponse>
     {
         const response = new PingActionResponse();
@@ -12,14 +19,12 @@ class PingAction extends ApiAction<PingActionResponseContent, EmptyActionParamsC
 
         const packageInfo = require(process.cwd() + "/package.json");
         let version = packageInfo.version;
-        if (!Config.isCurrentEnv(EnvType.Prod))
+        if (!this.config.isCurrentEnv(EnvType.Prod))
         {
-            version += ` (${process.env.APP_ENV})`;
+            version += ` (${this.config.get("APP_ENV")})`;
         }
         response.set("version", version);
 
         return response;
     }
 }
-
-export default PingAction;

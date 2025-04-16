@@ -1,6 +1,12 @@
 import CliCommand from "../../lib/cli/CliCommand";
 import Config, {EnvType} from "../../lib/config/Config";
-import WebServer from "../../api/WebServer";
+import {Command} from "commander";
+import {HttpMethod} from "../../lib/api/Http";
+import PingAction from "../../api/actions/ping/PingAction";
+import ServiceContainer from "../../lib/service/ServiceContainer";
+import IServer from "../../lib/server/IServer";
+import WaitAction from "../../api/actions/wait/WaitAction";
+import WaitActionParamsParser from "../../api/actions/wait/params/WaitActionParamsParser";
 
 class ServerStartOptions
 {
@@ -9,11 +15,11 @@ class ServerStartOptions
 
 class ServerStartCommand extends CliCommand
 {
-    static
-    {
-        this.commandName = "server-start";
-        this.description = "Starts the API server in production mode.";
+    public commandName = "server-start";
+    public description = "Starts the API server in production mode.";
 
+    protected registerCliParams()
+    {
         this.addOption(
             "-d, --dev",
             "Starts the server in dev mode. This is useful for integration tests (ie. for the PHP app)." +
@@ -22,10 +28,28 @@ class ServerStartCommand extends CliCommand
         );
     }
 
-    public static doWithInitialization(options: ServerStartOptions)
+    public constructor(
+        protected config: Config,
+        protected program: Command,
+        protected process: NodeJS.Process,
+        protected server: IServer,
+        protected services: ServiceContainer
+    )
     {
-        Config.setEnvironment(options.dev ? EnvType.Dev : EnvType.Prod);
-        WebServer.start();
+        super(config, program, process);
+    }
+
+    protected initialise(options: ServerStartOptions)
+    {
+        this.config.setEnvironment(options.dev ? EnvType.Dev : EnvType.Prod);
+    }
+
+    public do(options: ServerStartOptions)
+    {
+        this.server.defineRoute(HttpMethod.GET, "/", this.services.resolve(PingAction));
+        this.server.defineRoute(HttpMethod.GET, "/wait", this.services.resolve(WaitAction), WaitActionParamsParser);
+
+        this.server.start((error: Error) => this.error(`${error.name}: ${error.message}`));
     }
 }
 

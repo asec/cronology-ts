@@ -1,25 +1,30 @@
-class Profiler
+export default class Profiler
 {
-    protected static sequences: number[] = [];
+    protected sequences: number[] = [];
 
-    public static start()
+    public constructor()
+    {
+        this.start();
+    }
+
+    public start()
     {
         const now = this.now();
         this.reset();
         this.sequences.push(now);
     }
 
-    public static reset()
+    public reset()
     {
         this.sequences = [];
     }
 
-    public static now(): number
+    public now(): number
     {
         return (new Date()).getTime();
     }
 
-    public static mark(): number
+    public mark(): number
     {
         if (!this.sequences.length)
         {
@@ -27,12 +32,12 @@ class Profiler
             return -1;
         }
 
-        const timeDiff = this.#getTimeSince();
+        const timeDiff = this.getTimeSince();
         this.sequences.push(this.now());
         return timeDiff;
     }
 
-    static #getTimeSince(sinceFirstOne: boolean = false): number
+    private getTimeSince(sinceFirstOne: boolean = false): number
     {
         const now = this.now();
         const prev = this.sequences[sinceFirstOne ? 0 : this.sequences.length - 1];
@@ -40,22 +45,20 @@ class Profiler
         return now - prev;
     }
 
-    public static get(showTotal: boolean = false): number
+    public get(showTotal: boolean = false): number
     {
         if (!this.sequences.length)
         {
             return -1;
         }
 
-        return this.#getTimeSince(showTotal);
+        return this.getTimeSince(showTotal);
     }
 
-    public static async wait(ms: number = 200)
+    public async wait(ms: number = 200)
     {
         await new Promise(resolve => setTimeout(resolve, ms));
 
         return true;
     }
 }
-
-export default Profiler;

@@ -1,4 +1,4 @@
-import {configDotenv} from "dotenv";
+import {configDotenv, DotenvPopulateInput} from "dotenv";
 
 enum EnvType
 {
@@ -9,9 +9,15 @@ enum EnvType
 
 class Config
 {
-    public static setEnvironment(env: EnvType)
+    private data: DotenvPopulateInput = {};
+
+    public constructor()
     {
         this.extendWith(".env");
+    }
+
+    public setEnvironment(env: EnvType)
+    {
         switch (env)
         {
             case EnvType.Test:
@@ -23,60 +29,65 @@ class Config
         }
     }
 
-    public static setEnvironmentToCli()
+    public setEnvironmentToCli()
     {
-        this.extendWith(".env");
         this.extendWith(".env.cli");
     }
 
-    public static extendWith(file: string)
+    public extendWith(file: string)
     {
         this.extendConfiguration([file, file + ".local"])
     }
 
-    private static extendConfiguration(file: string[])
+    private extendConfiguration(file: string[])
     {
         file.forEach(actualFile => {
             configDotenv({
                 path: actualFile,
-                override: true
+                override: true,
+                processEnv: this.data
             });
         });
     }
 
-    private static toggleLogging(state: boolean)
+    public get(key: string): string|undefined
     {
-        process.env.CONF_LOG_DISABLED = !state ? "true" : "false";
+        return this.data[key];
     }
 
-    private static toggleSilentLogging(state: boolean)
+    private toggleLogging(state: boolean)
     {
-        process.env.CONF_LOG_SILENT = state ? "true" : "false";
+        this.data["CONF_LOG_DISABLED"] = !state ? "true" : "false";
     }
 
-    public static enableLogging()
+    private toggleSilentLogging(state: boolean)
+    {
+        this.data["CONF_LOG_SILENT"] = state ? "true" : "false";
+    }
+
+    public enableLogging()
     {
         this.toggleLogging(true);
     }
 
-    public static disableLogging()
+    public disableLogging()
     {
         this.toggleLogging(false);
     }
 
-    public static enableSilentLogging()
+    public enableSilentLogging()
     {
         this.toggleSilentLogging(true);
     }
 
-    public static disableSilentLogging()
+    public disableSilentLogging()
     {
         this.toggleSilentLogging(false);
     }
 
-    public static isCurrentEnv(env: EnvType): boolean
+    public isCurrentEnv(env: EnvType): boolean
     {
-        return process.env.APP_ENV === env;
+        return this.get("APP_ENV") === env;
     }
 }
 

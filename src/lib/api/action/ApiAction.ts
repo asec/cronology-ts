@@ -3,7 +3,13 @@ import {BeanContents} from "../../datastructures/Bean";
 import ApiActionParams from "./params/ApiActionParams";
 
 // Command pattern - interface Command
-abstract class ApiAction<TResponseContent extends ApiResponseContent, TParamsContent extends BeanContents>
+interface Command<TResponseContent extends ApiResponseContent, TParamsContent extends BeanContents>
+{
+    setParams(params: ApiActionParams<TParamsContent>): void;
+    execute(): Promise<ApiResponse<TResponseContent>>;
+}
+
+export default abstract class ApiAction<TResponseContent extends ApiResponseContent, TParamsContent extends BeanContents> implements Command<TResponseContent, TParamsContent>
 {
     protected params: ApiActionParams<TParamsContent>;
 
@@ -14,5 +20,3 @@ abstract class ApiAction<TResponseContent extends ApiResponseContent, TParamsCon
 
     public abstract execute(): Promise<ApiResponse<TResponseContent>>;
 }
-
-export default ApiAction;
