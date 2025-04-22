@@ -1,16 +1,16 @@
 import Bean, {BeanContents, BeanProps} from "../datastructures/Bean";
 import {EntityKeyType} from "../entities/Entity";
+import BeanFactory from "../factory/BeanFactory";
 
 type InferredBeanContents<T> = T extends Bean<infer U> ? U : BeanContents;
-type BeanConstructor<TBean extends Bean<InferredBeanContents<TBean>>> = new (props?: InferredBeanContents<TBean>) => TBean;
 
 export default interface IDatabase<TBean extends Bean<InferredBeanContents<TBean>>>
 {
-    store(beanClass: BeanConstructor<TBean>, object: TBean, index?: EntityKeyType): Promise<EntityKeyType>
-    count(beanClass: BeanConstructor<TBean>): Promise<number>
-    all(beanClass: BeanConstructor<TBean>): Promise<Map<EntityKeyType, TBean>>
-    get(beanClass: BeanConstructor<TBean>, id: EntityKeyType): Promise<TBean|null>
-    getByKey(beanClass: BeanConstructor<TBean>, key: keyof InferredBeanContents<TBean>, value: any): Promise<Map<EntityKeyType, TBean>>
+    store(factory: BeanFactory<TBean>, object: TBean, index?: EntityKeyType): Promise<EntityKeyType>
+    count(factory: BeanFactory<TBean>): Promise<number>
+    all(factory: BeanFactory<TBean>): Promise<Map<EntityKeyType, TBean>>
+    get(factory: BeanFactory<TBean>, id: EntityKeyType): Promise<TBean|null>
+    getByKey(factory: BeanFactory<TBean>, key: keyof InferredBeanContents<TBean>, value: any): Promise<Map<EntityKeyType, TBean>>
 
     destruct(): Promise<void>
 }

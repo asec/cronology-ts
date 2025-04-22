@@ -21,6 +21,7 @@ import RsaKeypair from "../lib/utils/RsaKeypair";
 import BeanFactory from "../lib/factory/BeanFactory";
 import ApplicationFactory from "../entities/factory/ApplicationFactory";
 import AppIpCommand from "../cli/commands/AppIpCommand";
+import AppKeysCommand from "../cli/commands/AppKeysCommand";
 
 const IProgram = Symbol("IProgram");
 const IProcess = Symbol("IProcess");
@@ -94,9 +95,15 @@ services.register(ApplicationFactory, () => {
     );
 });
 
-services.register(ApplicationRepository, () => {
+services.register(ApplicationRepository, (params?: {factory?: BeanFactory<Application>}) => {
+    if (typeof params?.factory === "undefined")
+    {
+        throw new Error("Service Error: Missing parameter 'factory' for 'ApplicationRepository' resolution.");
+    }
+
     return new ApplicationRepository(
-        services.resolve(IDatabase)
+        services.resolve(IDatabase),
+        params.factory
     );
 });
 
@@ -165,6 +172,16 @@ services.register(AppCreateCommand, () => {
 
 services.register(AppIpCommand, () => {
     return new AppIpCommand(
+        services.resolve(AppConfig),
+        services.resolve(IProgram),
+        services.resolve(IProcess),
+        services.resolve(ServiceContainer),
+        services.resolve(ApplicationFactory)
+    );
+});
+
+services.register(AppKeysCommand, () => {
+    return new AppKeysCommand(
         services.resolve(AppConfig),
         services.resolve(IProgram),
         services.resolve(IProcess),

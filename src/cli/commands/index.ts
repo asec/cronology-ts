@@ -7,6 +7,7 @@ import WaitCommand from "./api/WaitCommand";
 import services from "../../services/default";
 import AppCreateCommand from "./AppCreateCommand";
 import AppIpCommand from "./AppIpCommand";
+import AppKeysCommand from "./AppKeysCommand";
 
 const commandList: CliCommand[] = [
     services.resolve(ServerStartCommand),
@@ -15,7 +16,8 @@ const commandList: CliCommand[] = [
     services.resolve(PingCommand),
     services.resolve(WaitCommand),
     services.resolve(AppCreateCommand),
-    services.resolve(AppIpCommand)
+    services.resolve(AppIpCommand),
+    services.resolve(AppKeysCommand)
 ];
 
 module.exports = commandList;

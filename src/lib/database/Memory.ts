@@ -1,9 +1,9 @@
 import IDatabase from "./IDatabase";
 import Bean, {BeanContents, BeanProps} from "../datastructures/Bean";
 import Entity, {EntityKeyType} from "../entities/Entity";
+import BeanFactory from "../factory/BeanFactory";
 
 type InferredBeanContents<T> = T extends Bean<infer U> ? U : BeanContents;
-type BeanConstructor<TBean extends Bean<InferredBeanContents<TBean>>> = new (props?: BeanProps) => TBean;
 
 export default class Memory<TBean extends Bean<InferredBeanContents<TBean>>> implements IDatabase<TBean>
 {
@@ -15,7 +15,7 @@ export default class Memory<TBean extends Bean<InferredBeanContents<TBean>>> imp
         return new constructor(JSON.parse(JSON.stringify(object.toObject())));
     }
 
-    public async store(_: BeanConstructor<TBean>, object: TBean, index?: EntityKeyType): Promise<EntityKeyType>
+    public async store(_: BeanFactory<TBean>, object: TBean, index?: EntityKeyType): Promise<EntityKeyType>
     {
         const entity = new Entity(object);
         index = index ?? await this.count(_);
@@ -27,12 +27,12 @@ export default class Memory<TBean extends Bean<InferredBeanContents<TBean>>> imp
         return index;
     }
 
-    public async count(_: BeanConstructor<TBean>): Promise<number>
+    public async count(_: BeanFactory<TBean>): Promise<number>
     {
         return this.data.size;
     }
 
-    public async all(_: BeanConstructor<TBean>): Promise<Map<EntityKeyType, TBean>>
+    public async all(_: BeanFactory<TBean>): Promise<Map<EntityKeyType, TBean>>
     {
         const result = new Map<EntityKeyType, TBean>();
 
@@ -44,7 +44,7 @@ export default class Memory<TBean extends Bean<InferredBeanContents<TBean>>> imp
         return result;
     }
 
-    public async get(_: BeanConstructor<TBean>, index: EntityKeyType): Promise<TBean|null>
+    public async get(_: BeanFactory<TBean>, index: EntityKeyType): Promise<TBean|null>
     {
         if (!this.data.has(index))
         {
@@ -54,7 +54,7 @@ export default class Memory<TBean extends Bean<InferredBeanContents<TBean>>> imp
         return this.copy(this.data.get(index).get("data"));
     }
 
-    public async getByKey(_: BeanConstructor<TBean>, key: keyof InferredBeanContents<TBean>, value: any): Promise<Map<EntityKeyType, TBean>>
+    public async getByKey(_: BeanFactory<TBean>, key: keyof InferredBeanContents<TBean>, value: any): Promise<Map<EntityKeyType, TBean>>
     {
         const result = new Map<EntityKeyType, TBean>();
 
