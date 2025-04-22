@@ -61,4 +61,21 @@ export default class Application extends Bean<ApplicationProps>
 
         return this.rsa.keys();
     }
+
+    public addIp(ip: string)
+    {
+        const ips = this.get("ip") ?? [];
+        if (ips.indexOf(ip) > -1)
+        {
+            return;
+        }
+
+        ips.push(ip);
+    }
+
+    public removeIp(ip: string)
+    {
+        const ips = this.get("ip") ?? [];
+        ips.splice(ips.indexOf(ip), 1);
+    }
 }

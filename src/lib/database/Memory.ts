@@ -15,10 +15,10 @@ export default class Memory<TBean extends Bean<InferredBeanContents<TBean>>> imp
         return new constructor(JSON.parse(JSON.stringify(object.toObject())));
     }
 
-    public async store(_: BeanConstructor<TBean>, object: TBean): Promise<EntityKeyType>
+    public async store(_: BeanConstructor<TBean>, object: TBean, index?: EntityKeyType): Promise<EntityKeyType>
     {
         const entity = new Entity(object);
-        const index = await this.count(_);
+        index = index ?? await this.count(_);
 
         this.data.set(index, entity);
 

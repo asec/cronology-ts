@@ -18,8 +18,6 @@ export default class Mongodb<TBean extends Bean<InferredBeanContents<TBean>>> im
     protected db: Db;
     protected indicesCreated = new Map<BeanConstructor<any>, boolean>();
 
-    protected collectionName: string;
-
     public constructor(
         protected uriGenerator: () => string,
         protected dbNameGenerator: () => string,
@@ -78,7 +76,6 @@ export default class Mongodb<TBean extends Bean<InferredBeanContents<TBean>>> im
             }
         }
 
-        console.log(`indices created: ${beanClass.name}`);
         this.indicesCreated.set(beanClass, true);
     }
 
@@ -88,13 +85,26 @@ export default class Mongodb<TBean extends Bean<InferredBeanContents<TBean>>> im
         this.db = undefined;
     }
 
-    public async store(beanClass: BeanConstructor<TBean>, object: TBean): Promise<EntityKeyType>
+    public async store(beanClass: BeanConstructor<TBean>, object: TBean, index?: EntityKeyType): Promise<EntityKeyType>
     {
         const db = await this.collection(beanClass);
 
-        const result = await db.insertOne(object.toObject());
+        if (index === undefined)
+        {
+            const result = await db.insertOne(object.toObject());
 
-        return result.insertedId.toString();
+            return result.insertedId.toString();
+        }
+        else
+        {
+            const result = await db.updateOne({
+                _id: new ObjectId(index)
+            }, {
+                $set: object.toObject()
+            });
+
+            return index;
+        }
     }
 
     public async all(beanClass: BeanConstructor<TBean>): Promise<Map<EntityKeyType, TBean>>

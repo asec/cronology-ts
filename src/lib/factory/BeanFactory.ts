@@ -2,6 +2,7 @@ import Bean, {BeanContents} from "../datastructures/Bean";
 import ServiceContainer from "../service/ServiceContainer";
 import Repository from "../entities/Repository";
 import IDatabase from "../database/IDatabase";
+import IValidator from "../validation/IValidator";
 
 type InferredBeanContents<T> = T extends Bean<infer U> ? U : BeanContents;
 
@@ -26,4 +27,6 @@ export default abstract class BeanFactory<TBean extends Bean<InferredBeanContent
     {
         return this.services.resolve(this.repositoryClass);
     }
+
+    public abstract validator(entity: TBean): IValidator
 }

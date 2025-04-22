@@ -6,9 +6,7 @@ type BeanConstructor<TBean extends Bean<InferredBeanContents<TBean>>> = new (pro
 
 export default interface IDatabase<TBean extends Bean<InferredBeanContents<TBean>>>
 {
-    //initialise(beanClass: new(props?: BeanProps) => TBean): void
-
-    store(beanClass: BeanConstructor<TBean>, object: TBean): Promise<EntityKeyType>
+    store(beanClass: BeanConstructor<TBean>, object: TBean, index?: EntityKeyType): Promise<EntityKeyType>
     count(beanClass: BeanConstructor<TBean>): Promise<number>
     all(beanClass: BeanConstructor<TBean>): Promise<Map<EntityKeyType, TBean>>
     get(beanClass: BeanConstructor<TBean>, id: EntityKeyType): Promise<TBean|null>

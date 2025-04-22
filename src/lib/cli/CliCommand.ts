@@ -5,13 +5,13 @@ import {EnvType} from "../config/Config";
 import ServiceContainer from "../service/ServiceContainer";
 import IDatabase from "../database/IDatabase";
 
-type CliCommandArgument = {
+export type CliCommandArgument = {
     name: string,
     description?: string,
     defaultValue?: any
 };
 
-abstract class CliCommand
+export default abstract class CliCommand
 {
     public commandName: string;
     public description: string;
@@ -128,6 +128,3 @@ abstract class CliCommand
         this.program.error(message);
     }
 }
-
-export {CliCommandArgument};
-export default CliCommand;

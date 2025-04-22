@@ -16,9 +16,9 @@ export default abstract class Repository<TBean extends Bean<InferredBeanContents
         this.initialise();
     }
 
-    public async store(object: TBean): Promise<EntityKeyType>
+    public async store(object: TBean, index?: EntityKeyType): Promise<EntityKeyType>
     {
-        return this.driver.store(this.beanClass, object);
+        return this.driver.store(this.beanClass, object, index);
     }
 
     public async count(): Promise<number>
