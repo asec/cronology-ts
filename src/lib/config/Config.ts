@@ -1,17 +1,27 @@
 import {configDotenv, DotenvPopulateInput} from "dotenv";
 
-enum EnvType
+export enum EnvType
 {
     Prod = "prod",
     Dev = "dev",
     Test = "test"
 }
 
-class Config
+export interface ConfigProps
 {
-    private data: DotenvPopulateInput = {};
+    [name: string]: string
 
-    public constructor()
+    APP_ENV: string;
+}
+
+export interface IConfig
+{}
+
+export default abstract class Config<TProps extends ConfigProps> implements IConfig
+{
+    private data: TProps = <TProps> {};
+
+    protected constructor()
     {
         this.extendWith(".env");
     }
@@ -50,39 +60,14 @@ class Config
         });
     }
 
-    public get(key: string): string|undefined
+    public get(key: keyof TProps): string|undefined
     {
         return this.data[key];
     }
 
-    private toggleLogging(state: boolean)
+    protected set<TKey extends keyof TProps>(key: TKey, value: TProps[TKey])
     {
-        this.data["CONF_LOG_DISABLED"] = !state ? "true" : "false";
-    }
-
-    private toggleSilentLogging(state: boolean)
-    {
-        this.data["CONF_LOG_SILENT"] = state ? "true" : "false";
-    }
-
-    public enableLogging()
-    {
-        this.toggleLogging(true);
-    }
-
-    public disableLogging()
-    {
-        this.toggleLogging(false);
-    }
-
-    public enableSilentLogging()
-    {
-        this.toggleSilentLogging(true);
-    }
-
-    public disableSilentLogging()
-    {
-        this.toggleSilentLogging(false);
+        this.data[key] = value;
     }
 
     public isCurrentEnv(env: EnvType): boolean
@@ -90,6 +75,3 @@ class Config
         return this.get("APP_ENV") === env;
     }
 }
-
-export { EnvType };
-export default Config;

@@ -6,17 +6,18 @@ import bodyParser from "body-parser";
 import {BeanContents} from "../lib/datastructures/Bean";
 import ApiAction from "../lib/api/action/ApiAction";
 import ApiResponse, {ApiResponseContent} from "../lib/api/action/response/ApiResponse";
-import Config, {EnvType} from "../lib/config/Config";
+import {EnvType} from "../lib/config/Config";
 import {HttpMethod} from "../lib/api/Http";
 import IServer, {ParamsParserClass} from "../lib/server/IServer";
 import ApiErrorResponse from "../lib/api/action/response/ApiErrorResponse";
+import AppConfig from "../config/AppConfig";
 
 export default class WebServer implements IServer
 {
     private app: Express = express();
 
     public constructor(
-        private config: Config
+        private config: AppConfig
     )
     {}
 

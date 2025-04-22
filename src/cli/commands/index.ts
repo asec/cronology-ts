@@ -5,13 +5,15 @@ import EnvGetCommand from "./EnvGetCommand";
 import PingCommand from "./api/PingCommand";
 import WaitCommand from "./api/WaitCommand";
 import services from "../../services/default";
+import AppCreateCommand from "./AppCreateCommand";
 
 const commandList: CliCommand[] = [
     services.resolve(ServerStartCommand),
     services.resolve(EnvSetCommand),
     services.resolve(EnvGetCommand),
     services.resolve(PingCommand),
-    services.resolve(WaitCommand)
+    services.resolve(WaitCommand),
+    services.resolve(AppCreateCommand),
 ];
 
 module.exports = commandList;

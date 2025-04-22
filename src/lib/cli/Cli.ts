@@ -1,7 +1,7 @@
 import CliCommand from "./CliCommand";
 import {Command, program} from "commander";
 
-class Cli
+export default class Cli
 {
     public constructor(
         private program: Command
@@ -30,7 +30,7 @@ class Cli
             .description("CLI tools for the Cronology API.")
             .version(packageInfo.version, "-v, --version")
             .configureOutput({
-                writeErr: str => process.stderr.write(`\x1b[31m[api-console][error] ${str}\x1b[0m`)
+                writeErr: str => process.stderr.write(`\x1b[31m[api-cli][error] ${str}\x1b[0m`)
             })
         ;
 
@@ -44,5 +44,3 @@ class Cli
         this.program.parse();
     }
 }
-
-export default Cli;

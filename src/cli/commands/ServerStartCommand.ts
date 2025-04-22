@@ -1,5 +1,5 @@
 import CliCommand from "../../lib/cli/CliCommand";
-import Config, {EnvType} from "../../lib/config/Config";
+import {EnvType} from "../../lib/config/Config";
 import {Command} from "commander";
 import {HttpMethod} from "../../lib/api/Http";
 import PingAction from "../../api/actions/ping/PingAction";
@@ -7,6 +7,7 @@ import ServiceContainer from "../../lib/service/ServiceContainer";
 import IServer from "../../lib/server/IServer";
 import WaitAction from "../../api/actions/wait/WaitAction";
 import WaitActionParamsParser from "../../api/actions/wait/params/WaitActionParamsParser";
+import AppConfig from "../../config/AppConfig";
 
 class ServerStartOptions
 {
@@ -29,14 +30,14 @@ class ServerStartCommand extends CliCommand
     }
 
     public constructor(
-        protected config: Config,
+        protected config: AppConfig,
         protected program: Command,
         protected process: NodeJS.Process,
         protected server: IServer,
         protected services: ServiceContainer
     )
     {
-        super(config, program, process);
+        super(config, program, process, services);
     }
 
     protected initialise(options: ServerStartOptions)
@@ -44,7 +45,7 @@ class ServerStartCommand extends CliCommand
         this.config.setEnvironment(options.dev ? EnvType.Dev : EnvType.Prod);
     }
 
-    public do(options: ServerStartOptions)
+    public async do(options: ServerStartOptions)
     {
         this.server.defineRoute(HttpMethod.GET, "/", this.services.resolve(PingAction));
         this.server.defineRoute(HttpMethod.GET, "/wait", this.services.resolve(WaitAction), WaitActionParamsParser);

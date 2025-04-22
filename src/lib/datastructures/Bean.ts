@@ -1,3 +1,5 @@
+import ServiceContainer from "../service/ServiceContainer";
+
 export type BeanProps = Record<string, any>;
 
 export class BeanContents implements BeanProps
@@ -6,6 +8,7 @@ export class BeanContents implements BeanProps
 export default class Bean<ContentType extends BeanContents>
 {
     protected data: ContentType;
+    protected services: ServiceContainer;
 
     public constructor(c: new() => ContentType, props?: ContentType)
     {
@@ -14,6 +17,11 @@ export default class Bean<ContentType extends BeanContents>
         {
             this.setAll(props);
         }
+    }
+
+    public inject(services: ServiceContainer): void
+    {
+        this.services = services;
     }
 
     public set<Key extends keyof ContentType>(key: Key, value: ContentType[Key]): boolean
@@ -54,6 +62,10 @@ export default class Bean<ContentType extends BeanContents>
             if (typeof result[i] === "undefined")
             {
                 delete result[i];
+            }
+            else if (result[i] instanceof Bean)
+            {
+                result[i] = (<Bean<any>>result[i]).toObject();
             }
         }
         return result;

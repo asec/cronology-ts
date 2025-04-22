@@ -1,6 +1,9 @@
 import fs from "fs";
-import Config from "../config/Config";
 import {Command} from "commander";
+import AppConfig from "../../config/AppConfig";
+import {EnvType} from "../config/Config";
+import ServiceContainer from "../service/ServiceContainer";
+import IDatabase from "../database/IDatabase";
 
 type CliCommandArgument = {
     name: string,
@@ -16,9 +19,10 @@ abstract class CliCommand
     public options: CliCommandArgument[] = [];
 
     public constructor(
-        protected config: Config,
+        protected config: AppConfig,
         protected program: Command,
-        protected process: NodeJS.Process
+        protected process: NodeJS.Process,
+        protected services: ServiceContainer
     )
     {
         this.registerCliParams();
@@ -32,21 +36,41 @@ abstract class CliCommand
         this.config.setEnvironmentToCli();
     }
 
-    public execute(...args)
+    public async execute(...args)
     {
         try
         {
             this.initialise(...args);
-            this.do(...args);
+            await this.do(...args);
         }
         catch (e: unknown)
         {
             const error = <Error> e;
-            this.error(`${error.name}: ${error.message}`);
+            let errorMsg = `${error.name}: ${error.message}`;
+            if (!this.config.isCurrentEnv(EnvType.Prod))
+            {
+                errorMsg += `\n${error.stack}`;
+            }
+            this.error(errorMsg);
+        }
+
+        try
+        {
+            await (<IDatabase<any>> this.services.resolve(Symbol("IDatabase"))).destruct();
+        }
+        catch (e: unknown)
+        {
+            const error = <Error> e;
+            let errorMsg = `${error.name}: ${error.message}`;
+            if (!this.config.isCurrentEnv(EnvType.Prod))
+            {
+                errorMsg += `\n${error.stack}`;
+            }
+            this.error(errorMsg);
         }
     }
 
-    protected do(...args)
+    protected async do(...args)
     {
         console.log(`API action called: ${this.commandName}`, args);
     }

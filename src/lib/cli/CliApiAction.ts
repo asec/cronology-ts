@@ -3,22 +3,9 @@ import ApiAction from "../api/action/ApiAction";
 import {BeanContents, BeanProps} from "../datastructures/Bean";
 import {ApiResponseContent} from "../api/action/response/ApiResponse";
 import ApiActionParams from "../api/action/params/ApiActionParams";
-import Config from "../config/Config";
-import ServiceContainer from "../service/ServiceContainer";
-import {Command} from "commander";
 
 export default abstract class CliApiAction extends CliCommand
 {
-    public constructor(
-        protected config: Config,
-        protected program: Command,
-        protected process: NodeJS.Process,
-        protected services: ServiceContainer
-    )
-    {
-        super(config, program, process);
-    }
-
     protected async do(...args)
     {
         const command = this.createAction(...args);

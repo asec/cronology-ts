@@ -1,8 +1,8 @@
 import CliCommand from "../../lib/cli/CliCommand";
-import Config, {EnvType} from "../../lib/config/Config";
+import {EnvType} from "../../lib/config/Config";
 import path from "path";
 import fs from "fs";
-import {Command} from "commander";
+import {AppConfigProps} from "../../config/AppConfig";
 
 class EnvSetCommand extends CliCommand
 {
@@ -18,9 +18,10 @@ class EnvSetCommand extends CliCommand
         );
     }
 
-    protected envKeysToCopy: string[] = [
+    protected envKeysToCopy: (keyof AppConfigProps)[] = [
         "APP_ENV",
-        "CONF_DB_URI",
+        "CONF_MONGO_URI",
+        "CONF_MONGO_DB",
         "CONF_CRYPTO_APPKEYS",
         "CONF_LOG_DIR",
     ];
@@ -28,7 +29,7 @@ class EnvSetCommand extends CliCommand
     protected initialise(env: EnvType)
     {}
 
-    public do(env: EnvType)
+    public async do(env: EnvType)
     {
         const possibleEnvValues = Object.values(EnvType);
         if (possibleEnvValues.indexOf(env) === -1)
@@ -109,7 +110,12 @@ class EnvSetCommand extends CliCommand
         for (let i = 0; i < this.envKeysToCopy.length; i++)
         {
             const key = this.envKeysToCopy[i];
-            keys[key] = this.config.get(key);
+            const newValue = this.config.get(key);
+            if (newValue === undefined)
+            {
+                throw new Error(`Invalid key or value in config: '${key}'`);
+            }
+            keys[key] = newValue;
         }
         return keys;
     }

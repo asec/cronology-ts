@@ -1,12 +1,13 @@
 import ApiAction from "../../../lib/api/action/ApiAction";
-import Config, {EnvType} from "../../../lib/config/Config";
+import {EnvType} from "../../../lib/config/Config";
 import PingActionResponse, {PingActionResponseContent} from "./response/PingActionResponse";
 import {EmptyActionParamsContent} from "../../../lib/api/action/params/EmptyActionParams";
+import AppConfig from "../../../config/AppConfig";
 
 export default class PingAction extends ApiAction<PingActionResponseContent, EmptyActionParamsContent>
 {
     public constructor(
-        protected config: Config
+        protected config: AppConfig
     )
     {
         super();
