@@ -22,6 +22,10 @@ import BeanFactory from "../lib/factory/BeanFactory";
 import ApplicationFactory from "../entities/factory/ApplicationFactory";
 import AppIpCommand from "../cli/commands/AppIpCommand";
 import AppKeysCommand from "../cli/commands/AppKeysCommand";
+import BadResponseAction from "../api/actions/bad-response/BadResponseAction";
+import BadResponseCommand from "../cli/commands/api/BadResponseCommand";
+import TestErrorAction from "../api/actions/test-error/TestErrorAction";
+import TestErrorCommand from "../cli/commands/api/TestErrorCommand";
 
 const IProgram = Symbol("IProgram");
 const IProcess = Symbol("IProcess");
@@ -190,6 +194,24 @@ services.register(AppKeysCommand, () => {
     );
 });
 
+services.register(BadResponseCommand, () => {
+    return new BadResponseCommand(
+        services.resolve(AppConfig),
+        services.resolve(IProgram),
+        services.resolve(IProcess),
+        services.resolve(ServiceContainer)
+    );
+});
+
+services.register(TestErrorCommand, () => {
+    return new TestErrorCommand(
+        services.resolve(AppConfig),
+        services.resolve(IProgram),
+        services.resolve(IProcess),
+        services.resolve(ServiceContainer)
+    );
+});
+
 // API actions
 services.register(PingAction, () => {
     return new PingAction(
@@ -201,6 +223,14 @@ services.register(WaitAction, () => {
     return new WaitAction(
         services.resolve(Profiler)
     );
+});
+
+services.register(BadResponseAction, () => {
+    return new BadResponseAction();
+});
+
+services.register(TestErrorAction, () => {
+    return new TestErrorAction();
 });
 
 export default services;

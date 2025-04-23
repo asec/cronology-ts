@@ -8,6 +8,8 @@ import IServer from "../../lib/server/IServer";
 import WaitAction from "../../api/actions/wait/WaitAction";
 import WaitActionParamsParser from "../../api/actions/wait/params/WaitActionParamsParser";
 import AppConfig from "../../config/AppConfig";
+import BadResponseAction from "../../api/actions/bad-response/BadResponseAction";
+import TestErrorAction from "../../api/actions/test-error/TestErrorAction";
 
 class ServerStartOptions
 {
@@ -49,6 +51,12 @@ class ServerStartCommand extends CliCommand
     {
         this.server.defineRoute(HttpMethod.GET, "/", this.services.resolve(PingAction));
         this.server.defineRoute(HttpMethod.GET, "/wait", this.services.resolve(WaitAction), WaitActionParamsParser);
+
+        if (options.dev)
+        {
+            this.server.defineRoute(HttpMethod.GET, "/bad-response", this.services.resolve(BadResponseAction));
+            this.server.defineRoute(HttpMethod.GET, "/test-error", this.services.resolve(TestErrorAction));
+        }
 
         this.server.start((error: Error) => this.error(`${error.name}: ${error.message}`));
     }

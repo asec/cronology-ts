@@ -48,7 +48,6 @@ export default class AppKeysCommand extends CliCommand
         }
 
         const app = [...result.values()][0];
-        const keys = await app.keys();
         let keysGenerated = false;
 
         if (options.recreate)
@@ -57,11 +56,12 @@ export default class AppKeysCommand extends CliCommand
             keysGenerated = true;
         }
 
+        const keys = await app.keys();
         this.output(`Application: '${app.get("name")}'`, true, false);
         if (keysGenerated)
         {
             this.output("-- Keys have been regenerated --", false, false);
         }
-        this.output(`Keys: \n\t${keys.length === 0 ? '\x1b[31mnone\x1b[0m' : keys.join("\n\t")}`, false);
+        this.output(`Keys: ${keys.length === 0 ? '\x1b[31mnone\x1b[0m' : ('\n\t' + keys.join("\n\t"))}`, false);
     }
 }
