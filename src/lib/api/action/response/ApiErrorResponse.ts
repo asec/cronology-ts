@@ -1,5 +1,5 @@
-import ApiResponse, {ApiResponseContent} from "./ApiResponse";
-import {HttpStatus} from "../../Http";
+import ApiResponse, {ApiResponseContent} from "./ApiResponse.js";
+import {HttpStatus} from "../../Http.js";
 
 export class ApiErrorResponseContent extends ApiResponseContent
 {

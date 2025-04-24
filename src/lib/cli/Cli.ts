@@ -1,10 +1,12 @@
-import CliCommand from "./CliCommand";
+import CliCommand from "./CliCommand.js";
 import {Command, program} from "commander";
+import PackageInfo from "../utils/PackageInfo.js";
 
 export default class Cli
 {
     public constructor(
-        private program: Command
+        private program: Command,
+        private packageInfo: PackageInfo
     )
     {}
 
@@ -22,13 +24,13 @@ export default class Cli
         cmd.action(command.execute.bind(command));
     }
 
-    public init(commands: CliCommand[])
+    public async init(commands: CliCommand[])
     {
-        const packageInfo = require("../../../package.json");
+        const version: string = await this.packageInfo.get("version") as string;
 
         this.program
             .description("CLI tools for the Cronology API.")
-            .version(packageInfo.version, "-v, --version")
+            .version(version, "-v, --version")
             .configureOutput({
                 writeErr: str => process.stderr.write(`\x1b[31m[api-cli][error] ${str}\x1b[0m`)
             })

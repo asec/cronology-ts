@@ -1,5 +1,5 @@
-import CliApiAction from "../../../lib/cli/CliApiAction";
-import PingAction from "../../../api/actions/ping/PingAction";
+import CliApiAction from "../../../lib/cli/CliApiAction.js";
+import PingAction from "../../../api/actions/ping/PingAction.js";
 
 class PingCommand extends CliApiAction
 {

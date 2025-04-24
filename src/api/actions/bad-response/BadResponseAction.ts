@@ -1,8 +1,8 @@
-import ApiAction from "../../../lib/api/action/ApiAction";
-import {EmptyActionParamsContent} from "../../../lib/api/action/params/EmptyActionParams";
-import {ApiResponseContent} from "../../../lib/api/action/response/ApiResponse";
-import BadResponseActionResponse from "./response/BadResponseActionResponse";
-import CronologyError from "../../../lib/error/CronologyError";
+import ApiAction from "../../../lib/api/action/ApiAction.js";
+import {EmptyActionParamsContent} from "../../../lib/api/action/params/EmptyActionParams.js";
+import {ApiResponseContent} from "../../../lib/api/action/response/ApiResponse.js";
+import BadResponseActionResponse from "./response/BadResponseActionResponse.js";
+import CronologyError from "../../../lib/error/CronologyError.js";
 
 export default class BadResponseAction extends ApiAction<ApiResponseContent, EmptyActionParamsContent>
 {

@@ -1,6 +1,6 @@
-import IValidator from "./IValidator";
+import IValidator from "./IValidator.js";
 import * as net from "net";
-import ValidationError from "../error/ValidationError";
+import ValidationError from "../error/ValidationError.js";
 
 export default class IpValidator implements IValidator
 {

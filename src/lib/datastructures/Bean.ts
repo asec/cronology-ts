@@ -1,4 +1,4 @@
-import ServiceContainer from "../service/ServiceContainer";
+import ServiceContainer from "../service/ServiceContainer.js";
 
 export type BeanProps = Record<string, any>;
 

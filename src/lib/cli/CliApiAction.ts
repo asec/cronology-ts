@@ -1,8 +1,8 @@
-import CliCommand from "./CliCommand";
-import ApiAction from "../api/action/ApiAction";
-import {BeanContents, BeanProps} from "../datastructures/Bean";
-import {ApiResponseContent} from "../api/action/response/ApiResponse";
-import ApiActionParams from "../api/action/params/ApiActionParams";
+import CliCommand from "./CliCommand.js";
+import ApiAction from "../api/action/ApiAction.js";
+import {BeanContents, BeanProps} from "../datastructures/Bean.js";
+import {ApiResponseContent} from "../api/action/response/ApiResponse.js";
+import ApiActionParams from "../api/action/params/ApiActionParams.js";
 
 export default abstract class CliApiAction extends CliCommand
 {

@@ -1,8 +1,8 @@
-import BeanFactory from "../../lib/factory/BeanFactory";
-import Application from "../Application";
-import ServiceContainer from "../../lib/service/ServiceContainer";
-import ApplicationRepository from "../repository/ApplicationRepository";
-import ApplicationValidator from "../../validation/ApplicationValidator";
+import BeanFactory from "../../lib/factory/BeanFactory.js";
+import Application from "../Application.js";
+import ServiceContainer from "../../lib/service/ServiceContainer.js";
+import ApplicationRepository from "../repository/ApplicationRepository.js";
+import ApplicationValidator from "../../validation/ApplicationValidator.js";
 
 export default class ApplicationFactory extends BeanFactory<Application>
 {

@@ -3,6 +3,7 @@
   "version": "2.0.0",
   "description": "Cronology Typescript implementáció",
   "main": "src/api.ts",
+  "type": "module",
   "scripts": {
     "run": "node ./dist/api.js server-start",
     "run dev": "nodemon ./dist/api.js server-start --dev",

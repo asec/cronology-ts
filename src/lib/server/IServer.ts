@@ -1,8 +1,8 @@
-import {HttpMethod} from "../api/Http";
-import ApiAction from "../../lib/api/action/ApiAction";
+import {HttpMethod} from "../api/Http.js";
+import ApiAction from "../../lib/api/action/ApiAction.js";
 import {Request} from "express";
-import {BeanContents} from "../datastructures/Bean";
-import IExpressRequestParser from "./IExpressRequestParser";
+import {BeanContents} from "../datastructures/Bean.js";
+import IExpressRequestParser from "./IExpressRequestParser.js";
 
 export type ParamsParserClass<TRequest extends Request, TParamsContent extends BeanContents> = new(request: TRequest, ...params: any) => IExpressRequestParser<TParamsContent>
 

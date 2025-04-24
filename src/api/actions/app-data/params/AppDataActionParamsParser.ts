@@ -1,8 +1,8 @@
-import IExpressRequestParser from "../../../../lib/server/IExpressRequestParser";
-import AppDataActionParams, {AppDataActionParamsContent} from "./AppDataActionParams";
+import IExpressRequestParser from "../../../../lib/server/IExpressRequestParser.js";
+import AppDataActionParams, {AppDataActionParamsContent} from "./AppDataActionParams.js";
 import {Request} from "express";
-import {AppDataActionResponseContent} from "../response/AppDataActionResponse";
-import ApplicationFactory from "../../../../entities/factory/ApplicationFactory";
+import {AppDataActionResponseContent} from "../response/AppDataActionResponse.js";
+import ApplicationFactory from "../../../../entities/factory/ApplicationFactory.js";
 
 interface RequestParams
 {

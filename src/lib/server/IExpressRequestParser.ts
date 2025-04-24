@@ -1,5 +1,5 @@
-import {BeanContents} from "../datastructures/Bean";
-import ApiActionParams from "../api/action/params/ApiActionParams";
+import {BeanContents} from "../datastructures/Bean.js";
+import ApiActionParams from "../api/action/params/ApiActionParams.js";
 
 export default interface IExpressRequestParser<TParamsContent extends BeanContents>
 {

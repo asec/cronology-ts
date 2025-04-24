@@ -1,5 +1,5 @@
-import Repository from "../../lib/entities/Repository";
-import Application from "../Application";
+import Repository from "../../lib/entities/Repository.js";
+import Application from "../Application.js";
 
 export default class ApplicationRepository extends Repository<Application>
 {}

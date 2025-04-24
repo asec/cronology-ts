@@ -1,6 +1,6 @@
-import ApiAction from "../../../lib/api/action/ApiAction";
-import AppDataActionResponse, {AppDataActionResponseContent} from "./response/AppDataActionResponse";
-import {AppDataActionParamsContent} from "./params/AppDataActionParams";
+import ApiAction from "../../../lib/api/action/ApiAction.js";
+import AppDataActionResponse, {AppDataActionResponseContent} from "./response/AppDataActionResponse.js";
+import {AppDataActionParamsContent} from "./params/AppDataActionParams.js";
 
 export default class AppDataAction extends ApiAction<AppDataActionResponseContent, AppDataActionParamsContent>
 {

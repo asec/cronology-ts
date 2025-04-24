@@ -1,6 +1,6 @@
-import ApiResponse, {ApiResponseContent} from "./response/ApiResponse";
-import {BeanContents} from "../../datastructures/Bean";
-import ApiActionParams from "./params/ApiActionParams";
+import ApiResponse, {ApiResponseContent} from "./response/ApiResponse.js";
+import {BeanContents} from "../../datastructures/Bean.js";
+import ApiActionParams from "./params/ApiActionParams.js";
 
 // Command pattern - interface Command
 interface Command<TResponseContent extends ApiResponseContent, TParamsContent extends BeanContents>

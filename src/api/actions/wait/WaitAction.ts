@@ -1,7 +1,7 @@
-import ApiAction from "../../../lib/api/action/ApiAction";
-import {WaitActionParamsContent} from "./params/WaitActionParams";
-import WaitActionResponse, {WaitActionResponseContent} from "./response/WaitActionResponse";
-import Profiler from "../../../lib/utils/Profiler";
+import ApiAction from "../../../lib/api/action/ApiAction.js";
+import {WaitActionParamsContent} from "./params/WaitActionParams.js";
+import WaitActionResponse, {WaitActionResponseContent} from "./response/WaitActionResponse.js";
+import Profiler from "../../../lib/utils/Profiler.js";
 
 export default class WaitAction extends ApiAction<WaitActionResponseContent, WaitActionParamsContent>
 {

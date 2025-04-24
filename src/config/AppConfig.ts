@@ -1,4 +1,4 @@
-import Config, {ConfigProps} from "../lib/config/Config";
+import Config, {ConfigProps} from "../lib/config/Config.js";
 
 export interface AppConfigProps extends ConfigProps
 {

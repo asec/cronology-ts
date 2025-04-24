@@ -1,8 +1,8 @@
-import Bean, {BeanContents, BeanProps} from "../datastructures/Bean";
-import IDatabase from "./IDatabase";
-import {EntityKeyType} from "../entities/Entity";
+import Bean, {BeanContents, BeanProps} from "../datastructures/Bean.js";
+import IDatabase from "./IDatabase.js";
+import {EntityKeyType} from "../entities/Entity.js";
 import {CreateIndexesOptions, Db, IndexSpecification, MongoClient, ObjectId} from "mongodb";
-import BeanFactory from "../factory/BeanFactory";
+import BeanFactory from "../factory/BeanFactory.js";
 
 type InferredBeanContents<T> = T extends Bean<infer U> ? U : BeanContents;
 type BeanConstructor<TBean extends Bean<InferredBeanContents<TBean>>> = new (props?: BeanProps) => TBean;

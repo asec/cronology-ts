@@ -1,4 +1,4 @@
-import ValidationError from "../error/ValidationError";
+import ValidationError from "../error/ValidationError.js";
 import path from "path";
 import fs from "fs";
 import crypto from "crypto";

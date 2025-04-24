@@ -1,8 +1,8 @@
-import IValidator from "../lib/validation/IValidator";
-import Application from "../entities/Application";
-import ValidationError from "../lib/error/ValidationError";
-import IpValidator from "../lib/validation/IpValidator";
-import Repository from "../lib/entities/Repository";
+import IValidator from "../lib/validation/IValidator.js";
+import Application from "../entities/Application.js";
+import ValidationError from "../lib/error/ValidationError.js";
+import IpValidator from "../lib/validation/IpValidator.js";
+import Repository from "../lib/entities/Repository.js";
 
 export default class ApplicationValidator implements IValidator
 {

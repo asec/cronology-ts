@@ -3,16 +3,16 @@ import * as fs from "fs";
 import {createServer} from "https";
 import cors from "cors";
 import bodyParser from "body-parser";
-import {BeanContents} from "../lib/datastructures/Bean";
-import ApiAction from "../lib/api/action/ApiAction";
-import ApiResponse, {ApiResponseContent} from "../lib/api/action/response/ApiResponse";
-import {EnvType} from "../lib/config/Config";
-import {HttpMethod, HttpStatus} from "../lib/api/Http";
-import IServer, {ParamsParserClass} from "../lib/server/IServer";
-import ApiErrorResponse from "../lib/api/action/response/ApiErrorResponse";
-import AppConfig from "../config/AppConfig";
-import ServiceContainer from "../lib/service/ServiceContainer";
-import HttpError from "../lib/error/HttpError";
+import {BeanContents} from "../lib/datastructures/Bean.js";
+import ApiAction from "../lib/api/action/ApiAction.js";
+import ApiResponse, {ApiResponseContent} from "../lib/api/action/response/ApiResponse.js";
+import {EnvType} from "../lib/config/Config.js";
+import {HttpMethod, HttpStatus} from "../lib/api/Http.js";
+import IServer, {ParamsParserClass} from "../lib/server/IServer.js";
+import ApiErrorResponse from "../lib/api/action/response/ApiErrorResponse.js";
+import AppConfig from "../config/AppConfig.js";
+import ServiceContainer from "../lib/service/ServiceContainer.js";
+import HttpError from "../lib/error/HttpError.js";
 
 export default class WebServer implements IServer
 {

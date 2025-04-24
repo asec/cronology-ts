@@ -1,8 +1,8 @@
-import Bean, {BeanContents, BeanProps} from "../lib/datastructures/Bean";
+import Bean, {BeanContents, BeanProps} from "../lib/datastructures/Bean.js";
 import {v4 as uuidv4} from "uuid";
-import RsaKeypair from "../lib/utils/RsaKeypair";
-import ServiceContainer from "../lib/service/ServiceContainer";
-import CronologyError from "../lib/error/CronologyError";
+import RsaKeypair from "../lib/utils/RsaKeypair.js";
+import ServiceContainer from "../lib/service/ServiceContainer.js";
+import CronologyError from "../lib/error/CronologyError.js";
 
 export class ApplicationProps extends BeanContents
 {

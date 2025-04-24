@@ -1,4 +1,4 @@
-import Bean, {BeanContents} from "../datastructures/Bean";
+import Bean, {BeanContents} from "../datastructures/Bean.js";
 
 export type EntityKeyType = string|number;
 

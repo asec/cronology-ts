@@ -1,6 +1,6 @@
-import {BeanContents, BeanProps} from "../../../../lib/datastructures/Bean";
-import ApiActionParams from "../../../../lib/api/action/params/ApiActionParams";
-import ValidationError from "../../../../lib/error/ValidationError";
+import {BeanContents, BeanProps} from "../../../../lib/datastructures/Bean.js";
+import ApiActionParams from "../../../../lib/api/action/params/ApiActionParams.js";
+import ValidationError from "../../../../lib/error/ValidationError.js";
 
 export interface WaitActionParamsContentRaw extends BeanProps
 {

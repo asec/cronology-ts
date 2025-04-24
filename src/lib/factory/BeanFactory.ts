@@ -1,8 +1,8 @@
-import Bean, {BeanContents, BeanProps} from "../datastructures/Bean";
-import ServiceContainer from "../service/ServiceContainer";
-import Repository from "../entities/Repository";
-import IDatabase from "../database/IDatabase";
-import IValidator from "../validation/IValidator";
+import Bean, {BeanContents, BeanProps} from "../datastructures/Bean.js";
+import ServiceContainer from "../service/ServiceContainer.js";
+import Repository from "../entities/Repository.js";
+import IDatabase from "../database/IDatabase.js";
+import IValidator from "../validation/IValidator.js";
 
 type InferredBeanContents<T> = T extends Bean<infer U> ? U : BeanContents;
 

@@ -1,8 +1,8 @@
-import CliApiAction from "../../../lib/cli/CliApiAction";
-import ApiAction from "../../../lib/api/action/ApiAction";
-import {ApiResponseContent} from "../../../lib/api/action/response/ApiResponse";
-import {EmptyActionParamsContent} from "../../../lib/api/action/params/EmptyActionParams";
-import TestErrorAction from "../../../api/actions/test-error/TestErrorAction";
+import CliApiAction from "../../../lib/cli/CliApiAction.js";
+import ApiAction from "../../../lib/api/action/ApiAction.js";
+import {ApiResponseContent} from "../../../lib/api/action/response/ApiResponse.js";
+import {EmptyActionParamsContent} from "../../../lib/api/action/params/EmptyActionParams.js";
+import TestErrorAction from "../../../api/actions/test-error/TestErrorAction.js";
 
 export default class TestErrorCommand extends CliApiAction
 {

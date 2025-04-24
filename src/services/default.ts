@@ -1,36 +1,37 @@
-import ServiceContainer, {createServiceContainer} from "../lib/service/ServiceContainer";
-import EnvGetCommand from "../cli/commands/EnvGetCommand";
+import ServiceContainer, {createServiceContainer} from "../lib/service/ServiceContainer.js";
+import EnvGetCommand from "../cli/commands/EnvGetCommand.js";
 import {program} from "commander";
-import Cli from "../lib/cli/Cli";
-import EnvSetCommand from "../cli/commands/EnvSetCommand";
-import WebServer from "../api/WebServer";
-import ServerStartCommand from "../cli/commands/ServerStartCommand";
-import PingAction from "../api/actions/ping/PingAction";
-import PingCommand from "../cli/commands/api/PingCommand";
-import Profiler from "../lib/utils/Profiler";
-import WaitAction from "../api/actions/wait/WaitAction";
-import WaitCommand from "../cli/commands/api/WaitCommand";
-import AppCreateCommand from "../cli/commands/AppCreateCommand";
-import ApplicationRepository from "../entities/repository/ApplicationRepository";
-import Memory from "../lib/database/Memory";
-import AppConfig from "../config/AppConfig";
-import Mongodb from "../lib/database/Mongodb";
-import IDatabase from "../lib/database/IDatabase";
-import Application from "../entities/Application";
-import RsaKeypair from "../lib/utils/RsaKeypair";
-import BeanFactory from "../lib/factory/BeanFactory";
-import ApplicationFactory from "../entities/factory/ApplicationFactory";
-import AppIpCommand from "../cli/commands/AppIpCommand";
-import AppKeysCommand from "../cli/commands/AppKeysCommand";
-import BadResponseAction from "../api/actions/bad-response/BadResponseAction";
-import BadResponseCommand from "../cli/commands/api/BadResponseCommand";
-import TestErrorAction from "../api/actions/test-error/TestErrorAction";
-import TestErrorCommand from "../cli/commands/api/TestErrorCommand";
-import AppDataAction from "../api/actions/app-data/AppDataAction";
-import AppDataActionParamsParser from "../api/actions/app-data/params/AppDataActionParamsParser";
+import Cli from "../lib/cli/Cli.js";
+import EnvSetCommand from "../cli/commands/EnvSetCommand.js";
+import WebServer from "../api/WebServer.js";
+import ServerStartCommand from "../cli/commands/ServerStartCommand.js";
+import PingAction from "../api/actions/ping/PingAction.js";
+import PingCommand from "../cli/commands/api/PingCommand.js";
+import Profiler from "../lib/utils/Profiler.js";
+import WaitAction from "../api/actions/wait/WaitAction.js";
+import WaitCommand from "../cli/commands/api/WaitCommand.js";
+import AppCreateCommand from "../cli/commands/AppCreateCommand.js";
+import ApplicationRepository from "../entities/repository/ApplicationRepository.js";
+import Memory from "../lib/database/Memory.js";
+import AppConfig from "../config/AppConfig.js";
+import Mongodb from "../lib/database/Mongodb.js";
+import IDatabase from "../lib/database/IDatabase.js";
+import Application from "../entities/Application.js";
+import RsaKeypair from "../lib/utils/RsaKeypair.js";
+import BeanFactory from "../lib/factory/BeanFactory.js";
+import ApplicationFactory from "../entities/factory/ApplicationFactory.js";
+import AppIpCommand from "../cli/commands/AppIpCommand.js";
+import AppKeysCommand from "../cli/commands/AppKeysCommand.js";
+import BadResponseAction from "../api/actions/bad-response/BadResponseAction.js";
+import BadResponseCommand from "../cli/commands/api/BadResponseCommand.js";
+import TestErrorAction from "../api/actions/test-error/TestErrorAction.js";
+import TestErrorCommand from "../cli/commands/api/TestErrorCommand.js";
+import AppDataAction from "../api/actions/app-data/AppDataAction.js";
+import AppDataActionParamsParser from "../api/actions/app-data/params/AppDataActionParamsParser.js";
 import {Request} from "express";
-import AppDataActionParams from "../api/actions/app-data/params/AppDataActionParams";
-import AppDataCommand from "../cli/commands/api/AppDataCommand";
+import AppDataActionParams from "../api/actions/app-data/params/AppDataActionParams.js";
+import AppDataCommand from "../cli/commands/api/AppDataCommand.js";
+import PackageInfo from "../lib/utils/PackageInfo.js";
 
 const IProgram = Symbol("IProgram");
 const IProcess = Symbol("IProcess");
@@ -46,6 +47,10 @@ services.register(AppConfig, () => {
 
 services.register(Profiler, () => {
     return new Profiler();
+});
+
+services.register(PackageInfo, () => {
+    return new PackageInfo();
 });
 
 services.register(IProgram, () => {
@@ -120,7 +125,8 @@ services.register(ApplicationRepository, (params?: {factory?: BeanFactory<Applic
 // CLI related
 services.register(Cli, () => {
     return new Cli(
-        services.resolve(IProgram)
+        services.resolve(IProgram),
+        services.resolve(PackageInfo)
     );
 });
 
@@ -230,7 +236,8 @@ services.register(TestErrorCommand, () => {
 // API actions
 services.register(PingAction, () => {
     return new PingAction(
-        services.resolve(AppConfig)
+        services.resolve(AppConfig),
+        services.resolve(PackageInfo)
     );
 });
 

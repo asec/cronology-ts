@@ -1,7 +1,7 @@
 import {Request} from "express";
-import {WaitActionResponseContent} from "../response/WaitActionResponse";
-import WaitActionParams, {WaitActionParamsContent, WaitActionParamsContentRaw} from "./WaitActionParams";
-import IExpressRequestParser from "../../../../lib/server/IExpressRequestParser";
+import {WaitActionResponseContent} from "../response/WaitActionResponse.js";
+import WaitActionParams, {WaitActionParamsContent, WaitActionParamsContentRaw} from "./WaitActionParams.js";
+import IExpressRequestParser from "../../../../lib/server/IExpressRequestParser.js";
 
 type WaitActionRequest = Request<{}, WaitActionResponseContent, {}, WaitActionParamsContentRaw>;
 

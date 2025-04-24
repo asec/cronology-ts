@@ -1,10 +1,10 @@
-import ApiActionParams from "../../../../lib/api/action/params/ApiActionParams";
-import {BeanContents, BeanProps} from "../../../../lib/datastructures/Bean";
-import Application from "../../../../entities/Application";
-import ValidationError from "../../../../lib/error/ValidationError";
-import ApplicationFactory from "../../../../entities/factory/ApplicationFactory";
-import HttpError from "../../../../lib/error/HttpError";
-import {HttpStatus} from "../../../../lib/api/Http";
+import ApiActionParams from "../../../../lib/api/action/params/ApiActionParams.js";
+import {BeanContents, BeanProps} from "../../../../lib/datastructures/Bean.js";
+import Application from "../../../../entities/Application.js";
+import ValidationError from "../../../../lib/error/ValidationError.js";
+import ApplicationFactory from "../../../../entities/factory/ApplicationFactory.js";
+import HttpError from "../../../../lib/error/HttpError.js";
+import {HttpStatus} from "../../../../lib/api/Http.js";
 
 interface AppDataActionParamsContentRaw extends BeanProps
 {

@@ -1,17 +1,17 @@
-import CliCommand from "../../lib/cli/CliCommand";
-import {EnvType} from "../../lib/config/Config";
+import CliCommand from "../../lib/cli/CliCommand.js";
+import {EnvType} from "../../lib/config/Config.js";
 import {Command} from "commander";
-import {HttpMethod} from "../../lib/api/Http";
-import PingAction from "../../api/actions/ping/PingAction";
-import ServiceContainer from "../../lib/service/ServiceContainer";
-import IServer from "../../lib/server/IServer";
-import WaitAction from "../../api/actions/wait/WaitAction";
-import WaitActionParamsParser from "../../api/actions/wait/params/WaitActionParamsParser";
-import AppConfig from "../../config/AppConfig";
-import BadResponseAction from "../../api/actions/bad-response/BadResponseAction";
-import TestErrorAction from "../../api/actions/test-error/TestErrorAction";
-import AppDataAction from "../../api/actions/app-data/AppDataAction";
-import AppDataActionParamsParser from "../../api/actions/app-data/params/AppDataActionParamsParser";
+import {HttpMethod} from "../../lib/api/Http.js";
+import PingAction from "../../api/actions/ping/PingAction.js";
+import ServiceContainer from "../../lib/service/ServiceContainer.js";
+import IServer from "../../lib/server/IServer.js";
+import WaitAction from "../../api/actions/wait/WaitAction.js";
+import WaitActionParamsParser from "../../api/actions/wait/params/WaitActionParamsParser.js";
+import AppConfig from "../../config/AppConfig.js";
+import BadResponseAction from "../../api/actions/bad-response/BadResponseAction.js";
+import TestErrorAction from "../../api/actions/test-error/TestErrorAction.js";
+import AppDataAction from "../../api/actions/app-data/AppDataAction.js";
+import AppDataActionParamsParser from "../../api/actions/app-data/params/AppDataActionParamsParser.js";
 
 class ServerStartOptions
 {

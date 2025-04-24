@@ -1,6 +1,6 @@
-import CliApiAction from "../../../lib/cli/CliApiAction";
-import AppDataAction from "../../../api/actions/app-data/AppDataAction";
-import AppDataActionParams from "../../../api/actions/app-data/params/AppDataActionParams";
+import CliApiAction from "../../../lib/cli/CliApiAction.js";
+import AppDataAction from "../../../api/actions/app-data/AppDataAction.js";
+import AppDataActionParams from "../../../api/actions/app-data/params/AppDataActionParams.js";
 
 export default class AppDataCommand extends CliApiAction
 {

@@ -1,5 +1,5 @@
-import ApiResponse, {ApiResponseContent} from "../../../../lib/api/action/response/ApiResponse";
-import {HttpStatus} from "../../../../lib/api/Http";
+import ApiResponse, {ApiResponseContent} from "../../../../lib/api/action/response/ApiResponse.js";
+import {HttpStatus} from "../../../../lib/api/Http.js";
 
 export class PingActionResponseContent extends ApiResponseContent
 {

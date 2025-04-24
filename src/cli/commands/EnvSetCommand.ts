@@ -1,8 +1,8 @@
-import CliCommand from "../../lib/cli/CliCommand";
-import {EnvType} from "../../lib/config/Config";
+import CliCommand from "../../lib/cli/CliCommand.js";
+import {EnvType} from "../../lib/config/Config.js";
 import path from "path";
 import fs from "fs";
-import {AppConfigProps} from "../../config/AppConfig";
+import {AppConfigProps} from "../../config/AppConfig.js";
 
 class EnvSetCommand extends CliCommand
 {

@@ -1,5 +1,5 @@
-import Bean, {BeanContents} from "../../../datastructures/Bean";
-import {HttpStatus} from "../../Http";
+import Bean, {BeanContents} from "../../../datastructures/Bean.js";
+import {HttpStatus} from "../../Http.js";
 
 export class ApiResponseContent extends BeanContents
 {

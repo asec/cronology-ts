@@ -1,9 +1,9 @@
 import fs from "fs";
 import {Command} from "commander";
-import AppConfig from "../../config/AppConfig";
-import {EnvType} from "../config/Config";
-import ServiceContainer from "../service/ServiceContainer";
-import IDatabase from "../database/IDatabase";
+import AppConfig from "../../config/AppConfig.js";
+import {EnvType} from "../config/Config.js";
+import ServiceContainer from "../service/ServiceContainer.js";
+import IDatabase from "../database/IDatabase.js";
 
 export type CliCommandArgument = {
     name: string,

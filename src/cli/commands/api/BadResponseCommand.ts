@@ -1,5 +1,5 @@
-import CliApiAction from "../../../lib/cli/CliApiAction";
-import BadResponseAction from "../../../api/actions/bad-response/BadResponseAction";
+import CliApiAction from "../../../lib/cli/CliApiAction.js";
+import BadResponseAction from "../../../api/actions/bad-response/BadResponseAction.js";
 
 export default class BadResponseCommand extends CliApiAction
 {

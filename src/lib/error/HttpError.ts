@@ -1,5 +1,5 @@
-import {HttpStatus} from "../api/Http";
-import CronologyError from "./CronologyError";
+import {HttpStatus} from "../api/Http.js";
+import CronologyError from "./CronologyError.js";
 
 export default class HttpError extends CronologyError
 {

@@ -1,7 +1,7 @@
-import IDatabase from "./IDatabase";
-import Bean, {BeanContents, BeanProps} from "../datastructures/Bean";
-import Entity, {EntityKeyType} from "../entities/Entity";
-import BeanFactory from "../factory/BeanFactory";
+import IDatabase from "./IDatabase.js";
+import Bean, {BeanContents, BeanProps} from "../datastructures/Bean.js";
+import Entity, {EntityKeyType} from "../entities/Entity.js";
+import BeanFactory from "../factory/BeanFactory.js";
 
 type InferredBeanContents<T> = T extends Bean<infer U> ? U : BeanContents;
 

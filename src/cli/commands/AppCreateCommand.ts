@@ -1,8 +1,8 @@
-import CliCommand from "../../lib/cli/CliCommand";
+import CliCommand from "../../lib/cli/CliCommand.js";
 import {Command} from "commander";
-import AppConfig from "../../config/AppConfig";
-import ServiceContainer from "../../lib/service/ServiceContainer";
-import ApplicationFactory from "../../entities/factory/ApplicationFactory";
+import AppConfig from "../../config/AppConfig.js";
+import ServiceContainer from "../../lib/service/ServiceContainer.js";
+import ApplicationFactory from "../../entities/factory/ApplicationFactory.js";
 
 export default class AppCreateCommand extends CliCommand
 {

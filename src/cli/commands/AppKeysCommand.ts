@@ -1,8 +1,8 @@
-import CliCommand from "../../lib/cli/CliCommand";
-import AppConfig from "../../config/AppConfig";
+import CliCommand from "../../lib/cli/CliCommand.js";
+import AppConfig from "../../config/AppConfig.js";
 import {Command} from "commander";
-import ServiceContainer from "../../lib/service/ServiceContainer";
-import ApplicationFactory from "../../entities/factory/ApplicationFactory";
+import ServiceContainer from "../../lib/service/ServiceContainer.js";
+import ApplicationFactory from "../../entities/factory/ApplicationFactory.js";
 
 class AppKeysOptions
 {

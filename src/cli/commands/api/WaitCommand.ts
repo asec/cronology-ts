@@ -1,7 +1,7 @@
-import CliApiAction from "../../../lib/cli/CliApiAction";
-import WaitAction from "../../../api/actions/wait/WaitAction";
-import WaitActionParams from "../../../api/actions/wait/params/WaitActionParams";
-import {BeanProps} from "../../../lib/datastructures/Bean";
+import CliApiAction from "../../../lib/cli/CliApiAction.js";
+import WaitAction from "../../../api/actions/wait/WaitAction.js";
+import WaitActionParams from "../../../api/actions/wait/params/WaitActionParams.js";
+import {BeanProps} from "../../../lib/datastructures/Bean.js";
 
 interface WaitCommandOptions extends BeanProps
 {

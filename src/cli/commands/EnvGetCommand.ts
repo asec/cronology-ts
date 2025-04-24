@@ -1,4 +1,4 @@
-import CliCommand from "../../lib/cli/CliCommand";
+import CliCommand from "../../lib/cli/CliCommand.js";
 
 class EnvGetCommand extends CliCommand
 {
