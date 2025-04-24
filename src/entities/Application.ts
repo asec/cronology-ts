@@ -39,7 +39,7 @@ export default class Application extends Bean<ApplicationProps>
 
     public async generateKeys(forced: boolean = false): Promise<void>
     {
-        this.rsa.setName(this.get("name"));
+        this.rsa.setName(this.get("uuid"));
         if (!forced && await this.rsa.exists())
         {
             throw new CronologyError(
@@ -53,7 +53,7 @@ export default class Application extends Bean<ApplicationProps>
 
     public async keys(): Promise<string[]>
     {
-        this.rsa.setName(this.get("name"));
+        this.rsa.setName(this.get("uuid"));
         if (!await this.rsa.exists())
         {
             return [];

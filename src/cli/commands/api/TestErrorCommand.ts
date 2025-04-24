@@ -9,7 +9,7 @@ export default class TestErrorCommand extends CliApiAction
     public commandName = "action:test-error";
     public description = "API action: GET /test-error";
 
-    protected createAction(...args): ApiAction<ApiResponseContent, EmptyActionParamsContent>
+    protected createAction(...args): Promise<ApiAction<ApiResponseContent, EmptyActionParamsContent>>
     {
         return this.createCliCommand(this.services.resolve(TestErrorAction));
     }

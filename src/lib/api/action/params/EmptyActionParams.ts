@@ -15,7 +15,7 @@ class EmptyActionParams extends ApiActionParams<EmptyActionParamsContent>
 
     parseRequest(req: Request<any, any, any, any, any>): void {}
 
-    validate(): void {}
+    validate(): Promise<void> { return new Promise<void>(resolve => resolve()) }
 }
 
 export {EmptyActionParamsContent};

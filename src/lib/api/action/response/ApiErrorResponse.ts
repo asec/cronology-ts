@@ -9,15 +9,12 @@ export class ApiErrorResponseContent extends ApiResponseContent
 
 export default class ApiErrorResponse extends ApiResponse<ApiErrorResponseContent>
 {
-    public status: HttpStatus = HttpStatus.Error;
-    public displayMessage: string = "An unexpected error occurred while processing your request.";
-
-    public constructor(props?: ApiErrorResponseContent, status?: HttpStatus, displayMessage?: string)
+    public constructor(
+        props?: ApiErrorResponseContent,
+        status: HttpStatus = HttpStatus.Error,
+        public displayMessage: string = "An unexpected error occurred while processing your request."
+    )
     {
         super(ApiErrorResponseContent, props, status);
-        if (displayMessage)
-        {
-            this.displayMessage = displayMessage;
-        }
     }
 }

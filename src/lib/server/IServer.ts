@@ -4,7 +4,7 @@ import {Request} from "express";
 import {BeanContents} from "../datastructures/Bean";
 import IExpressRequestParser from "./IExpressRequestParser";
 
-export type ParamsParserClass<TRequest extends Request, TParamsContent extends BeanContents> = new(request: TRequest) => IExpressRequestParser<TParamsContent>
+export type ParamsParserClass<TRequest extends Request, TParamsContent extends BeanContents> = new(request: TRequest, ...params: any) => IExpressRequestParser<TParamsContent>
 
 export default interface IServer
 {

@@ -26,6 +26,11 @@ import BadResponseAction from "../api/actions/bad-response/BadResponseAction";
 import BadResponseCommand from "../cli/commands/api/BadResponseCommand";
 import TestErrorAction from "../api/actions/test-error/TestErrorAction";
 import TestErrorCommand from "../cli/commands/api/TestErrorCommand";
+import AppDataAction from "../api/actions/app-data/AppDataAction";
+import AppDataActionParamsParser from "../api/actions/app-data/params/AppDataActionParamsParser";
+import {Request} from "express";
+import AppDataActionParams from "../api/actions/app-data/params/AppDataActionParams";
+import AppDataCommand from "../cli/commands/api/AppDataCommand";
 
 const IProgram = Symbol("IProgram");
 const IProcess = Symbol("IProcess");
@@ -53,7 +58,8 @@ services.register(IProcess, () => {
 
 services.register(IServer, () => {
     return new WebServer(
-        services.resolve(AppConfig)
+        services.resolve(AppConfig),
+        services.resolve(ServiceContainer)
     );
 });
 
@@ -194,6 +200,15 @@ services.register(AppKeysCommand, () => {
     );
 });
 
+services.register(AppDataCommand, () => {
+    return new AppDataCommand(
+        services.resolve(AppConfig),
+        services.resolve(IProgram),
+        services.resolve(IProcess),
+        services.resolve(ServiceContainer),
+    );
+});
+
 services.register(BadResponseCommand, () => {
     return new BadResponseCommand(
         services.resolve(AppConfig),
@@ -231,6 +246,23 @@ services.register(BadResponseAction, () => {
 
 services.register(TestErrorAction, () => {
     return new TestErrorAction();
+});
+
+services.register(AppDataAction, () => {
+    return new AppDataAction();
+});
+
+services.register(AppDataActionParams, () => {
+    return new AppDataActionParams(
+        services.resolve(ApplicationFactory)
+    );
+});
+
+services.register(AppDataActionParamsParser, (params?: { request: Request<any> }) => {
+    return new AppDataActionParamsParser(
+        params.request,
+        services.resolve(ApplicationFactory)
+    );
 });
 
 export default services;

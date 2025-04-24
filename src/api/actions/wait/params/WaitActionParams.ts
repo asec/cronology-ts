@@ -1,5 +1,6 @@
 import {BeanContents, BeanProps} from "../../../../lib/datastructures/Bean";
 import ApiActionParams from "../../../../lib/api/action/params/ApiActionParams";
+import ValidationError from "../../../../lib/error/ValidationError";
 
 export interface WaitActionParamsContentRaw extends BeanProps
 {
@@ -23,16 +24,16 @@ export default class WaitActionParams extends ApiActionParams<WaitActionParamsCo
         this.set("ms", Number(props.ms));
     }
 
-    public validate(): void
+    public async validate(): Promise<void>
     {
         if (this.get("ms") === null || this.get("ms") === undefined)
         {
-            throw new Error("Missing required parameter: 'ms'");
+            throw new ValidationError("Missing required parameter: 'ms'");
         }
 
         if (isNaN(this.get("ms")))
         {
-            throw new Error("Invalid parameter: 'ms'");
+            throw new ValidationError("Invalid parameter: 'ms'");
         }
     }
 }

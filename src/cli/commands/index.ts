@@ -10,6 +10,7 @@ import AppIpCommand from "./AppIpCommand";
 import AppKeysCommand from "./AppKeysCommand";
 import BadResponseCommand from "./api/BadResponseCommand";
 import TestErrorCommand from "./api/TestErrorCommand";
+import AppDataCommand from "./api/AppDataCommand";
 
 const commandList: CliCommand[] = [
     services.resolve(ServerStartCommand),
@@ -20,6 +21,7 @@ const commandList: CliCommand[] = [
     services.resolve(AppKeysCommand),
     services.resolve(PingCommand),
     services.resolve(WaitCommand),
+    services.resolve(AppDataCommand),
     services.resolve(BadResponseCommand),
     services.resolve(TestErrorCommand)
 ];

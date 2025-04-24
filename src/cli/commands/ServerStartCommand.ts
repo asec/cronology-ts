@@ -10,6 +10,8 @@ import WaitActionParamsParser from "../../api/actions/wait/params/WaitActionPara
 import AppConfig from "../../config/AppConfig";
 import BadResponseAction from "../../api/actions/bad-response/BadResponseAction";
 import TestErrorAction from "../../api/actions/test-error/TestErrorAction";
+import AppDataAction from "../../api/actions/app-data/AppDataAction";
+import AppDataActionParamsParser from "../../api/actions/app-data/params/AppDataActionParamsParser";
 
 class ServerStartOptions
 {
@@ -51,6 +53,7 @@ class ServerStartCommand extends CliCommand
     {
         this.server.defineRoute(HttpMethod.GET, "/", this.services.resolve(PingAction));
         this.server.defineRoute(HttpMethod.GET, "/wait", this.services.resolve(WaitAction), WaitActionParamsParser);
+        this.server.defineRoute(HttpMethod.GET, "/app/:uuid", this.services.resolve(AppDataAction), AppDataActionParamsParser);
 
         if (options.dev)
         {

@@ -1,4 +1,4 @@
-import CronologyError from "./CronologyError";
+import HttpError from "./HttpError";
 
-export default class ValidationError extends CronologyError
+export default class ValidationError extends HttpError
 {}

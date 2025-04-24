@@ -9,6 +9,8 @@ export interface AppConfigProps extends ConfigProps
     CONF_API_USERSESSION_LENGTH: string;
     CONF_API_HTTPS_PRIVATEKEY: string;
     CONF_API_HTTPS_CERTIFICATE: string;
+    CONF_API_HEADER_APP: string;
+    CONF_API_HEADER_SIGNATURE: string;
 
     CONF_SCHEDULER_TICKRATE: string;
 

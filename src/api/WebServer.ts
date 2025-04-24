@@ -7,17 +7,20 @@ import {BeanContents} from "../lib/datastructures/Bean";
 import ApiAction from "../lib/api/action/ApiAction";
 import ApiResponse, {ApiResponseContent} from "../lib/api/action/response/ApiResponse";
 import {EnvType} from "../lib/config/Config";
-import {HttpMethod} from "../lib/api/Http";
+import {HttpMethod, HttpStatus} from "../lib/api/Http";
 import IServer, {ParamsParserClass} from "../lib/server/IServer";
 import ApiErrorResponse from "../lib/api/action/response/ApiErrorResponse";
 import AppConfig from "../config/AppConfig";
+import ServiceContainer from "../lib/service/ServiceContainer";
+import HttpError from "../lib/error/HttpError";
 
 export default class WebServer implements IServer
 {
     private app: Express = express();
 
     public constructor(
-        private config: AppConfig
+        private config: AppConfig,
+        private services: ServiceContainer
     )
     {}
 
@@ -46,9 +49,11 @@ export default class WebServer implements IServer
             {
                 if (paramsParserClass !== null)
                 {
-                    const paramsParser = new paramsParserClass(req);
-                    const params = paramsParser.parse();
-                    params.validate();
+                    const paramsParser = this.services.resolve(paramsParserClass, {
+                        request: req
+                    });
+                    const params = await paramsParser.parse();
+                    await params.validate();
                     action.setParams(params);
                 }
 
@@ -56,10 +61,21 @@ export default class WebServer implements IServer
             }
             catch (error: unknown)
             {
-                result = new ApiErrorResponse({
-                    success: false,
-                    error: (<Error> error).message
-                });
+                if (error instanceof HttpError)
+                {
+                    console.log("is http error", error);
+                    result = new ApiErrorResponse({
+                        success: false,
+                        error: (<Error> error).message
+                    }, error.status);
+                }
+                else
+                {
+                    result = new ApiErrorResponse({
+                        success: false,
+                        error: (<Error> error).message
+                    }, HttpStatus.Error);
+                }
                 if (this.config.isCurrentEnv(EnvType.Prod))
                 {
                     (<ApiErrorResponse> result).set("error", (<ApiErrorResponse> result).displayMessage);
@@ -76,7 +92,7 @@ export default class WebServer implements IServer
         const server = this.createServer();
 
         server.listen(this.config.get("CONF_API_PORT"), () => {
-            console.log("[api-server]", "info", {message: `Server started on ${this.config.get("CONF_API_PORT")}`});
+            console.log("[api-server]", "info", {message: `Server started on https://localhost:${this.config.get("CONF_API_PORT")}`});
         });
 
         if (typeof errorHandler !== "undefined")

@@ -12,7 +12,7 @@ export default class WaitActionParamsParser implements IExpressRequestParser<Wai
     )
     {}
 
-    public parse(): WaitActionParams
+    public async parse(): Promise<WaitActionParams>
     {
         const raw: WaitActionParamsContentRaw = {
             ms: this.request.query.ms || "1000"
