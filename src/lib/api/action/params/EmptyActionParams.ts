@@ -1,6 +1,5 @@
 import ApiActionParams from "./ApiActionParams.js";
 import {Request} from "express";
-import {BeanContents, BeanProps} from "../../../datastructures/Bean.js";
 
 interface EmptyActionParamsContent extends Record<string, never>{}
 

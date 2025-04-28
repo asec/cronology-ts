@@ -1,25 +1,20 @@
 import ApiActionParams from "../../../../lib/api/action/params/ApiActionParams.js";
-import {BeanContents, BeanProps} from "../../../../lib/datastructures/Bean.js";
+import {BeanContents} from "../../../../lib/datastructures/Bean.js";
 import Application from "../../../../entities/Application.js";
 import ValidationError from "../../../../lib/error/ValidationError.js";
 import ApplicationFactory from "../../../../entities/factory/ApplicationFactory.js";
 import HttpError from "../../../../lib/error/HttpError.js";
 import {HttpStatus} from "../../../../lib/api/Http.js";
 
-interface AppDataActionParamsContentRaw extends BeanProps
-{
-    uuid: string
-    app?: Application
-}
-
 export class AppDataActionParamsContent extends BeanContents
 {
     uuid: string = ""
-    app?: Application = null
 }
 
 export default class AppDataActionParams extends ApiActionParams<AppDataActionParamsContent>
 {
+    protected app: Application = null;
+
     public constructor(
         protected factory: ApplicationFactory,
         props?: AppDataActionParamsContent
@@ -28,10 +23,15 @@ export default class AppDataActionParams extends ApiActionParams<AppDataActionPa
         super(AppDataActionParamsContent, props);
     }
 
-    public bind(props: AppDataActionParamsContentRaw): void
+    public bind(props: AppDataActionParamsContent): void
     {
         this.set("uuid", String(props.uuid));
-        this.set("app", null);
+        this.app = null;
+    }
+
+    public getApp(): Application
+    {
+        return this.app;
     }
 
     public async validate(): Promise<void>
@@ -49,8 +49,7 @@ export default class AppDataActionParams extends ApiActionParams<AppDataActionPa
             throw new HttpError(`The application does not exists: '${uuid}'`, HttpStatus.NotFound);
         }
 
-        const app = [...result.values()][0];
-        this.set("app", app);
+        this.app = [...result.values()][0];
     }
 
 }

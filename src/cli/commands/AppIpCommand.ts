@@ -94,7 +94,7 @@ export default class AppIpCommand extends CliCommand
             await this.factory.repository().store(app, index);
         }
 
-        const ips = app.get("ip") ?? [];
+        const ips = (app.get("ip") ?? []).map(value => `\x1b[32m${value}\x1b[0m`);
 
         this.output(`Application: ${app.get("name")}`, true, false);
         this.output(`IPs whitelisted: ${ips.length === 0 ? '\x1b[31mnone\x1b[0m' : ips.join(", ")}`, false);

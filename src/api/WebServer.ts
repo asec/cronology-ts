@@ -63,7 +63,6 @@ export default class WebServer implements IServer
             {
                 if (error instanceof HttpError)
                 {
-                    console.log("is http error", error);
                     result = new ApiErrorResponse({
                         success: false,
                         error: (<Error> error).message

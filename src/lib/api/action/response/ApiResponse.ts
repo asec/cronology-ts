@@ -8,9 +8,11 @@ export class ApiResponseContent extends BeanContents
 
 export default class ApiResponse<TResponseContent extends ApiResponseContent> extends Bean<TResponseContent>
 {
-    public status: HttpStatus = HttpStatus.Ok;
-
-    public constructor(c: new() => TResponseContent, props?: TResponseContent, status?: HttpStatus)
+    public constructor(
+        c: new() => TResponseContent,
+        props?: TResponseContent,
+        public status: HttpStatus = HttpStatus.Ok
+    )
     {
         super(c, props);
         if (typeof status !== "undefined")
