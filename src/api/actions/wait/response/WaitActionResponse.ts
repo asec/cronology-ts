@@ -1,18 +1,15 @@
-import ApiResponse, {ApiResponseContent} from "../../../../lib/api/action/response/ApiResponse";
-import {HttpStatus} from "../../../../lib/api/Http";
+import ApiResponse, {ApiResponseContent} from "../../../../lib/api/action/response/ApiResponse.js";
+import {HttpStatus} from "../../../../lib/api/Http.js";
 
-class WaitActionResponseContent extends ApiResponseContent
+export class WaitActionResponseContent extends ApiResponseContent
 {
     public waited: number = undefined;
 }
 
-class WaitActionResponse extends ApiResponse<WaitActionResponseContent>
+export default class WaitActionResponse extends ApiResponse<WaitActionResponseContent>
 {
     constructor(props?: WaitActionResponseContent, status?: HttpStatus)
     {
         super(WaitActionResponseContent, props, status);
     }
 }
-
-export {WaitActionResponseContent};
-export default WaitActionResponse;

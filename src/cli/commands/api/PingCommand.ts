@@ -1,17 +1,14 @@
-import CliAction, {createCliCommand} from "../../../lib/cli/CliAction";
-import PingAction from "../../../api/actions/ping/PingAction";
+import CliApiAction from "../../../lib/cli/CliApiAction.js";
+import PingAction from "../../../api/actions/ping/PingAction.js";
 
-class PingCommand extends CliAction
+class PingCommand extends CliApiAction
 {
-    static
-    {
-        this.commandName = "action:get-ping";
-        this.description = "Checks to see if the API can be reached. Also displays the current version.";
-    }
+    public commandName: string = "action:get-ping";
+    public description: string = "Checks to see if the API can be reached. Also displays the current version.";
 
-    static createAction(): PingAction
+    protected createAction(...args)
     {
-        return createCliCommand(PingAction);
+        return this.createCliCommand(this.services.resolve(PingAction));
     }
 }
 

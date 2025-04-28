@@ -1,16 +1,18 @@
-import Bean, {BeanContents} from "../../../datastructures/Bean";
-import {HttpStatus} from "../../Http";
+import Bean, {BeanContents} from "../../../datastructures/Bean.js";
+import {HttpStatus} from "../../Http.js";
 
-class ApiResponseContent extends BeanContents
+export class ApiResponseContent extends BeanContents
 {
     public success: boolean = undefined;
 }
 
-class ApiResponse<TResponseContent extends ApiResponseContent> extends Bean<TResponseContent>
+export default class ApiResponse<TResponseContent extends ApiResponseContent> extends Bean<TResponseContent>
 {
-    public status: HttpStatus = HttpStatus.Ok;
-
-    public constructor(c: new() => TResponseContent, props?: TResponseContent, status?: HttpStatus)
+    public constructor(
+        c: new() => TResponseContent,
+        props?: TResponseContent,
+        public status: HttpStatus = HttpStatus.Ok
+    )
     {
         super(c, props);
         if (typeof status !== "undefined")
@@ -19,6 +21,3 @@ class ApiResponse<TResponseContent extends ApiResponseContent> extends Bean<TRes
         }
     }
 }
-
-export {ApiResponseContent}
-export default ApiResponse;

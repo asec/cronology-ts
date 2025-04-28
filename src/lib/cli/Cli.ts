@@ -1,48 +1,48 @@
-import CliCommand from "./CliCommand";
-import {program} from "commander";
+import CliCommand from "./CliCommand.js";
+import {Command, program} from "commander";
+import PackageInfo from "../utils/PackageInfo.js";
 
-class Cli
+export default class Cli
 {
-    public static addCommand(command: typeof CliCommand)
+    public constructor(
+        private program: Command,
+        private packageInfo: PackageInfo
+    )
+    {}
+
+    public addCommand(command: CliCommand)
     {
         const cmd = program.command(command.commandName);
         cmd.description(command.description);
-        if (typeof command.args !== "undefined")
-        {
-            command.args.forEach(arg => {
-                cmd.argument(arg.name, arg.description, arg.defaultValue);
-            });
-        }
-        if (typeof command.options !== "undefined")
-        {
-            command.options.forEach(option => {
-                cmd.option(option.name, option.description, option.defaultValue);
-            });
-        }
+        command.args.forEach(arg => {
+            cmd.argument(arg.name, arg.description, arg.defaultValue);
+        });
+        command.options.forEach(option => {
+            cmd.option(option.name, option.description, option.defaultValue);
+        });
 
-        cmd.action(command.doWithInitialization.bind(command));
+        cmd.action(command.execute.bind(command));
     }
 
-    public static init()
+    public async init(commands: CliCommand[])
     {
-        const packageInfo = require("../../../package.json");
+        const version: string = await this.packageInfo.get("version") as string;
 
-        program
+        this.program
             .description("CLI tools for the Cronology API.")
-            .version(packageInfo.version, "-v, --version")
+            .version(version, "-v, --version")
             .configureOutput({
-                writeErr: str => process.stderr.write(`\x1b[31m[api-console][error] ${str}\x1b[0m`)
+                writeErr: str => process.stderr.write(`\x1b[31m[api-cli][error] ${str}\x1b[0m`)
             })
         ;
-
-        const commands: typeof CliCommand[] = require("../../cli/commands");
 
         commands.forEach(command => {
             this.addCommand(command);
         });
+    }
 
-        program.parse();
+    public start()
+    {
+        this.program.parse();
     }
 }
-
-export default Cli;

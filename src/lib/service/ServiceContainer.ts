@@ -3,15 +3,34 @@ type Token<T> = Constructor<T> | Symbol;
 
 export default class ServiceContainer
 {
-    protected bindings = new Map<string, () => any>();
+    protected bindings = new Map<string, (params?: {}) => any>();
 
-    register<T>(type: Token<T>, factory: () => T)
+    register<T>(type: Token<T>, factory: (params?: {}) => T, singleton: boolean = false)
     {
         const token = typeof type === "symbol" ? type.toString() : (<Constructor<T>> type).name;
-        this.bindings.set(token, factory);
+
+        if (singleton)
+        {
+            let singletonFactory = ((params?: {}) => {
+                let instance = null;
+                return () => {
+                    if (instance === null)
+                    {
+                        instance = factory(params);
+                    }
+
+                    return instance;
+                };
+            })();
+            this.bindings.set(token, singletonFactory);
+        }
+        else
+        {
+            this.bindings.set(token, factory);
+        }
     }
 
-    resolve<T>(type: Token<T>): T
+    resolve<T>(type: Token<T>, params?: {}): T
     {
         const token = typeof type === "symbol" ? type.toString() : (<Constructor<T>> type).name;
         const factory = this.bindings.get(token);
@@ -21,7 +40,7 @@ export default class ServiceContainer
             throw new Error("Service does not exists: " + token);
         }
 
-        return factory();
+        return factory(params);
     }
 }
 

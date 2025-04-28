@@ -1,10 +1,7 @@
-import Bean, {BeanContents} from "../../../datastructures/Bean";
-import {Request} from "express";
+import Bean, {BeanContents, BeanProps} from "../../../datastructures/Bean.js";
 
-abstract class ApiActionParams<TParamsContent extends BeanContents> extends Bean<TParamsContent>
+export default abstract class ApiActionParams<TParamsContent extends BeanContents> extends Bean<TParamsContent>
 {
-    abstract parseRequest(req: Request<any, any, any, any, any>): void;
-    abstract bind(props: {}): void;
+    abstract bind(props: BeanProps): void;
+    abstract validate(): Promise<void>;
 }
-
-export default ApiActionParams;
