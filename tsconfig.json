@@ -11,5 +11,5 @@
         "rootDir": "./src",
         "allowSyntheticDefaultImports": true
     },
-    "exclude": ["./tests"]
+    "include": ["./src/**/*"]
 }

@@ -16,9 +16,10 @@
     "test-docker: node v16.20": "docker compose --env-file ./docker/test/.env.n16-20 up && docker compose --env-file ./docker/test/.env.n16-20 down -v"
   },
   "author": "Roland Zsámboki",
-  "license": "ISC",
+  "license": "GPL-3.0",
   "devDependencies": {
     "@types/express": "^4.17.21",
+    "@types/jest": "^29.5.14",
     "@types/node": "^20.11.16",
     "jest": "^29.7.0",
     "node-mocks-http": "^1.14.1",
@@ -32,7 +33,6 @@
     "dotenv": "^16.4.1",
     "express": "^4.18.2",
     "mongodb": "^6.15.0",
-    "reflect-metadata": "^0.2.2",
     "uuid": "^11.1.0"
   }
 }

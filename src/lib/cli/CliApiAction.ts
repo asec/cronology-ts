@@ -1,8 +1,7 @@
 import CliCommand from "./CliCommand.js";
 import ApiAction from "../api/action/ApiAction.js";
-import {BeanContents, BeanProps} from "../datastructures/Bean.js";
-import {ApiResponseContent} from "../api/action/response/ApiResponse.js";
-import ApiActionParams from "../api/action/params/ApiActionParams.js";
+import {ApiResponseDTO} from "../api/action/response/ApiResponse.js";
+import ApiActionParams, {ApiParamsDTO} from "../api/action/params/ApiActionParams.js";
 
 export default abstract class CliApiAction extends CliCommand
 {
@@ -19,11 +18,11 @@ export default abstract class CliApiAction extends CliCommand
         this.output(result.toObject(), false);
     }
 
-    protected async createCliCommand<TOptions extends BeanProps, TResponseContent extends ApiResponseContent, TActionParamsContent extends BeanContents>(
-        action: ApiAction<TResponseContent, TActionParamsContent>,
-        params: ApiActionParams<TActionParamsContent> = null,
+    protected async createCliCommand<TOptions extends Record<string, any>, TResponseDTO extends ApiResponseDTO, TActionParamsDTO extends ApiParamsDTO>(
+        action: ApiAction<TResponseDTO, TActionParamsDTO>,
+        params: ApiActionParams<TActionParamsDTO> = null,
         options: TOptions = null
-    ): Promise<ApiAction<TResponseContent, TActionParamsContent>>
+    ): Promise<ApiAction<TResponseDTO, TActionParamsDTO>>
     {
         if (params !== null)
         {
@@ -37,5 +36,5 @@ export default abstract class CliApiAction extends CliCommand
         return action;
     }
 
-    protected abstract createAction(...args): Promise<ApiAction<any, any>>
+    protected abstract createAction(...args): Promise<ApiAction<ApiResponseDTO, ApiParamsDTO>>
 }

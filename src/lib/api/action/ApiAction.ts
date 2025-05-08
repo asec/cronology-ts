@@ -1,22 +1,21 @@
-import ApiResponse, {ApiResponseContent} from "./response/ApiResponse.js";
-import {BeanContents} from "../../datastructures/Bean.js";
-import ApiActionParams from "./params/ApiActionParams.js";
+import ApiResponse, {ApiResponseDTO} from "./response/ApiResponse.js";
+import ApiActionParams, {ApiParamsDTO} from "./params/ApiActionParams.js";
 
 // Command pattern - interface Command
-interface Command<TResponseContent extends ApiResponseContent, TParamsContent extends BeanContents>
+interface Command<TResponseDTO extends ApiResponseDTO, TParamsDTO extends ApiParamsDTO>
 {
-    setParams(params: ApiActionParams<TParamsContent>): void;
-    execute(): Promise<ApiResponse<TResponseContent>>;
+    setParams(params: ApiActionParams<TParamsDTO>): void;
+    execute(): Promise<ApiResponse<TResponseDTO>> | ApiResponse<TResponseDTO>;
 }
 
-export default abstract class ApiAction<TResponseContent extends ApiResponseContent, TParamsContent extends BeanContents> implements Command<TResponseContent, TParamsContent>
+export default abstract class ApiAction<TResponseDTO extends ApiResponseDTO, TParamsDTO extends ApiParamsDTO> implements Command<TResponseDTO, TParamsDTO>
 {
-    protected params: ApiActionParams<TParamsContent>;
+    protected params: ApiActionParams<TParamsDTO>;
 
-    public setParams(params: ApiActionParams<TParamsContent>)
+    public setParams(params: ApiActionParams<TParamsDTO>)
     {
         this.params = params;
     }
 
-    public abstract execute(): Promise<ApiResponse<TResponseContent>>;
+    public abstract execute(): Promise<ApiResponse<TResponseDTO>> | ApiResponse<TResponseDTO>;
 }

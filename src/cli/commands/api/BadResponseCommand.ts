@@ -6,7 +6,7 @@ export default class BadResponseCommand extends CliApiAction
     public commandName = "action:get-bad-response";
     public description = "API action: GET /bad-response";
 
-    protected createAction(...args): Promise<BadResponseAction>
+    protected createAction(...args)
     {
         return this.createCliCommand(this.services.resolve(BadResponseAction));
     }

@@ -1,23 +1,13 @@
-import Bean, {BeanContents} from "../../../datastructures/Bean.js";
 import {HttpStatus} from "../../Http.js";
+import {DataObject} from "../../../datastructures/DataObject.js";
+import {DataEntity} from "../../../datastructures/DataEntity.js";
 
-export class ApiResponseContent extends BeanContents
+export class ApiResponseDTO extends DataObject
 {
-    public success: boolean = undefined;
+    public success: boolean = true;
 }
 
-export default class ApiResponse<TResponseContent extends ApiResponseContent> extends Bean<TResponseContent>
+export default class ApiResponse<TResponseDTO extends ApiResponseDTO> extends DataEntity<TResponseDTO>
 {
-    public constructor(
-        c: new() => TResponseContent,
-        props?: TResponseContent,
-        public status: HttpStatus = HttpStatus.Ok
-    )
-    {
-        super(c, props);
-        if (typeof status !== "undefined")
-        {
-            this.status = status;
-        }
-    }
+    public status: HttpStatus = HttpStatus.Ok;
 }

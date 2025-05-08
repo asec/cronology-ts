@@ -14,6 +14,8 @@ COPY ./docker/.env.* ./
 
 COPY ./docker/docker-test.sh /usr/local/bin/docker-test
 
+RUN dos2unix /usr/local/bin/docker-test
+
 RUN rm -rf ./docker
 
 RUN npx tsc

@@ -1,7 +1,6 @@
-import {BeanContents} from "../datastructures/Bean.js";
-import ApiActionParams from "../api/action/params/ApiActionParams.js";
+import ApiActionParams, {ApiParamsDTO} from "../api/action/params/ApiActionParams.js";
 
-export default interface IExpressRequestParser<TParamsContent extends BeanContents>
+export default interface IExpressRequestParser<TParamsContent extends ApiParamsDTO>
 {
     parse(): Promise<ApiActionParams<TParamsContent>>
 }
