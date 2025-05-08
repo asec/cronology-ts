@@ -6,9 +6,9 @@ services:
             context: .
             args:
                 node_version: ${NODE_VERSION}
-        tty: true
+#        tty: true
         volumes:
-            -   ${CONF_API_HTTPS_PRIVATEKEY}:/etc/cert/cronology.key
-            -   ${CONF_API_HTTPS_CERTIFICATE}:/etc/cert/cronology.crt
+#            -   ${CONF_API_HTTPS_PRIVATEKEY}:/etc/cert/cronology.key
+#            -   ${CONF_API_HTTPS_CERTIFICATE}:/etc/cert/cronology.crt
             -   ./tests:/app/tests
             -   ./src:/app/src

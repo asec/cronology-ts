@@ -1,4 +1,3 @@
-import {it} from "@jest/globals";
 import {DataFields, DataObject} from "../../../../src/lib/datastructures/DataObject";
 
 it("Creates an empty data object", () => {
