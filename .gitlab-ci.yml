@@ -30,7 +30,7 @@ deploy-job:
     stage: deploy
     image: alpine:latest
     before_script:
-        - apk add --no-cache openssh
+        - apk add --no-cache openssh curl
         - chmod 600 $AWS_SSH_KEY
         - curl ifconfig.me
     script:
