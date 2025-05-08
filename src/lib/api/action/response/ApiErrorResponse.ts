@@ -1,20 +1,14 @@
-import ApiResponse, {ApiResponseContent} from "./ApiResponse.js";
+import ApiResponse, {ApiResponseDTO} from "./ApiResponse.js";
 import {HttpStatus} from "../../Http.js";
 
-export class ApiErrorResponseContent extends ApiResponseContent
+export class ApiErrorResponseDTO extends ApiResponseDTO
 {
-    public success: boolean = false;
+    public success: false = false;
     public error: string = "";
 }
 
-export default class ApiErrorResponse extends ApiResponse<ApiErrorResponseContent>
+export default class ApiErrorResponse extends ApiResponse<ApiErrorResponseDTO>
 {
-    public constructor(
-        props?: ApiErrorResponseContent,
-        status: HttpStatus = HttpStatus.Error,
-        public displayMessage: string = "An unexpected error occurred while processing your request."
-    )
-    {
-        super(ApiErrorResponseContent, props, status);
-    }
+    public status: HttpStatus = HttpStatus.Error;
+    public displayMessage: string = "An unexpected error occurred while processing your request.";
 }

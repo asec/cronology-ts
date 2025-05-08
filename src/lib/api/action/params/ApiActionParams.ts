@@ -1,7 +1,10 @@
-import Bean, {BeanContents, BeanProps} from "../../../datastructures/Bean.js";
+import {DataObject} from "../../../datastructures/DataObject.js";
+import {DataEntity} from "../../../datastructures/DataEntity.js";
 
-export default abstract class ApiActionParams<TParamsContent extends BeanContents> extends Bean<TParamsContent>
+export class ApiParamsDTO extends DataObject
+{}
+
+export default abstract class ApiActionParams<TParamsDTO extends ApiParamsDTO> extends DataEntity<TParamsDTO>
 {
-    abstract bind(props: BeanProps): void;
-    abstract validate(): Promise<void>;
+    public abstract validate(): Promise<void> | void;
 }

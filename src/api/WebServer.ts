@@ -3,16 +3,16 @@ import * as fs from "fs";
 import {createServer} from "https";
 import cors from "cors";
 import bodyParser from "body-parser";
-import {BeanContents} from "../lib/datastructures/Bean.js";
 import ApiAction from "../lib/api/action/ApiAction.js";
-import ApiResponse, {ApiResponseContent} from "../lib/api/action/response/ApiResponse.js";
+import ApiResponse, {ApiResponseDTO} from "../lib/api/action/response/ApiResponse.js";
 import {EnvType} from "../lib/config/Config.js";
-import {HttpMethod, HttpStatus} from "../lib/api/Http.js";
+import {HttpMethod} from "../lib/api/Http.js";
 import IServer, {ParamsParserClass} from "../lib/server/IServer.js";
-import ApiErrorResponse from "../lib/api/action/response/ApiErrorResponse.js";
+import ApiErrorResponse, {ApiErrorResponseDTO} from "../lib/api/action/response/ApiErrorResponse.js";
 import AppConfig from "../config/AppConfig.js";
 import ServiceContainer from "../lib/service/ServiceContainer.js";
 import HttpError from "../lib/error/HttpError.js";
+import {ApiParamsDTO} from "../lib/api/action/params/ApiActionParams.js";
 
 export default class WebServer implements IServer
 {
@@ -38,12 +38,12 @@ export default class WebServer implements IServer
         return server;
     }
 
-    private createRequestHandler<TRequest extends Request, TResponseContent extends ApiResponseContent, TParamsContent extends BeanContents>(
-        action: ApiAction<TResponseContent, TParamsContent>,
-        paramsParserClass: ParamsParserClass<TRequest, TParamsContent> = null
+    private createRequestHandler<TRequest extends Request, TResponseDTO extends ApiResponseDTO, TParamsDTO extends ApiParamsDTO>(
+        action: ApiAction<TResponseDTO, TParamsDTO>,
+        paramsParserClass: ParamsParserClass<TRequest, TParamsDTO> = null
     )
     {
-        return async (req: TRequest, res: Response<TResponseContent>) => {
+        return async (req: TRequest, res: Response) => {
             let result: ApiResponse<any>;
             try
             {
@@ -63,21 +63,37 @@ export default class WebServer implements IServer
             {
                 if (error instanceof HttpError)
                 {
-                    result = new ApiErrorResponse({
-                        success: false,
-                        error: (<Error> error).message
-                    }, error.status);
+                    let response = new ApiErrorResponse(new ApiErrorResponseDTO());
+                    response.bind({
+                        dataObj: {
+                            success: false,
+                            error: (<Error> error).message
+                        },
+                        status: error.status
+                    });
+
+                    result = response;
                 }
                 else
                 {
-                    result = new ApiErrorResponse({
-                        success: false,
-                        error: (<Error> error).message
-                    }, HttpStatus.Error);
+                    let response = new ApiErrorResponse(new ApiErrorResponseDTO());
+                    response.bind({
+                        dataObj: {
+                            success: false,
+                            error: (<Error> error).message
+                        }
+                    });
+
+                    result = response;
                 }
                 if (this.config.isCurrentEnv(EnvType.Prod))
                 {
-                    (<ApiErrorResponse> result).set("error", (<ApiErrorResponse> result).displayMessage);
+                    (<ApiErrorResponse> result).bind({
+                        dataObj: {
+                            success: (<ApiErrorResponse> result).data("success"),
+                            error: (<ApiErrorResponse> result).displayMessage
+                        }
+                    });
                 }
             }
 
@@ -102,11 +118,11 @@ export default class WebServer implements IServer
         }
     }
 
-    public defineRoute<TResponseContent extends ApiResponseContent, TParamsContent extends BeanContents>(
+    public defineRoute<TResponseDTO extends ApiResponseDTO, TParamsDTO extends ApiParamsDTO>(
         method: HttpMethod,
         endpoint: string,
-        action: ApiAction<TResponseContent, TParamsContent>,
-        paramsParserClass: ParamsParserClass<Request, TParamsContent> = null
+        action: ApiAction<TResponseDTO, TParamsDTO>,
+        paramsParserClass: ParamsParserClass<Request, TParamsDTO> = null
     ): void
     {
         this.app[method](endpoint, this.createRequestHandler(action, paramsParserClass));

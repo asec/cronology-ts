@@ -3,7 +3,6 @@ import {Command} from "commander";
 import AppConfig from "../../config/AppConfig.js";
 import {EnvType} from "../config/Config.js";
 import ServiceContainer from "../service/ServiceContainer.js";
-import IDatabase from "../database/IDatabase.js";
 
 export type CliCommandArgument = {
     name: string,
@@ -42,21 +41,6 @@ export default abstract class CliCommand
         {
             this.initialise(...args);
             await this.do(...args);
-        }
-        catch (e: unknown)
-        {
-            const error = <Error> e;
-            let errorMsg = `${error.name}: ${error.message}`;
-            if (!this.config.isCurrentEnv(EnvType.Prod))
-            {
-                errorMsg += `\n${error.stack}`;
-            }
-            this.error(errorMsg);
-        }
-
-        try
-        {
-            await (<IDatabase<any>> this.services.resolve(Symbol("IDatabase"))).destruct();
         }
         catch (e: unknown)
         {

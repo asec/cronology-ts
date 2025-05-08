@@ -1,15 +1,6 @@
-import ApiResponse, {ApiResponseContent} from "../../../../lib/api/action/response/ApiResponse.js";
-import {HttpStatus} from "../../../../lib/api/Http.js";
+import {ApiResponseDTO} from "../../../../lib/api/action/response/ApiResponse.js";
 
-export class PingActionResponseContent extends ApiResponseContent
+export default class PingActionResponseDTO extends ApiResponseDTO
 {
     public version: string = undefined;
-}
-
-export default class PingActionResponse extends ApiResponse<PingActionResponseContent>
-{
-    constructor(props?: PingActionResponseContent, status?: HttpStatus)
-    {
-        super(PingActionResponseContent, props, status);
-    }
 }

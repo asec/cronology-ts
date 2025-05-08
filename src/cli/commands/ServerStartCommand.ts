@@ -5,13 +5,9 @@ import {HttpMethod} from "../../lib/api/Http.js";
 import PingAction from "../../api/actions/ping/PingAction.js";
 import ServiceContainer from "../../lib/service/ServiceContainer.js";
 import IServer from "../../lib/server/IServer.js";
-import WaitAction from "../../api/actions/wait/WaitAction.js";
-import WaitActionParamsParser from "../../api/actions/wait/params/WaitActionParamsParser.js";
 import AppConfig from "../../config/AppConfig.js";
 import BadResponseAction from "../../api/actions/bad-response/BadResponseAction.js";
 import TestErrorAction from "../../api/actions/test-error/TestErrorAction.js";
-import AppDataAction from "../../api/actions/app-data/AppDataAction.js";
-import AppDataActionParamsParser from "../../api/actions/app-data/params/AppDataActionParamsParser.js";
 
 class ServerStartOptions
 {
@@ -52,8 +48,6 @@ class ServerStartCommand extends CliCommand
     public async do(options: ServerStartOptions)
     {
         this.server.defineRoute(HttpMethod.GET, "/", this.services.resolve(PingAction));
-        this.server.defineRoute(HttpMethod.GET, "/wait", this.services.resolve(WaitAction), WaitActionParamsParser);
-        this.server.defineRoute(HttpMethod.GET, "/app/:uuid", this.services.resolve(AppDataAction), AppDataActionParamsParser);
 
         if (options.dev)
         {
