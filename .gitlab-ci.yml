@@ -30,9 +30,8 @@ deploy-job:
     stage: deploy
     image: alpine:latest
     before_script:
-        - apk add --no-cache openssh curl
+        - apk add --no-cache openssh
         - chmod 600 $AWS_SSH_KEY
-        - curl ifconfig.me
     script:
         - ssh -i $AWS_SSH_KEY -o StrictHostKeyChecking=no ubuntu@$AWS_HOST \
             'echo "$DOCKER_HUB_PASSWORD" | sudo docker login -u "$DOCKER_HUB_USERNAME" --password-stdin && \
