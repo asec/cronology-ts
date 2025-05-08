@@ -1,0 +1,15 @@
+stages:
+    - build
+    - test
+
+build-job:
+    stage: build
+    script:
+        - npm install
+        - npx tsc
+
+tests-job:
+    stage: test
+    script:
+        - node ./dist/api cli-env-set dev
+        - npm run test
