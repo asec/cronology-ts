@@ -1,0 +1,13 @@
+name: cronology-test-v2-n${NODE_VERSION_CANONICAL}
+services:
+    api:
+        image: cronology-api:test-2.0.0-n${NODE_VERSION_CANONICAL}
+        build:
+            context: ../
+            dockerfile: ./docker/Dockerfile
+            args:
+                node_version: ${NODE_VERSION}
+        tty: true
+        volumes:
+            -   ../tests:/app/tests
+            -   ../src:/app/src

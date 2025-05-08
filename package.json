@@ -10,10 +10,10 @@
     "cli": "node ./dist/api.js",
     "typescript watch": "tsc -w",
     "test": "jest ./tests/unit",
-    "test-docker: node latest": "docker compose --env-file ./docker/test/.env.latest up && docker compose --env-file ./docker/test/.env.latest down -v",
-    "test-docker: node lts": "docker compose --env-file ./docker/test/.env.lts up && docker compose --env-file ./docker/test/.env.lts down -v",
-    "test-docker: node v18.16": "docker compose --env-file ./docker/test/.env.n18-16 up && docker compose --env-file ./docker/test/.env.n18-16 down -v",
-    "test-docker: node v16.20": "docker compose --env-file ./docker/test/.env.n16-20 up && docker compose --env-file ./docker/test/.env.n16-20 down -v"
+    "test-docker: node latest": "docker compose --env-file ./docker/test/.env.latest --file ./docker/compose.yaml up && docker compose --env-file ./docker/test/.env.latest --file ./docker/compose.yaml down -v",
+    "test-docker: node lts": "docker compose --env-file ./docker/test/.env.lts --file ./docker/compose.yaml up && docker compose --env-file ./docker/test/.env.lts --file ./docker/compose.yaml down -v",
+    "test-docker: node v18.16": "docker compose --env-file ./docker/test/.env.n18-16 --file ./docker/compose.yaml up && docker compose --env-file ./docker/test/.env.n18-16 --file ./docker/compose.yaml down -v",
+    "test-docker: node v16.20": "docker compose --env-file ./docker/test/.env.n16-20 --file ./docker/compose.yaml up && docker compose --env-file ./docker/test/.env.n16-20 --file ./docker/compose.yaml down -v"
   },
   "author": "Roland Zsámboki",
   "license": "GPL-3.0",
