@@ -6,25 +6,25 @@ stages:
 variables:
     DOCKER_IMAGE_NAME: cronology:api-2.0.0
 
-#services:
-#    - docker:dind
-#
-#tests-job:
-#    stage: test
-#    image: node:22.15.0-alpine3.21
-#    script:
-#        - npm install
-#        - npx tsc
-#        - node ./dist/api cli-env-set dev
-#        - npm run test
-#
-#build-job:
-#    stage: build
-#    image: docker:28.1.1-cli
-#    script:
-#        - echo "$DOCKER_HUB_PASSWORD" | docker login -u "$DOCKER_HUB_USERNAME" --password-stdin
-#        - docker build -t $DOCKER_HUB_USERNAME/$DOCKER_IMAGE_NAME .
-#        - docker push $DOCKER_HUB_USERNAME/$DOCKER_IMAGE_NAME
+services:
+    - docker:dind
+
+tests-job:
+    stage: test
+    image: node:22.15.0-alpine3.21
+    script:
+        - npm install
+        - npx tsc
+        - node ./dist/api cli-env-set dev
+        - npm run test
+
+build-job:
+    stage: build
+    image: docker:28.1.1-cli
+    script:
+        - echo "$DOCKER_HUB_PASSWORD" | docker login -u "$DOCKER_HUB_USERNAME" --password-stdin
+        - docker build -t $DOCKER_HUB_USERNAME/$DOCKER_IMAGE_NAME .
+        - docker push $DOCKER_HUB_USERNAME/$DOCKER_IMAGE_NAME
 
 deploy-job:
     stage: deploy
