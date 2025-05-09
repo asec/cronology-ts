@@ -15,6 +15,8 @@ import BadResponseCommand from "../cli/commands/api/BadResponseCommand.js";
 import TestErrorAction from "../api/actions/test-error/TestErrorAction.js";
 import TestErrorCommand from "../cli/commands/api/TestErrorCommand.js";
 import PackageInfo from "../lib/utils/PackageInfo.js";
+import WaitAction from "../api/actions/wait/WaitAction.js";
+import WaitCommand from "../cli/commands/api/WaitCommand.js";
 
 const IProgram = Symbol("IProgram");
 const IProcess = Symbol("IProcess");
@@ -121,6 +123,15 @@ services.register(TestErrorCommand, () => {
     );
 });
 
+services.register(WaitCommand, () => {
+    return new WaitCommand(
+        services.resolve(AppConfig),
+        services.resolve(IProgram),
+        services.resolve(IProcess),
+        services.resolve(ServiceContainer)
+    );
+});
+
 // API actions
 services.register(PingAction, () => {
     return new PingAction(
@@ -135,6 +146,12 @@ services.register(BadResponseAction, () => {
 
 services.register(TestErrorAction, () => {
     return new TestErrorAction();
+});
+
+services.register(WaitAction, () => {
+    return new WaitAction(
+        services.resolve(Profiler)
+    );
 });
 
 export default services;
