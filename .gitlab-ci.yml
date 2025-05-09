@@ -33,5 +33,5 @@ deploy-job:
         - apk add --no-cache openssh
         - chmod 600 $AWS_SSH_KEY
     script:
-        - ssh -i $AWS_SSH_KEY -o StrictHostKeyChecking=no ubuntu@$AWS_HOST \
+        - ssh -i $AWS_SSH_KEY -o StrictHostKeyChecking=no $AWS_USER@$AWS_HOST \
             "echo \"$DOCKER_HUB_PASSWORD\" | sudo docker login -u \"$DOCKER_HUB_USERNAME\" --password-stdin && cd ./cronology/ && ./docker-down.sh && sudo docker pull $DOCKER_HUB_USERNAME/$DOCKER_IMAGE_NAME && ./docker-up.sh"
