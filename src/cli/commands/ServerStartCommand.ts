@@ -8,6 +8,7 @@ import IServer from "../../lib/server/IServer.js";
 import AppConfig from "../../config/AppConfig.js";
 import BadResponseAction from "../../api/actions/bad-response/BadResponseAction.js";
 import TestErrorAction from "../../api/actions/test-error/TestErrorAction.js";
+import WaitAction from "../../api/actions/wait/WaitAction.js";
 
 class ServerStartOptions
 {
@@ -48,6 +49,7 @@ class ServerStartCommand extends CliCommand
     public async do(options: ServerStartOptions)
     {
         this.server.defineRoute(HttpMethod.GET, "/", this.services.resolve(PingAction));
+        this.server.defineRoute(HttpMethod.GET, "/wait", this.services.resolve(WaitAction));
 
         if (options.dev)
         {
