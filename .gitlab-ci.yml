@@ -34,5 +34,4 @@ deploy-job:
         - chmod 600 $AWS_SSH_KEY
     script:
         - ssh -i $AWS_SSH_KEY -o StrictHostKeyChecking=no ubuntu@$AWS_HOST \
-            "echo USER=\"$DOCKER_HUB_USERNAME\" && \
-            echo PASS=${#DOCKER_HUB_PASSWORD}"
+            "echo USER=\"$DOCKER_HUB_USERNAME\" && echo PASS=${#DOCKER_HUB_PASSWORD}"
