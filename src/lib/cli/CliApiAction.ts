@@ -12,7 +12,7 @@ export default abstract class CliApiAction extends CliCommand
         {
             throw new Error(`The 'createAction' method returned an invalid command in '${this.constructor.name}'.`);
         }
-        const result = await command.execute();
+        const result = await command.execute(args);
 
         this.output(`Status: ${result.status}`, true, false);
         this.output(result.toObject(), false);

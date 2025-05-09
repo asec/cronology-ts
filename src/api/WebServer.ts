@@ -39,25 +39,14 @@ export default class WebServer implements IServer
     }
 
     private createRequestHandler<TRequest extends Request, TResponseDTO extends ApiResponseDTO, TParamsDTO extends ApiParamsDTO>(
-        action: ApiAction<TResponseDTO, TParamsDTO>,
-        paramsParserClass: ParamsParserClass<TRequest, TParamsDTO> = null
+        action: ApiAction<TResponseDTO, TParamsDTO>
     )
     {
         return async (req: TRequest, res: Response) => {
             let result: ApiResponse<any>;
             try
             {
-                if (paramsParserClass !== null)
-                {
-                    const paramsParser = this.services.resolve(paramsParserClass, {
-                        request: req
-                    });
-                    const params = await paramsParser.parse();
-                    await params.validate();
-                    action.setParams(params);
-                }
-
-                result = await action.execute();
+                result = await action.execute(req);
             }
             catch (error: unknown)
             {
@@ -121,10 +110,9 @@ export default class WebServer implements IServer
     public defineRoute<TResponseDTO extends ApiResponseDTO, TParamsDTO extends ApiParamsDTO>(
         method: HttpMethod,
         endpoint: string,
-        action: ApiAction<TResponseDTO, TParamsDTO>,
-        paramsParserClass: ParamsParserClass<Request, TParamsDTO> = null
+        action: ApiAction<TResponseDTO, TParamsDTO>
     ): void
     {
-        this.app[method](endpoint, this.createRequestHandler(action, paramsParserClass));
+        this.app[method](endpoint, this.createRequestHandler(action));
     }
 }

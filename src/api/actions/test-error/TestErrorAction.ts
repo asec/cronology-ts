@@ -5,7 +5,7 @@ import {EmptyActionParamsDTO} from "../../../lib/api/action/params/EmptyActionPa
 
 export default class TestErrorAction extends ApiAction<ApiResponseDTO, EmptyActionParamsDTO>
 {
-    public execute(): ApiResponse<ApiResponseDTO>
+    public async do(): Promise<ApiResponse<ApiResponseDTO>>
     {
         throw new CronologyError("Teszt error");
     }
