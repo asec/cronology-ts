@@ -3,7 +3,7 @@ import ServerStartCommand from "./ServerStartCommand.js";
 import EnvSetCommand from "./EnvSetCommand.js";
 import EnvGetCommand from "./EnvGetCommand.js";
 import PingCommand from "./api/PingCommand.js";
-import services from "../../services/default.js";
+import services from "../../services/index.js";
 import BadResponseCommand from "./api/BadResponseCommand.js";
 import TestErrorCommand from "./api/TestErrorCommand.js";
 import WaitCommand from "./api/WaitCommand.js";

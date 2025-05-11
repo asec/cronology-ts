@@ -2,6 +2,8 @@ import CliCommand from "./CliCommand.js";
 import ApiAction from "../api/action/ApiAction.js";
 import {ApiResponseDTO} from "../api/action/response/ApiResponse.js";
 import ApiActionParams, {ApiParamsDTO} from "../api/action/params/ApiActionParams.js";
+import {Command} from "commander";
+import {CliContext} from "../../cli/middleware/CliParamsParser.js";
 
 export default abstract class CliApiAction extends CliCommand
 {
@@ -12,7 +14,14 @@ export default abstract class CliApiAction extends CliCommand
         {
             throw new Error(`The 'createAction' method returned an invalid command in '${this.constructor.name}'.`);
         }
-        const result = await command.execute(args);
+
+        const commander: Command = args[args.length - 1];
+        const context: CliContext = new CliContext();
+        context.bind({
+            args: commander.args,
+            options: commander.opts()
+        });
+        const result = await command.execute(context);
 
         this.output(`Status: ${result.status}`, true, false);
         this.output(result.toObject(), false);

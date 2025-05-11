@@ -1,4 +1,4 @@
-import {configDotenv, DotenvPopulateInput} from "dotenv";
+import {configDotenv} from "dotenv";
 
 export enum EnvType
 {

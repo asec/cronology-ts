@@ -1,5 +1,5 @@
 import fs from "fs";
-import {fileURLToPath} from "url";
+import path from "path";
 
 export default class PackageInfo
 {
@@ -12,7 +12,7 @@ export default class PackageInfo
 
     protected async load(): Promise<void>
     {
-        const file = fileURLToPath(import.meta.resolve(this.file));
+        const file = path.resolve("./package.json");
         this.data = JSON.parse(String(await fs.promises.readFile(file, "utf-8")));
     }
 

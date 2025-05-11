@@ -1,6 +1,7 @@
 import ApiResponse, {ApiResponseDTO} from "./response/ApiResponse.js";
 import ApiActionParams, {ApiParamsDTO} from "./params/ApiActionParams.js";
 import CronologyError from "../../error/CronologyError.js";
+import Middleware from "./Middleware.js";
 
 // Command pattern - interface Command
 interface Command<TResponseDTO extends ApiResponseDTO, TParamsDTO extends ApiParamsDTO>
@@ -9,12 +10,6 @@ interface Command<TResponseDTO extends ApiResponseDTO, TParamsDTO extends ApiPar
     execute(context: unknown): Promise<ApiResponse<TResponseDTO>> | ApiResponse<TResponseDTO>;
     use(middleware: Middleware<unknown, ApiAction<TResponseDTO, TParamsDTO>>): this;
 }
-
-export type Middleware<TContext, TAction extends ApiAction<ApiResponseDTO, ApiParamsDTO>> = (
-    action: TAction,
-    context: TContext,
-    next: () => void,
-) => Promise<void>;
 
 export default abstract class ApiAction<TResponseDTO extends ApiResponseDTO, TParamsDTO extends ApiParamsDTO> implements Command<TResponseDTO, TParamsDTO>
 {
@@ -31,7 +26,7 @@ export default abstract class ApiAction<TResponseDTO extends ApiResponseDTO, TPa
     public async execute(context: unknown): Promise<ApiResponse<TResponseDTO>>
     {
         let index = -1;
-        const dispatch = async (i: number): Promise<void> => {
+        const dispatch = async (i: number): Promise<ApiResponse<TResponseDTO>> => {
             if (i <= index)
             {
                 throw new CronologyError(
@@ -43,13 +38,13 @@ export default abstract class ApiAction<TResponseDTO extends ApiResponseDTO, TPa
             const middleware = this.middlewares[i];
             if (middleware)
             {
-                await middleware(this, context, () => dispatch(i + 1));
+                return await middleware.execute(this, context, () => dispatch(i + 1)) as ApiResponse<TResponseDTO>;
             }
+
+            return this.do();
         };
 
-        await dispatch(0);
-
-        return this.do();
+        return dispatch(0);
     }
 
     public use(middleware: Middleware<unknown, this>): this

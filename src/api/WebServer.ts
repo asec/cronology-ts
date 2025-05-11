@@ -13,6 +13,7 @@ import AppConfig from "../config/AppConfig.js";
 import ServiceContainer from "../lib/service/ServiceContainer.js";
 import HttpError from "../lib/error/HttpError.js";
 import {ApiParamsDTO} from "../lib/api/action/params/ApiActionParams.js";
+import {ExpressContext} from "./middleware/ExpressRequestParser.js";
 
 export default class WebServer implements IServer
 {
@@ -46,7 +47,12 @@ export default class WebServer implements IServer
             let result: ApiResponse<any>;
             try
             {
-                result = await action.execute(req);
+                const context = new ExpressContext();
+                context.bind({
+                    request: req
+                });
+
+                result = await action.execute(context);
             }
             catch (error: unknown)
             {

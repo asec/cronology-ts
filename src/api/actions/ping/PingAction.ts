@@ -16,7 +16,7 @@ export default class PingAction extends ApiAction<PingActionResponseDTO, EmptyAc
         super();
     }
 
-    public async do(): Promise<ApiResponse<PingActionResponseDTO>>
+    protected async do(): Promise<ApiResponse<PingActionResponseDTO>>
     {
         const response = new PingActionResponseDTO();
 

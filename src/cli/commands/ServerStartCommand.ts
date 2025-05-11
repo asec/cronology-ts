@@ -9,7 +9,7 @@ import AppConfig from "../../config/AppConfig.js";
 import BadResponseAction from "../../api/actions/bad-response/BadResponseAction.js";
 import TestErrorAction from "../../api/actions/test-error/TestErrorAction.js";
 import WaitAction from "../../api/actions/wait/WaitAction.js";
-import {WaitActionParamsParserExpress} from "../../api/actions/wait/params/WaitActionParamsParserExpress.js";
+import WaitActionParamsParserExpress from "../../api/actions/wait/params/WaitActionParamsParserExpress.js";
 
 class ServerStartOptions
 {
@@ -54,7 +54,7 @@ class ServerStartCommand extends CliCommand
             HttpMethod.GET,
             "/wait",
             this.services.resolve(WaitAction)
-                .use(WaitActionParamsParserExpress)
+                .use(new WaitActionParamsParserExpress())
         );
 
         if (options.dev)
