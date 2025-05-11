@@ -11,9 +11,9 @@ export default class ServiceContainer
 
         if (singleton)
         {
-            let singletonFactory = ((params?: {}) => {
+            let singletonFactory = (() => {
                 let instance = null;
-                return () => {
+                return (params?: {}) => {
                     if (instance === null)
                     {
                         instance = factory(params);

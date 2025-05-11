@@ -1,10 +1,11 @@
 import ApiAction from "../../../lib/api/action/ApiAction.js";
 import WaitActionResponseDTO from "./response/WaitActionResponse.js";
-import {EmptyActionParamsDTO} from "../../../lib/api/action/params/EmptyActionParams.js";
 import ApiResponse from "../../../lib/api/action/response/ApiResponse.js";
 import Profiler from "../../../lib/utils/Profiler.js";
+import {WaitActionParamsDTO} from "./params/WaitActionParams.js";
+import ValidationError from "../../../lib/error/ValidationError.js";
 
-export default class WaitAction extends ApiAction<WaitActionResponseDTO, EmptyActionParamsDTO>
+export default class WaitAction extends ApiAction<WaitActionResponseDTO, WaitActionParamsDTO>
 {
     public constructor(
         protected profiler: Profiler
@@ -13,9 +14,21 @@ export default class WaitAction extends ApiAction<WaitActionResponseDTO, EmptyAc
         super();
     }
 
-    public async execute(): Promise<ApiResponse<WaitActionResponseDTO>>
+    protected async validate(): Promise<void>
     {
-        const waitLength = 1000;
+        if (!this.params)
+        {
+            throw new ValidationError(`The following action requires parameters: '${this.constructor.name}'`);
+        }
+
+        await this.params.validate();
+    }
+
+    public async do(): Promise<ApiResponse<WaitActionResponseDTO>>
+    {
+        await this.validate();
+
+        const waitLength = this.params.data("ms");
 
         await this.profiler.wait(waitLength);
 

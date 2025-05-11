@@ -13,6 +13,7 @@ import AppConfig from "../config/AppConfig.js";
 import ServiceContainer from "../lib/service/ServiceContainer.js";
 import HttpError from "../lib/error/HttpError.js";
 import {ApiParamsDTO} from "../lib/api/action/params/ApiActionParams.js";
+import {ExpressContext} from "./middleware/ExpressRequestParser.js";
 
 export default class WebServer implements IServer
 {
@@ -39,25 +40,19 @@ export default class WebServer implements IServer
     }
 
     private createRequestHandler<TRequest extends Request, TResponseDTO extends ApiResponseDTO, TParamsDTO extends ApiParamsDTO>(
-        action: ApiAction<TResponseDTO, TParamsDTO>,
-        paramsParserClass: ParamsParserClass<TRequest, TParamsDTO> = null
+        action: ApiAction<TResponseDTO, TParamsDTO>
     )
     {
         return async (req: TRequest, res: Response) => {
             let result: ApiResponse<any>;
             try
             {
-                if (paramsParserClass !== null)
-                {
-                    const paramsParser = this.services.resolve(paramsParserClass, {
-                        request: req
-                    });
-                    const params = await paramsParser.parse();
-                    await params.validate();
-                    action.setParams(params);
-                }
+                const context = new ExpressContext();
+                context.bind({
+                    request: req
+                });
 
-                result = await action.execute();
+                result = await action.execute(context);
             }
             catch (error: unknown)
             {
@@ -121,10 +116,9 @@ export default class WebServer implements IServer
     public defineRoute<TResponseDTO extends ApiResponseDTO, TParamsDTO extends ApiParamsDTO>(
         method: HttpMethod,
         endpoint: string,
-        action: ApiAction<TResponseDTO, TParamsDTO>,
-        paramsParserClass: ParamsParserClass<Request, TParamsDTO> = null
+        action: ApiAction<TResponseDTO, TParamsDTO>
     ): void
     {
-        this.app[method](endpoint, this.createRequestHandler(action, paramsParserClass));
+        this.app[method](endpoint, this.createRequestHandler(action));
     }
 }
