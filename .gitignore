@@ -8,7 +8,9 @@ node_modules
 package-lock.json
 coverage
 logs
+_logs
 logs-with-teardown
 app-keys
+_app-keys
 cli.bat
 dist

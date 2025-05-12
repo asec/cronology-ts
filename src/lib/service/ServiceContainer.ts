@@ -5,7 +5,7 @@ export default class ServiceContainer
 {
     protected bindings = new Map<string, (params?: {}) => any>();
 
-    register<T>(type: Token<T>, factory: (params?: {}) => T, singleton: boolean = false)
+    register<T>(type: Token<T>, factory: (...params: any[]) => T, singleton: boolean = false)
     {
         const token = typeof type === "symbol" ? type.toString() : (<Constructor<T>> type).name;
 
@@ -13,10 +13,10 @@ export default class ServiceContainer
         {
             let singletonFactory = (() => {
                 let instance = null;
-                return (params?: {}) => {
+                return (...params: any[]) => {
                     if (instance === null)
                     {
-                        instance = factory(params);
+                        instance = factory(...params);
                     }
 
                     return instance;
@@ -30,7 +30,7 @@ export default class ServiceContainer
         }
     }
 
-    resolve<T>(type: Token<T>, params?: {}): T
+    resolve<T>(type: Token<T>, ...params: any[]): T
     {
         const token = typeof type === "symbol" ? type.toString() : (<Constructor<T>> type).name;
         const factory = this.bindings.get(token);
@@ -40,7 +40,7 @@ export default class ServiceContainer
             throw new Error("Service does not exists: " + token);
         }
 
-        return factory(params);
+        return factory(...params);
     }
 }
 

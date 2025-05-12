@@ -24,9 +24,14 @@ export abstract class DataEntity<TData extends DataObject> implements IDataObjec
         }
     }
 
-    public data<Key extends keyof DataFields<TData>>(key?: Key): TData[Key]
+    public data<Key extends keyof DataFields<TData>>(key: Key): TData[Key]
     {
         return this.dataObj.get(key);
+    }
+
+    protected setData<Key extends keyof DataFields<TData>>(key: Key, value: TData[Key]): void
+    {
+        this.dataObj.set(key, value);
     }
 
     public toObject(): Record<string, any>

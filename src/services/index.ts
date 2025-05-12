@@ -10,7 +10,8 @@ export interface ServiceInterfaceNames {
 
     IProgram: Symbol,
     IProcess: Symbol,
-    IServer: Symbol
+    IServer: Symbol,
+    IDatabase: Symbol
 }
 
 export type ServiceRegistrar = (services: ServiceContainer, interfaces: ServiceInterfaceNames) => void;
@@ -18,7 +19,8 @@ export type ServiceRegistrar = (services: ServiceContainer, interfaces: ServiceI
 const interfaces: ServiceInterfaceNames = {
     IProgram: Symbol("IProgram"),
     IProcess: Symbol("IProcess"),
-    IServer: Symbol("IServer")
+    IServer: Symbol("IServer"),
+    IDatabase: Symbol("IDatabase")
 };
 
 const services = createServiceContainer();

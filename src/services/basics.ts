@@ -6,9 +6,16 @@ import {program} from "commander";
 import WebServer from "../api/WebServer.js";
 import RsaKeypair from "../lib/utils/RsaKeypair.js";
 import {ServiceRegistrar} from "./index.js";
+import ApplicationFactory from "../entities/factory/ApplicationFactory.js";
+import Memorydb from "../lib/database/Memorydb.js";
+import Repository from "../lib/entities/Repository.js";
+import Factory from "../lib/entities/Factory.js";
+import Entity from "../lib/entities/Entity.js";
+import {DataObject} from "../lib/datastructures/DataObject.js";
+import CronologyError from "../lib/error/CronologyError.js";
 
 const registerServicesBasic: ServiceRegistrar = (services, interfaces): void => {
-    const {IProgram, IProcess, IServer} = interfaces;
+    const {IProgram, IProcess, IServer, IDatabase} = interfaces;
 
     services.register(AppConfig, () => {
         return new AppConfig();
@@ -44,6 +51,28 @@ const registerServicesBasic: ServiceRegistrar = (services, interfaces): void => 
             () => config.get("CONF_CRYPTO_APPKEYS")
         );
     });
+
+    services.register(IDatabase, () => {
+        return new Memorydb();
+    }, true);
+
+    services.register(Repository, (factory: Factory<Entity<DataObject>>) => {
+        if (!factory || !(factory instanceof Factory))
+        {
+            throw new CronologyError("Service Error: Missing parameter 'factory' for 'Repository' resolution.");
+        }
+
+        return new Repository(
+            factory,
+            services.resolve(IDatabase)
+        );
+    });
+
+    services.register(ApplicationFactory, () => {
+        return new ApplicationFactory(
+            services.resolve(ServiceContainer)
+        );
+    }, true);
 };
 
 export default registerServicesBasic;
