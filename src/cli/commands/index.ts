@@ -7,11 +7,13 @@ import services from "../../services/index.js";
 import BadResponseCommand from "./api/BadResponseCommand.js";
 import TestErrorCommand from "./api/TestErrorCommand.js";
 import WaitCommand from "./api/WaitCommand.js";
+import AppCreateCommand from "./AppCreateCommand.js";
 
 const commandList: CliCommand[] = [
     services.resolve(ServerStartCommand),
     services.resolve(EnvSetCommand),
     services.resolve(EnvGetCommand),
+    services.resolve(AppCreateCommand),
     services.resolve(PingCommand),
     services.resolve(WaitCommand),
     services.resolve(BadResponseCommand),

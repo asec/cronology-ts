@@ -13,6 +13,10 @@ import Factory from "../lib/entities/Factory.js";
 import Entity from "../lib/entities/Entity.js";
 import {DataObject} from "../lib/datastructures/DataObject.js";
 import CronologyError from "../lib/error/CronologyError.js";
+import ValidatorFactory from "../lib/validation/ValidatorFactory.js";
+import ApplicationValidator from "../validation/ApplicationValidator.js";
+import Application from "../entities/Application.js";
+import IpValidator from "../lib/validation/IpValidator.js";
 
 const registerServicesBasic: ServiceRegistrar = (services, interfaces): void => {
     const {IProgram, IProcess, IServer, IDatabase} = interfaces;
@@ -72,6 +76,16 @@ const registerServicesBasic: ServiceRegistrar = (services, interfaces): void => 
         return new ApplicationFactory(
             services.resolve(ServiceContainer)
         );
+    }, true);
+
+    services.register(ValidatorFactory, () => {
+        const factory = new ValidatorFactory();
+
+        factory.register("application", (app: Application) => {
+            return new ApplicationValidator(app, services.resolve(ApplicationFactory).repository());
+        });
+
+        return factory;
     }, true);
 };
 
