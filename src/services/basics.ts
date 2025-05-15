@@ -16,30 +16,22 @@ import CronologyError from "../lib/error/CronologyError.js";
 import ValidatorFactory from "../lib/validation/ValidatorFactory.js";
 import ApplicationValidator from "../validation/ApplicationValidator.js";
 import Application from "../entities/Application.js";
-import IpValidator from "../lib/validation/IpValidator.js";
+import IDatabase from "../lib/database/IDatabase.js";
+import Mongodb from "../lib/database/Mongodb.js";
+import ConnectionPool from "../lib/utils/ConnectionPool.js";
 
 const registerServicesBasic: ServiceRegistrar = (services, interfaces): void => {
     const {IProgram, IProcess, IServer, IDatabase} = interfaces;
 
-    services.register(AppConfig, () => {
-        return new AppConfig();
-    }, true);
+    services.register(AppConfig, () => new AppConfig(), true);
 
-    services.register(Profiler, () => {
-        return new Profiler();
-    });
+    services.register(Profiler, () => new Profiler());
 
-    services.register(PackageInfo, () => {
-        return new PackageInfo();
-    });
+    services.register(PackageInfo, () => new PackageInfo());
 
-    services.register(IProgram, () => {
-        return program;
-    }, true);
+    services.register(IProgram, () => program, true);
 
-    services.register(IProcess, () => {
-        return process;
-    }, true);
+    services.register(IProcess, () => process, true);
 
     services.register(IServer, () => {
         return new WebServer(
@@ -47,6 +39,8 @@ const registerServicesBasic: ServiceRegistrar = (services, interfaces): void => 
             services.resolve(ServiceContainer)
         );
     });
+
+    services.register(ConnectionPool, () => new ConnectionPool(), true);
 
     services.register(RsaKeypair, () => {
         const config = services.resolve(AppConfig);
@@ -57,7 +51,32 @@ const registerServicesBasic: ServiceRegistrar = (services, interfaces): void => 
     });
 
     services.register(IDatabase, () => {
-        return new Memorydb();
+        const config = services.resolve(AppConfig);
+
+        let db: IDatabase<any>;
+        switch (config.get("CONF_DB_TYPE"))
+        {
+            case "mongodb":
+                db = new Mongodb(
+                    () => config.get("CONF_MONGO_URI"),
+                    () => config.get("CONF_MONGO_DB"),
+                    services.resolve(ConnectionPool),
+                    {
+                        [Application.name]: config.get("CONF_MONGO_TABLE_APPLICATIONS")
+                    },
+                    {
+                        [Application.name]: [
+                            {spec: {name: 1}, options: {unique: true}},
+                            {spec: {uuid: 1}, options: {unique: true}}
+                        ]
+                    }
+                );
+                break;
+            default:
+                db = new Memorydb();
+        }
+
+        return db;
     }, true);
 
     services.register(Repository, (factory: Factory<Entity<DataObject>>) => {

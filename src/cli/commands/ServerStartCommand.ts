@@ -1,11 +1,8 @@
-import CliCommand from "../../lib/cli/CliCommand.js";
+import CliCommand, {CliDependencies} from "../../lib/cli/CliCommand.js";
 import {EnvType} from "../../lib/config/Config.js";
-import {Command} from "commander";
 import {HttpMethod} from "../../lib/api/Http.js";
 import PingAction from "../../api/actions/ping/PingAction.js";
-import ServiceContainer from "../../lib/service/ServiceContainer.js";
 import IServer from "../../lib/server/IServer.js";
-import AppConfig from "../../config/AppConfig.js";
 import BadResponseAction from "../../api/actions/bad-response/BadResponseAction.js";
 import TestErrorAction from "../../api/actions/test-error/TestErrorAction.js";
 import WaitAction from "../../api/actions/wait/WaitAction.js";
@@ -32,14 +29,11 @@ class ServerStartCommand extends CliCommand
     }
 
     public constructor(
-        protected config: AppConfig,
-        protected program: Command,
-        protected process: NodeJS.Process,
+        dependencies: CliDependencies,
         protected server: IServer,
-        protected services: ServiceContainer
     )
     {
-        super(config, program, process, services);
+        super(dependencies);
     }
 
     protected initialise(options: ServerStartOptions)

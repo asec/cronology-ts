@@ -2,6 +2,7 @@ import fs from "fs";
 import {Command} from "commander";
 import AppConfig from "../../config/AppConfig.js";
 import {EnvType} from "../config/Config.js";
+import ConnectionPool from "../utils/ConnectionPool.js";
 import ServiceContainer from "../service/ServiceContainer.js";
 
 export type CliCommandArgument = {
@@ -10,6 +11,15 @@ export type CliCommandArgument = {
     defaultValue?: any
 };
 
+export interface CliDependencies
+{
+    config: AppConfig,
+    program: Command,
+    process: NodeJS.Process,
+    services: ServiceContainer,
+    connectionPool: ConnectionPool
+}
+
 export default abstract class CliCommand
 {
     public commandName: string;
@@ -17,13 +27,19 @@ export default abstract class CliCommand
     public args: CliCommandArgument[] = [];
     public options: CliCommandArgument[] = [];
 
-    public constructor(
-        protected config: AppConfig,
-        protected program: Command,
-        protected process: NodeJS.Process,
-        protected services: ServiceContainer
-    )
+    protected config: AppConfig;
+    protected program: Command;
+    protected process: NodeJS.Process;
+    protected services: ServiceContainer;
+    protected connectionPool: ConnectionPool;
+
+    public constructor(dependencies: CliDependencies)
     {
+        this.config = dependencies.config;
+        this.program = dependencies.program;
+        this.process = dependencies.process;
+        this.services = dependencies.services;
+        this.connectionPool = dependencies.connectionPool;
         this.registerCliParams();
     }
 
@@ -41,6 +57,21 @@ export default abstract class CliCommand
         {
             this.initialise(...args);
             await this.do(...args);
+        }
+        catch (e: unknown)
+        {
+            const error = <Error> e;
+            let errorMsg = `${error.name}: ${error.message}`;
+            if (!this.config.isCurrentEnv(EnvType.Prod))
+            {
+                errorMsg += `\n${error.stack}`;
+            }
+            this.error(errorMsg);
+        }
+
+        try
+        {
+            await this.connectionPool.release();
         }
         catch (e: unknown)
         {

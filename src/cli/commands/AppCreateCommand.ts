@@ -1,9 +1,5 @@
-import CliApiAction from "../../lib/cli/CliApiAction.js";
-import AppConfig from "../../config/AppConfig.js";
-import {Command} from "commander";
-import ServiceContainer from "../../lib/service/ServiceContainer.js";
 import ApplicationFactory from "../../entities/factory/ApplicationFactory.js";
-import CliCommand from "../../lib/cli/CliCommand.js";
+import CliCommand, {CliDependencies} from "../../lib/cli/CliCommand.js";
 import ValidatorFactory from "../../lib/validation/ValidatorFactory.js";
 
 export default class AppCreateCommand extends CliCommand
@@ -21,15 +17,12 @@ export default class AppCreateCommand extends CliCommand
     }
 
     public constructor(
-        config: AppConfig,
-        program: Command,
-        process: NodeJS.Process,
-        services: ServiceContainer,
+        dependencies: CliDependencies,
         protected factory: ApplicationFactory,
         protected validatorFactory: ValidatorFactory
     )
     {
-        super(config, program, process, services);
+        super(dependencies);
     }
 
     protected async do(name: string)

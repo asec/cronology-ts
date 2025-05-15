@@ -2,6 +2,7 @@ import Application, {ApplicationData} from "../../../src/entities/Application";
 import {DataFields} from "../../../src/lib/datastructures/DataObject";
 import {testServices} from "../_services";
 import * as fs from "fs";
+import {msgKeysGenerated} from "../_mock/utils/RsaKeypair";
 
 function createApp(data: Partial<DataFields<ApplicationData>> = null): Application
 {
@@ -87,17 +88,35 @@ it("Generates some uuids", () => {
 });
 
 it("Tests app key generation", async () => {
-    const app = createApp();
+    const logSpy = jest.spyOn(console, "log").mockImplementation();
+
+    const app: Application = createApp();
     app.inject(testServices);
+
+    const getKeyData: (keys: string[]) => Promise<string[]> = (() => {
+        const keyData: {[key: string]: string} = {};
+
+        return async (keys: string[]) => {
+            return Promise.all(
+                keys.map(async (file) => {
+                    if (!keyData[file])
+                    {
+                        keyData[file] = String(Math.random())
+                    }
+
+                    return keyData[file];
+                })
+            );
+        };
+    })();
 
     expect(await app.keys()).toHaveLength(0);
     await app.generateKeys();
     const keys = await app.keys();
     expect(keys).toHaveLength(2);
+    expect(logSpy).nthCalledWith(1, msgKeysGenerated(keys));
 
-    const keysData = await Promise.all(
-        keys.map(async (file) => (await fs.promises.readFile(file)).toString())
-    );
+    const keysData = await getKeyData(keys);
     expect(keysData).toHaveLength(2);
 
     await expect(app.generateKeys()).rejects
@@ -106,12 +125,7 @@ it("Tests app key generation", async () => {
     await app.generateKeys(true);
     const newKeys = await app.keys();
     expect(keys).toStrictEqual(newKeys);
-    const newKeysData  = await Promise.all(
-        newKeys.map(async (file) => (await fs.promises.readFile(file)).toString())
-    );
-    expect(newKeysData).toHaveLength(2);
-    expect(keysData[0]).not.toBe(newKeysData[0]);
-    expect(keysData[1]).not.toBe(newKeysData[1]);
+    expect(logSpy).nthCalledWith(2, msgKeysGenerated(newKeys));
 
     const newApp = createApp({
         name: "test"
@@ -123,18 +137,13 @@ it("Tests app key generation", async () => {
     expect(newAppKeys).toHaveLength(2);
     expect(newAppKeys).not.toStrictEqual(keys);
     expect(newAppKeys).not.toStrictEqual(newKeys);
-    const newAppKeysData = await Promise.all(
-        newAppKeys.map(async (file) => (await fs.promises.readFile(file)).toString())
-    );
+    const newAppKeysData = await getKeyData(newAppKeys);
     expect(newAppKeysData).toHaveLength(2);
     expect(newAppKeysData[0]).not.toBe(keysData[0]);
     expect(newAppKeysData[1]).not.toBe(keysData[1]);
-    expect(newAppKeysData[0]).not.toBe(newKeysData[0]);
-    expect(newAppKeysData[1]).not.toBe(newKeysData[1]);
+    expect(logSpy).nthCalledWith(3, msgKeysGenerated(newAppKeys));
 
-    newKeys.map(keyName => keys.push(keyName));
-    newAppKeys.map(keyName => keys.push(keyName));
-    await Promise.all(keys.map(file => fs.promises.rm(file)));
+    logSpy.mockRestore();
 });
 
 it("Test ip address handling", () => {

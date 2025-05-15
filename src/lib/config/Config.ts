@@ -41,7 +41,14 @@ export default abstract class Config<TProps extends ConfigProps> implements ICon
 
     public setEnvironmentToCli()
     {
-        this.extendWith(".env.cli");
+        if (this.isCurrentEnv(EnvType.Test))
+        {
+            this.extendWith(".env.cli.test");
+        }
+        else
+        {
+            this.extendWith(".env.cli");
+        }
     }
 
     public extendWith(file: string)
