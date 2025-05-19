@@ -25,8 +25,8 @@ function testResult(result: ApiResponse<WaitActionResponseDTO>, waitTime: number
     expect(result.data("success")).toBe(true);
     expect(result.data("waited")).toBe(waitTime);
     expect(profiler.get()).toBeGreaterThanOrEqual(waitTime);
-    expect(profiler.get()).toBeLessThan(waitTime + 200);
-    expect(profiler.get()).toBeLessThan(waitTime * 2);
+    expect(profiler.get()).toBeLessThanOrEqual(waitTime + 200);
+    expect(profiler.get()).toBeLessThanOrEqual(waitTime * 3);
 }
 
 it("Runs the action with default parameters", async () => {

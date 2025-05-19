@@ -14,3 +14,4 @@ app-keys
 _app-keys
 cli.bat
 dist
+tests/_files

@@ -1,8 +1,11 @@
-import {testServices} from "../../../_services";
+import {createTestServices, testServices} from "../../../_services";
 import PingAction from "../../../../../src/api/actions/ping/PingAction";
 import PingActionResponseDTO from "../../../../../src/api/actions/ping/response/PingActionResponse";
 import ApiResponse from "../../../../../src/lib/api/action/response/ApiResponse";
 import Middleware from "../../../../../src/lib/api/action/Middleware";
+import services, {createServices} from "../../../../../src/services";
+import AppConfig from "../../../../../src/config/AppConfig";
+import PackageInfo from "../../../../../src/lib/utils/PackageInfo";
 
 class TestMiddleware extends Middleware<null, PingAction>
 {
@@ -37,6 +40,19 @@ class TestMiddlewareAsync extends TestMiddleware
         await new Promise(resolve => setTimeout(() => { console.log(`After next #${this.id}`); resolve(null)}, 30));
 
         return result;
+    }
+}
+
+class TestMiddlewareFailing extends Middleware<null, PingAction>
+{
+    protected validate(action: PingAction, context: null): Promise<void>
+    {
+        return null;
+    }
+
+    protected do(action: PingAction, context: null, next): Promise<ApiResponse<PingActionResponseDTO>>
+    {
+        throw new Error("failure");
     }
 }
 
@@ -107,4 +123,20 @@ it("Tests middleware execution order using async middleware", async () => {
     }
 
     await testMiddlewareExecutionOrder(createTestMiddleware);
+});
+
+it("Test middleware failure", async () => {
+    const action = testServices.resolve(PingAction);
+    action.use(new TestMiddlewareFailing());
+
+    await expect(action.execute(null)).rejects.toThrow("failure");
+});
+
+it("Test possible failure due to missing package file", async () => {
+    const services = createTestServices();
+    services.register(PackageInfo, () => new PackageInfo(".non-existent-file"));
+
+    const action = services.resolve(PingAction);
+
+    await expect(action.execute(null)).rejects.toThrow(/no such file.*?\.non-existent-file/)
 });

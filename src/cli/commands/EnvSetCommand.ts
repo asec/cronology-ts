@@ -1,4 +1,4 @@
-import CliCommand from "../../lib/cli/CliCommand.js";
+import CliCommand, {CliDependencies} from "../../lib/cli/CliCommand.js";
 import {EnvType} from "../../lib/config/Config.js";
 import path from "path";
 import fs from "fs";
@@ -26,6 +26,14 @@ class EnvSetCommand extends CliCommand
         "CONF_LOG_DIR",
     ];
 
+    public constructor(
+        dependencies: CliDependencies,
+        protected localFileName: string = ".env.cli.local"
+    )
+    {
+        super(dependencies);
+    }
+
     protected initialise(env: EnvType)
     {}
 
@@ -39,25 +47,25 @@ class EnvSetCommand extends CliCommand
 
         this.config.setEnvironment(env);
 
-        const variables = this.#extractVariablesFromCurrentEnv();
+        const variables = this.extractVariablesFromCurrentEnv();
         let content: string[] = [];
 
-        if (!this.#localFileExists())
+        if (!this.localFileExists())
         {
             for (let varName in variables)
             {
-                content.push(this.#makeVariableString(varName, variables[varName]));
+                content.push(this.makeVariableString(varName, variables[varName]));
             }
         }
         else
         {
             try
             {
-                content = fs.readFileSync(this.#getLocalFileName()).toString().split("\n");
+                content = fs.readFileSync(this.getLocalFileName()).toString().split("\n");
             }
             catch (e: any)
             {
-                this.error(`The target file exists but could not be read: ${this.#getLocalFileName()}`);
+                this.error(`The target file exists but could not be read: ${this.getLocalFileName()}`);
             }
 
             const varsFound: string[] = [];
@@ -66,7 +74,7 @@ class EnvSetCommand extends CliCommand
                 {
                     if (line.startsWith(`${varName}=`))
                     {
-                        content[index] = this.#makeVariableString(varName, variables[varName]);
+                        content[index] = this.makeVariableString(varName, variables[varName]);
                         varsFound.push(varName);
                         break;
                     }
@@ -75,17 +83,17 @@ class EnvSetCommand extends CliCommand
             const varNames: string[] = Object.keys(variables);
             const nonExistentVars: string[] = varNames.filter(varName => varsFound.indexOf(varName) === -1);
             nonExistentVars.forEach(varName => {
-                content.push(this.#makeVariableString(varName, variables[varName]));
+                content.push(this.makeVariableString(varName, variables[varName]));
             });
         }
 
         try
         {
-            fs.writeFileSync(this.#getLocalFileName(), content.join("\n"));
+            fs.writeFileSync(this.getLocalFileName(), content.join("\n"));
         }
         catch (e: any)
         {
-            this.error(`The target file could not be written: ${this.#getLocalFileName()}`);
+            this.error(`The target file could not be written: ${this.getLocalFileName()}`);
         }
 
         this.output(
@@ -94,17 +102,17 @@ class EnvSetCommand extends CliCommand
         );
     }
 
-    #getLocalFileName(): string
+    private getLocalFileName(): string
     {
-        return path.resolve("./.env.cli.local");
+        return path.resolve(this.localFileName);
     }
 
-    #localFileExists(): boolean
+    private localFileExists(): boolean
     {
-        return fs.existsSync(this.#getLocalFileName());
+        return fs.existsSync(this.getLocalFileName());
     }
 
-    #extractVariablesFromCurrentEnv(): {[key: string]: string}
+    private extractVariablesFromCurrentEnv(): {[key: string]: string}
     {
         const keys = {};
         for (let i = 0; i < this.envKeysToCopy.length; i++)
@@ -120,7 +128,7 @@ class EnvSetCommand extends CliCommand
         return keys;
     }
 
-    #makeVariableString(name: string, value: any): string
+    private makeVariableString(name: string, value: any): string
     {
         return `${name}=${value}`;
     }

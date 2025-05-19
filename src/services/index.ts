@@ -25,17 +25,24 @@ const interfaces: ServiceInterfaceNames = {
     CliDependencies: Symbol("CliDependencies")
 };
 
-const services = createServiceContainer();
+export function createServices(): ServiceContainer
+{
+    const services = createServiceContainer();
 
-// Basics
-registerServicesBasic(services, interfaces);
+    // Basics
+    registerServicesBasic(services, interfaces);
 
-// CLI related
-registerServicesCliBasics(services, interfaces);
-registerServicesCliCommands(services, interfaces);
-registerServicesCliActions(services, interfaces);
+    // CLI related
+    registerServicesCliBasics(services, interfaces);
+    registerServicesCliCommands(services, interfaces);
+    registerServicesCliActions(services, interfaces);
 
-// API actions
-registerServicesApiActions(services, interfaces);
+    // API actions
+    registerServicesApiActions(services, interfaces);
 
+    return services;
+}
+
+
+const services = createServices();
 export default services;
