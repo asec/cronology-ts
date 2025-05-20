@@ -43,18 +43,18 @@ class ServerStartCommand extends CliCommand
 
     public async do(options: ServerStartOptions)
     {
-        this.server.defineRoute(HttpMethod.GET, "/", this.services.resolve(PingAction));
+        this.server.defineRoute(HttpMethod.GET, "/", this.services.resolve("api.action.ping"));
         this.server.defineRoute(
             HttpMethod.GET,
             "/wait",
-            this.services.resolve(WaitAction)
+            this.services.resolve("api.action.wait")
                 .use(new WaitActionParamsParserExpress())
         );
 
         if (options.dev)
         {
-            this.server.defineRoute(HttpMethod.GET, "/bad-response", this.services.resolve(BadResponseAction));
-            this.server.defineRoute(HttpMethod.GET, "/test-error", this.services.resolve(TestErrorAction));
+            this.server.defineRoute(HttpMethod.GET, "/bad-response", this.services.resolve("api.action.badResponse"));
+            this.server.defineRoute(HttpMethod.GET, "/test-error", this.services.resolve("api.action.testError"));
         }
 
         this.server.start((error: Error) => this.error(`${error.name}: ${error.message}`));

@@ -1,4 +1,4 @@
-import Config, {ConfigProps} from "../lib/config/Config.js";
+import Config, {ConfigProps, EnvType} from "../lib/config/Config.js";
 
 export interface AppConfigProps extends ConfigProps
 {
@@ -29,9 +29,11 @@ export interface AppConfigProps extends ConfigProps
 
 export default class AppConfig extends Config<AppConfigProps>
 {
-    public constructor()
+    public constructor(
+        envPaths: Partial<{[K in EnvType]: string}> = {}
+    )
     {
-        super();
+        super(envPaths);
     }
 
     private toggleLogging(state: boolean)

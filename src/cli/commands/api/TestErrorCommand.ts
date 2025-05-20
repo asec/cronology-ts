@@ -1,5 +1,4 @@
 import CliApiAction from "../../../lib/cli/CliApiAction.js";
-import TestErrorAction from "../../../api/actions/test-error/TestErrorAction.js";
 
 export default class TestErrorCommand extends CliApiAction
 {
@@ -8,6 +7,6 @@ export default class TestErrorCommand extends CliApiAction
 
     protected createAction(...args)
     {
-        return this.createCliCommand(this.services.resolve(TestErrorAction));
+        return this.createCliCommand(this.services.resolve("api.action.testError"));
     }
 }

@@ -1,6 +1,5 @@
-import {testServices} from "../../_services";
-import AppCreateCommand from "../../../../src/cli/commands/AppCreateCommand";
-import {msgKeysGenerated} from "../../_mock/utils/RsaKeypair";
+import {testServices} from "../../../_services";
+import {msgKeysGenerated} from "../../../_mock/utils/RsaKeypair";
 
 it("Instantiates and runs the command", async () => {
     const logSpy = jest.spyOn(console, "log").mockImplementation();
@@ -9,7 +8,7 @@ it("Instantiates and runs the command", async () => {
     });
     const stdErrSpy = jest.spyOn(process.stderr, "write").mockImplementation(() => true);
 
-    const command = testServices.resolve(AppCreateCommand);
+    const command = testServices.resolve("cli.command.app-create");
     const appName = "test";
 
     expect(logSpy).not.toHaveBeenCalled();

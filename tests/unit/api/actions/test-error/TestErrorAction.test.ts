@@ -1,9 +1,8 @@
-import {testServices} from "../../../_services";
-import TestErrorAction from "../../../../../src/api/actions/test-error/TestErrorAction";
+import {testServices} from "../../../../_services";
 import CronologyError from "../../../../../src/lib/error/CronologyError";
 
 it("Runs the action with default parameters", async () => {
-    const action = testServices.resolve(TestErrorAction);
+    const action = testServices.resolve("api.action.testError");
 
     try
     {

@@ -1,9 +1,8 @@
-import ApplicationFactory from "../../../../src/entities/factory/ApplicationFactory";
-import {testServices} from "../../_services";
+import {testServices} from "../../../_services";
 import Application from "../../../../src/entities/Application";
 
 it("Tests instantiation with default params", async () => {
-    const factory = testServices.resolve(ApplicationFactory);
+    const factory = testServices.resolve("factory.application");
 
     const app = factory.convert({
         foo: "bar",
@@ -16,7 +15,7 @@ it("Tests instantiation with default params", async () => {
 });
 
 it("Tests the repository", async () => {
-    const factory = testServices.resolve(ApplicationFactory);
+    const factory = testServices.resolve("factory.application");
     const repository = factory.repository();
 
     expect(await repository.count()).toBe(0);

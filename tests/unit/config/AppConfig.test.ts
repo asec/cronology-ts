@@ -1,6 +1,6 @@
 import AppConfig from "../../../src/config/AppConfig";
 import {EnvType} from "../../../src/lib/config/Config";
-import {testServices} from "../_services";
+import {testServices} from "../../_services";
 
 it("Creates the default config", () => {
     const config = new AppConfig();
@@ -27,7 +27,7 @@ it("Tests environment changes", () => {
 });
 
 it("Tests the default environment of the config resolved from the container used by the tests", () => {
-    const config = testServices.resolve(AppConfig);
+    const config = testServices.resolve("config");
 
     expect(config.isCurrentEnv(EnvType.Test)).toBe(true);
     expect(config.get("APP_CLI_ENV")).toBe("false");

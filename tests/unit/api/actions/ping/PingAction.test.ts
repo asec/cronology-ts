@@ -1,10 +1,8 @@
-import {createTestServices, testServices} from "../../../_services";
+import {createTestServices, testServices} from "../../../../_services";
 import PingAction from "../../../../../src/api/actions/ping/PingAction";
 import PingActionResponseDTO from "../../../../../src/api/actions/ping/response/PingActionResponse";
 import ApiResponse from "../../../../../src/lib/api/action/response/ApiResponse";
 import Middleware from "../../../../../src/lib/api/action/Middleware";
-import services, {createServices} from "../../../../../src/services";
-import AppConfig from "../../../../../src/config/AppConfig";
 import PackageInfo from "../../../../../src/lib/utils/PackageInfo";
 
 class TestMiddleware extends Middleware<null, PingAction>
@@ -59,7 +57,7 @@ class TestMiddlewareFailing extends Middleware<null, PingAction>
 async function testMiddlewareExecutionOrder(createTestMiddleware: (id: number) => Middleware<null, PingAction>)
 {
     const logSpy = jest.spyOn(console, "log").mockImplementation();
-    const action = testServices.resolve(PingAction);
+    const action = testServices.resolve("api.action.ping");
     action
         .use(createTestMiddleware(0))
         .use(createTestMiddleware(1))
@@ -97,7 +95,7 @@ async function testMiddlewareExecutionOrder(createTestMiddleware: (id: number) =
 }
 
 it("Runs the action with default parameters",  async () => {
-    const action = testServices.resolve(PingAction);
+    const action = testServices.resolve("api.action.ping");
     const response = await action.execute(null);
 
     expect(response.status).toBe(200);
@@ -115,8 +113,6 @@ it("Tests middleware execution", async () => {
 });
 
 it("Tests middleware execution order using async middleware", async () => {
-    const logSpy = jest.spyOn(console, "log").mockImplementation();
-
     function createTestMiddleware(id: number): Middleware<null, PingAction>
     {
         return new TestMiddlewareAsync(id);
@@ -126,7 +122,7 @@ it("Tests middleware execution order using async middleware", async () => {
 });
 
 it("Test middleware failure", async () => {
-    const action = testServices.resolve(PingAction);
+    const action = testServices.resolve("api.action.ping");
     action.use(new TestMiddlewareFailing());
 
     await expect(action.execute(null)).rejects.toThrow("failure");
@@ -134,9 +130,9 @@ it("Test middleware failure", async () => {
 
 it("Test possible failure due to missing package file", async () => {
     const services = createTestServices();
-    services.register(PackageInfo, () => new PackageInfo(".non-existent-file"));
+    services.register("packageInfo", () => new PackageInfo(".non-existent-file"));
 
-    const action = services.resolve(PingAction);
+    const action = services.resolve("api.action.ping");
 
     await expect(action.execute(null)).rejects.toThrow(/no such file.*?\.non-existent-file/)
 });

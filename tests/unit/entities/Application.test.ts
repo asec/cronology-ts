@@ -1,8 +1,7 @@
 import Application, {ApplicationData} from "../../../src/entities/Application";
 import {DataFields} from "../../../src/lib/datastructures/DataObject";
-import {testServices} from "../_services";
-import * as fs from "fs";
-import {msgKeysGenerated} from "../_mock/utils/RsaKeypair";
+import {testServices} from "../../_services";
+import {msgKeysGenerated} from "../../_mock/utils/RsaKeypair";
 
 function createApp(data: Partial<DataFields<ApplicationData>> = null): Application
 {
@@ -19,8 +18,7 @@ it("Creates an entity with default values", async () => {
     const app = createApp();
 
     expect(app.data("name")).toBeUndefined();
-    expect(app.data("uuid")).not.toBeUndefined();
-    expect(app.data("uuid")).toHaveLength(36);
+    expect(app.data("uuid")).toBeUndefined();
     expect(app.data("ip")).toHaveLength(0);
 
     await expect(app.generateKeys()).rejects.toThrow(/no service container.*?'Application'.*?'inject'/);
@@ -47,8 +45,7 @@ it("Creates an entity with specified values and modifies it", () => {
     });
 
     expect(app.data("name")).toBeUndefined();
-    expect(app.data("uuid")).not.toBeNull();
-    expect(app.data("uuid")).toHaveLength(36);
+    expect(app.data("uuid")).toBeUndefined();
     expect(app.data("ip")).toBeUndefined();
 
     app.bind({
@@ -66,14 +63,66 @@ it("Creates an entity with specified values and modifies it", () => {
     });
 
     expect(app.data("name")).toBe("name");
-    expect(app.data("uuid")).not.toBeNull();
-    expect(app.data("uuid")).toHaveLength(36);
+    expect(app.data("uuid")).toBeNull();
     expect(app.data("ip")).toHaveLength(2);
     expect(app.data("ip")).toStrictEqual(["e", "ip"]);
 });
 
+it("Tests automatic uuid generation", () => {
+    const factory = testServices.resolve("factory.application");
+    let app = factory.create();
+    expect(app.data("uuid")).toHaveLength(36);
+    let uuid = app.data("uuid");
+
+    app.bind({
+        dataObj: {
+            uuid: null
+        }
+    });
+    expect(app.data("uuid")).toHaveLength(36);
+    expect(app.data("uuid")).not.toBe(uuid);
+    uuid = app.data("uuid");
+
+    app.bind({
+        dataObj: {
+            uuid: undefined
+        }
+    });
+    expect(app.data("uuid")).toHaveLength(36);
+    expect(app.data("uuid")).not.toBe(uuid);
+
+    app.bind({
+        dataObj: {
+            uuid: "a"
+        }
+    });
+    expect(app.data("uuid")).toBe("a");
+
+    app.bind({
+        dataObj: {
+            uuid: ""
+        }
+    });
+    expect(app.data("uuid")).toBe("");
+
+    app = factory.create({
+        uuid: "b"
+    });
+    expect(app.data("uuid")).toBe("b");
+
+    app = factory.create({
+        uuid: ""
+    });
+    expect(app.data("uuid")).toBe("");
+
+    app = factory.create({
+        uuid: null
+    });
+    expect(app.data("uuid")).toHaveLength(36);
+});
+
 it("Generates some uuids", () => {
-    const app = new Application(new ApplicationData());
+    const app = testServices.resolve("factory.application").create();
     const testSize = 10;
 
     for (let i = 0; i < testSize; i++)

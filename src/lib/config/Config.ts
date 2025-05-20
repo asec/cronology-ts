@@ -20,9 +20,24 @@ export interface IConfig
 export default abstract class Config<TProps extends ConfigProps> implements IConfig
 {
     private data: TProps = <TProps> {};
+    private envPaths: {[K in EnvType]: string} = {
+        [EnvType.Prod]: "./",
+        [EnvType.Dev]: "./",
+        [EnvType.Test]: "./"
+    };
 
-    protected constructor()
+    protected constructor(
+        envPaths: Partial<{[K in EnvType]: string}> = {}
+    )
     {
+        for (let k in EnvType)
+        {
+            const type = EnvType[k];
+            if (envPaths[type] !== undefined)
+            {
+                this.envPaths[type] = envPaths[type];
+            }
+        }
         this.extendWith(".env");
     }
 
@@ -31,10 +46,10 @@ export default abstract class Config<TProps extends ConfigProps> implements ICon
         switch (env)
         {
             case EnvType.Test:
-                this.extendWith(".env.test");
+                this.extendWith(this.envPaths[env] + ".env.test");
                 break;
             case EnvType.Dev:
-                this.extendWith(".env.dev");
+                this.extendWith(this.envPaths[env] + ".env.dev");
                 break;
         }
     }
@@ -43,11 +58,11 @@ export default abstract class Config<TProps extends ConfigProps> implements ICon
     {
         if (this.isCurrentEnv(EnvType.Test))
         {
-            this.extendWith(".env.cli.test");
+            this.extendWith(this.envPaths[this.get("APP_ENV")] + ".env.cli.test");
         }
         else
         {
-            this.extendWith(".env.cli");
+            this.extendWith(this.envPaths[this.get("APP_ENV")] + ".env.cli");
         }
     }
 

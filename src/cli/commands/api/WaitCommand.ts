@@ -1,5 +1,4 @@
 import CliApiAction from "../../../lib/cli/CliApiAction.js";
-import WaitAction from "../../../api/actions/wait/WaitAction.js";
 import WaitActionParamsParserCli from "../../../api/actions/wait/params/WaitActionParamsParserCli.js";
 
 export default class WaitCommand extends CliApiAction
@@ -19,7 +18,7 @@ export default class WaitCommand extends CliApiAction
     protected createAction(...args)
     {
         return this.createCliCommand(
-            this.services.resolve(WaitAction)
+            this.services.resolve("api.action.wait")
                 .use(new WaitActionParamsParserCli())
         );
     }

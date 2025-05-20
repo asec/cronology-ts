@@ -1,4 +1,4 @@
-import RsaKeypair from "../../../../src/lib/utils/RsaKeypair";
+import RsaKeypair from "../../../src/lib/utils/RsaKeypair";
 
 export function msgKeysGenerated(keys: string[])
 {

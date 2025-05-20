@@ -7,10 +7,9 @@ import ApiAction from "../lib/api/action/ApiAction.js";
 import ApiResponse, {ApiResponseDTO} from "../lib/api/action/response/ApiResponse.js";
 import {EnvType} from "../lib/config/Config.js";
 import {HttpMethod} from "../lib/api/Http.js";
-import IServer, {ParamsParserClass} from "../lib/server/IServer.js";
+import IServer from "../lib/server/IServer.js";
 import ApiErrorResponse, {ApiErrorResponseDTO} from "../lib/api/action/response/ApiErrorResponse.js";
 import AppConfig from "../config/AppConfig.js";
-import ServiceContainer from "../lib/service/ServiceContainer.js";
 import HttpError from "../lib/error/HttpError.js";
 import {ApiParamsDTO} from "../lib/api/action/params/ApiActionParams.js";
 import {ExpressContext} from "./middleware/ExpressRequestParser.js";
@@ -20,8 +19,7 @@ export default class WebServer implements IServer
     private app: Express = express();
 
     public constructor(
-        private config: AppConfig,
-        private services: ServiceContainer
+        private config: AppConfig
     )
     {}
 

@@ -3,36 +3,42 @@ import EnvGetCommand from "../cli/commands/EnvGetCommand.js";
 import EnvSetCommand from "../cli/commands/EnvSetCommand.js";
 import ServerStartCommand from "../cli/commands/ServerStartCommand.js";
 import AppCreateCommand from "../cli/commands/AppCreateCommand.js";
-import ApplicationFactory from "../entities/factory/ApplicationFactory.js";
-import ValidatorFactory from "../lib/validation/ValidatorFactory.js";
+import {ServiceBindings} from "../lib/service/ServiceContainer.js";
 
-const registerServicesCliCommands: ServiceRegistrar = (services, interfaces) => {
-    const {IServer, CliDependencies} = interfaces;
+export interface ServiceBindingsCliCommands extends ServiceBindings
+{
+    "cli.command.env-get": () => EnvGetCommand,
+    "cli.command.env-set": () => EnvSetCommand,
+    "cli.command.server-start": () => ServerStartCommand,
+    "cli.command.app-create": () => AppCreateCommand
+}
 
-    services.register(EnvGetCommand, () => {
+const registerServicesCliCommands: ServiceRegistrar = (services) => {
+
+    services.register("cli.command.env-get", () => {
         return new EnvGetCommand(
-            services.resolve(CliDependencies)
+            services.resolve("cli.dependencies")
         );
     });
 
-    services.register(EnvSetCommand, () => {
+    services.register("cli.command.env-set", () => {
         return new EnvSetCommand(
-            services.resolve(CliDependencies)
+            services.resolve("cli.dependencies")
         );
     });
 
-    services.register(ServerStartCommand, () => {
+    services.register("cli.command.server-start", () => {
         return new ServerStartCommand(
-            services.resolve(CliDependencies),
-            services.resolve(IServer)
+            services.resolve("cli.dependencies"),
+            services.resolve("server")
         );
     });
 
-    services.register(AppCreateCommand, () => {
+    services.register("cli.command.app-create", () => {
         return new AppCreateCommand(
-            services.resolve(CliDependencies),
-            services.resolve(ApplicationFactory),
-            services.resolve(ValidatorFactory)
+            services.resolve("cli.dependencies"),
+            services.resolve("factory.application"),
+            services.resolve("validators")
         );
     });
 };

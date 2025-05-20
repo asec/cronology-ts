@@ -1,28 +1,30 @@
 import {ServiceRegistrar} from "./index.js";
 import Cli from "../lib/cli/Cli.js";
-import PackageInfo from "../lib/utils/PackageInfo.js";
 import {CliDependencies} from "../lib/cli/CliCommand.js";
-import AppConfig from "../config/AppConfig.js";
-import ServiceContainer from "../lib/service/ServiceContainer.js";
-import ConnectionPool from "../lib/utils/ConnectionPool.js";
+import {ServiceBindings} from "../lib/service/ServiceContainer.js";
 
-const registerServicesCliBasics: ServiceRegistrar = (services, interfaces) => {
-    const {IProgram, CliDependencies, IProcess} = interfaces;
+export interface ServiceBindingsCli extends ServiceBindings
+{
+    "cli": () => Cli,
+    "cli.dependencies": () => CliDependencies
+}
 
-    services.register(Cli, () => {
+const registerServicesCliBasics: ServiceRegistrar = (services) => {
+
+    services.register("cli", () => {
         return new Cli(
-            services.resolve(IProgram),
-            services.resolve(PackageInfo)
+            services.resolve("program"),
+            services.resolve("packageInfo")
         );
     });
 
-    services.register(CliDependencies, (): CliDependencies => {
+    services.register("cli.dependencies", (): CliDependencies => {
         return {
-            config: services.resolve(AppConfig),
-            program: services.resolve(IProgram),
-            process: services.resolve(IProcess),
-            services: services.resolve(ServiceContainer),
-            connectionPool: services.resolve(ConnectionPool)
+            config: services.resolve("config"),
+            program: services.resolve("program"),
+            process: services.resolve("process"),
+            services: services.resolve("services"),
+            connectionPool: services.resolve("connectionPool")
         };
     });
 };

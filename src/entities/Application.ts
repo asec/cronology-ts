@@ -1,8 +1,9 @@
 import {DataFields, DataObject} from "../lib/datastructures/DataObject.js";
 import Entity from "../lib/entities/Entity.js";
-import {v4 as uuidv4} from "uuid";
 import RsaKeypair from "../lib/utils/RsaKeypair.js";
 import CronologyError from "../lib/error/CronologyError.js";
+import {Uuid} from "../lib/utils/Uuid.js";
+import ServiceContainer from "../lib/service/ServiceContainer.js";
 
 export class ApplicationData extends DataObject
 {
@@ -14,10 +15,16 @@ export class ApplicationData extends DataObject
 export default class Application extends Entity<ApplicationData>
 {
     protected rsa: RsaKeypair;
+    protected uuidGenerator: Uuid;
 
     public constructor(data: ApplicationData)
     {
         super(data);
+    }
+
+    public inject(services: ServiceContainer)
+    {
+        super.inject(services);
 
         if (this.data("uuid") === null || this.data("uuid") === undefined)
         {
@@ -30,7 +37,7 @@ export default class Application extends Entity<ApplicationData>
     }) {
         super.bind(data);
 
-        if (this.data("uuid") === null || this.data("uuid") === undefined)
+        if (this.uuidGenerator !== undefined && (this.data("uuid") === null || this.data("uuid") === undefined))
         {
             this.generateUuid();
         }
@@ -38,14 +45,19 @@ export default class Application extends Entity<ApplicationData>
 
     public generateUuid()
     {
-        this.setData("uuid", uuidv4());
+        if (this.uuidGenerator === undefined)
+        {
+            this.uuidGenerator = this.services().resolve("uuid");
+        }
+
+        this.setData("uuid", this.uuidGenerator());
     }
 
     public async generateKeys(forced: boolean = false): Promise<void>
     {
         if (this.rsa === undefined)
         {
-            this.rsa = this.services().resolve(RsaKeypair);
+            this.rsa = this.services().resolve("rsaKeypair");
         }
 
         this.rsa.setName(this.data("uuid"));
@@ -64,7 +76,7 @@ export default class Application extends Entity<ApplicationData>
     {
         if (this.rsa === undefined)
         {
-            this.rsa = this.services().resolve(RsaKeypair);
+            this.rsa = this.services().resolve("rsaKeypair");
         }
 
         this.rsa.setName(this.data("uuid"));

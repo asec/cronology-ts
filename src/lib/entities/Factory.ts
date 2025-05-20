@@ -44,7 +44,7 @@ export default abstract class Factory<TEntity extends Entity<DataObject>>
     {
         if (this._repository === undefined)
         {
-            this._repository = this.services.resolve<Repository<TEntity>>(Repository, this);
+            this._repository = this.services.resolve("repository", this) as Repository<TEntity>;
         }
 
         return this._repository;

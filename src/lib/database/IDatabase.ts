@@ -1,5 +1,5 @@
 import Entity from "../entities/Entity.js";
-import {DataFields, DataObject} from "../datastructures/DataObject.js";
+import {DataObject} from "../datastructures/DataObject.js";
 import Factory from "../entities/Factory.js";
 import {EntityIdType} from "../entities/Repository.js";
 
