@@ -3,6 +3,7 @@ import TestFile from "./TestFile";
 import {Uuid} from "../../src/lib/utils/Uuid";
 import ServiceContainer from "../../src/lib/service/ServiceContainer";
 import {ServiceBindingsTestFull} from "../_services";
+import * as fs from "fs";
 
 export default class TestFileFactory implements IDisconnectable
 {
@@ -32,10 +33,14 @@ export default class TestFileFactory implements IDisconnectable
 
     public async disconnect(): Promise<void>
     {
+        let path: string = null;
         for (let i = 0; i < this.files.length; i++)
         {
+            path = path || this.files[i].path();
             await this.files[i].delete();
         }
+
+        await fs.promises.rm(path);
 
         return null;
     }

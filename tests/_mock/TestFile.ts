@@ -91,16 +91,11 @@ export default class TestFile
 
     public async delete()
     {
-        try
+        const path = this._path + "/" + this.uuid;
+        await fs.promises.rm(path + "/" + this._file);
+        if ((await fs.promises.readdir(path)).length === 0)
         {
-            const path = this._path + "/" + this.uuid;
-            await fs.promises.rm(path + "/" + this._file);
-            if ((await fs.promises.readdir(path)).length === 0)
-            {
-                await fs.promises.rmdir(path);
-            }
+            await fs.promises.rmdir(path);
         }
-        catch
-        {}
     }
 }

@@ -10,6 +10,8 @@ class EnvSetCommand extends CliCommand
     public description = `Sets the CLI environment to one of the following: ${Object.values(EnvType).join(", ")}.` +
         ` This affects (among other things possibly) which db it will use.`;
 
+    protected localFileName: string;
+
     protected registerCliParams()
     {
         this.addArgument(
@@ -27,11 +29,11 @@ class EnvSetCommand extends CliCommand
     ];
 
     public constructor(
-        dependencies: CliDependencies,
-        protected localFileName: string = ".env.cli.local"
+        dependencies: CliDependencies
     )
     {
         super(dependencies);
+        this.localFileName = this.config.cliFile() + ".local";
     }
 
     protected initialise(env: EnvType)

@@ -19,9 +19,12 @@ export default class ConnectionPool
 
     public async release(): Promise<void>
     {
+        const promises = [];
         for (let connection of this.connections)
         {
-            await connection.disconnect();
+            promises.push(connection.disconnect());
         }
+
+        await Promise.all(promises);
     }
 }

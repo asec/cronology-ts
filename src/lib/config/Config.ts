@@ -38,7 +38,7 @@ export default abstract class Config<TProps extends ConfigProps> implements ICon
                 this.envPaths[type] = envPaths[type];
             }
         }
-        this.extendWith(".env");
+        this.reset();
     }
 
     public setEnvironment(env: EnvType)
@@ -51,19 +51,14 @@ export default abstract class Config<TProps extends ConfigProps> implements ICon
             case EnvType.Dev:
                 this.extendWith(this.envPaths[env] + ".env.dev");
                 break;
+            default:
+                this.extendWith(this.envPaths[env] + ".env");
         }
     }
 
     public setEnvironmentToCli()
     {
-        if (this.isCurrentEnv(EnvType.Test))
-        {
-            this.extendWith(this.envPaths[this.get("APP_ENV")] + ".env.cli.test");
-        }
-        else
-        {
-            this.extendWith(this.envPaths[this.get("APP_ENV")] + ".env.cli");
-        }
+        this.extendWith(this.cliFile());
     }
 
     public extendWith(file: string)
@@ -95,5 +90,26 @@ export default abstract class Config<TProps extends ConfigProps> implements ICon
     public isCurrentEnv(env: EnvType): boolean
     {
         return this.get("APP_ENV") === env;
+    }
+
+    public cliFile(): string
+    {
+        let cliFile: string = "";
+        if (this.isCurrentEnv(EnvType.Test))
+        {
+            cliFile = this.envPaths[this.get("APP_ENV")] + ".env.cli.test";
+        }
+        else
+        {
+            cliFile = this.envPaths[this.get("APP_ENV")] + ".env.cli";
+        }
+
+        return cliFile;
+    }
+
+    public reset(): void
+    {
+        this.data = <TProps> {}
+        this.extendWith(".env");
     }
 }
