@@ -10,7 +10,7 @@ interface FileList
 export async function establishSeparateEnvironmentForTesting(
     services: ServiceContainer<ServiceBindingsTestFull>,
     pool: ConnectionPool
-): Promise<void>
+): Promise<string>
 {
     const files = services.resolve("factory.testFile");
     pool.add(files);
@@ -65,4 +65,6 @@ export async function establishSeparateEnvironmentForTesting(
         dev: path + "/",
         test: path + "/"
     });
+
+    return path;
 }

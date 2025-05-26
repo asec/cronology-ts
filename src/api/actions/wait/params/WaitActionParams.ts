@@ -15,6 +15,11 @@ export default class WaitActionParams extends ApiActionParams<WaitActionParamsDT
             throw new ValidationError("Invalid parameter: 'ms'. Needs to be a number greater than 0.");
         }
 
+        if (this.data("ms") > 120000)
+        {
+            throw new ValidationError("Invalid parameter: 'ms'. Needs to be a number less than 120000.");
+        }
+
         return null;
     }
 }

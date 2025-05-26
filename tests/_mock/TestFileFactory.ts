@@ -34,13 +34,28 @@ export default class TestFileFactory implements IDisconnectable
     public async disconnect(): Promise<void>
     {
         let path: string = null;
+        const promises = [];
         for (let i = 0; i < this.files.length; i++)
         {
             path = path || this.files[i].path();
-            await this.files[i].delete();
+            promises.push(this.files[i].delete());
         }
 
-        await fs.promises.rm(path);
+        await Promise.all(promises);
+
+        try
+        {
+            await fs.promises.access(path, fs.constants.R_OK);
+            if ((await fs.promises.readdir(path)).length > 0)
+            {
+                console.error(`Uncleaned test files in ${path}`);
+                await fs.promises.rm(path, {
+                    force: true,
+                    recursive: true
+                });
+            }
+        }
+        catch {}
 
         return null;
     }

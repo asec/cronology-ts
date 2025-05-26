@@ -3,6 +3,7 @@ import {createTestServices} from "../../../_services";
 import {cliContext} from "../../../_mock/clicontext";
 import Config, {EnvType} from "../../../../src/lib/config/Config";
 import ConnectionPool from "../../../../src/lib/utils/ConnectionPool";
+import * as fs from "fs";
 
 const pool = new ConnectionPool();
 
@@ -109,4 +110,38 @@ it("Tests if it is able to switch cli environments in the sandbox correctly", as
         expect.stringMatching(/current CLI.*?dev/),
         "\n"
     );
+});
+
+it("Tests for invalid params", async () => {
+    const exitSpy = jest.spyOn(process, "exit").mockImplementation((errorCode: unknown) => {
+        throw new Error(`process.exit ${errorCode}`);
+    });
+    const errorSpy = jest.spyOn(process.stderr, "write").mockImplementation();
+    const services = createTestServices();
+    const path = await establishSeparateEnvironmentForTesting(services, pool);
+    const file = path + "/.env.cli.test.local";
+    const config = services.resolve("config");
+
+    // Invalid env argument
+    let command = services.resolve("cli.command.env-set");
+    await expect(command.execute(...cliContext(["non-existent"]))).rejects.toThrow(/^process\.exit 1$/);
+    expect(exitSpy).nthCalledWith(1, 1);
+    expect(errorSpy).nthCalledWith(1, expect.stringMatching(/[Ii]nvalid parameter.*?env.*?/));
+
+    // File exists but not readable
+    command = services.resolve("cli.command.env-set");
+    const localFileExistsMock = jest.spyOn(command as any, "localFileExists").mockImplementation(() => true);
+    await expect(command.execute(...cliContext([EnvType.Dev]))).rejects.toThrow(/^process\.exit 1$/);
+    expect(exitSpy).nthCalledWith(3, 1);
+    expect(errorSpy).nthCalledWith(3, expect.stringMatching(/exists.*?could not be read/));
+    localFileExistsMock.mockRestore();
+
+    // File exists, but cannot be written to
+    resetConfig(config);
+    await fs.promises.writeFile(file, "");
+    await fs.promises.chmod(file, 0);
+    command = services.resolve("cli.command.env-set");
+    await expect(command.execute(...cliContext([EnvType.Dev]))).rejects.toThrow(/^process\.exit 1$/);
+    expect(exitSpy).nthCalledWith(5, 1);
+    expect(errorSpy).nthCalledWith(5, expect.stringMatching(/could not be written/));
 });
