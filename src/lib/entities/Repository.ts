@@ -80,4 +80,15 @@ export default class Repository<TEntity extends Entity<DataObject>>
 
         return [id, this.factory.convert(object)];
     }
+
+    public async delete(id: EntityIdType): Promise<boolean>
+    {
+        const entity = await this.get(id);
+        if (entity !== null)
+        {
+            await entity.cleanup();
+        }
+
+        return this.driver.delete(this.factory, id);
+    }
 }

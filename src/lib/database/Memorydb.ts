@@ -104,4 +104,9 @@ export default class Memorydb<TEntity extends Entity<DataObject>> implements IDa
 
         return result;
     }
+
+    public async delete(factory: Factory<TEntity>, id: EntityIdType): Promise<boolean>
+    {
+        return this.table(factory).delete(id);
+    }
 }

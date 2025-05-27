@@ -24,4 +24,7 @@ export default abstract class Entity<TData extends DataObject> extends DataEntit
 
         return this._services;
     }
+
+    public async cleanup(): Promise<void>
+    {}
 }

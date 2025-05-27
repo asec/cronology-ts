@@ -143,19 +143,8 @@ it("Tests app key generation", async () => {
     app.inject(testServices);
 
     const getKeyData: (keys: string[]) => Promise<string[]> = (() => {
-        const keyData: {[key: string]: string} = {};
-
         return async (keys: string[]) => {
-            return Promise.all(
-                keys.map(async (file) => {
-                    if (!keyData[file])
-                    {
-                        keyData[file] = String(Math.random())
-                    }
-
-                    return keyData[file];
-                })
-            );
+            return testServices.resolve("rsaKeystore")(keys);
         };
     })();
 
@@ -173,8 +162,11 @@ it("Tests app key generation", async () => {
 
     await app.generateKeys(true);
     const newKeys = await app.keys();
+    const newKeysData = await getKeyData(newKeys);
     expect(keys).toStrictEqual(newKeys);
     expect(logSpy).nthCalledWith(2, msgKeysGenerated(newKeys));
+    expect(newKeysData[0]).not.toBe(keysData[0]);
+    expect(newKeysData[1]).not.toBe(keysData[1]);
 
     const newApp = createApp({
         name: "test"
@@ -190,6 +182,8 @@ it("Tests app key generation", async () => {
     expect(newAppKeysData).toHaveLength(2);
     expect(newAppKeysData[0]).not.toBe(keysData[0]);
     expect(newAppKeysData[1]).not.toBe(keysData[1]);
+    expect(newAppKeysData[0]).not.toBe(newKeysData[0]);
+    expect(newAppKeysData[1]).not.toBe(newKeysData[1]);
     expect(logSpy).nthCalledWith(3, msgKeysGenerated(newAppKeys));
 
     logSpy.mockRestore();

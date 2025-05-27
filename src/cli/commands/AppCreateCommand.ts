@@ -5,7 +5,7 @@ import ValidatorFactory from "../../lib/validation/ValidatorFactory.js";
 export default class AppCreateCommand extends CliCommand
 {
     public commandName = "app-create";
-    public description = "Creates a new external application";
+    public description = "Creates a new external application.";
 
     protected registerCliParams()
     {

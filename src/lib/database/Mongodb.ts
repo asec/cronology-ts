@@ -65,7 +65,7 @@ export default class Mongodb<TEntity extends Entity<DataObject>> implements IDat
         if (!this.collectionMapper.hasOwnProperty(className))
         {
             throw new Error(
-                `The following bean class has no collection name mapping in the mongodb driver: ` +
+                `The following entity has no collection name mapping in the mongodb driver: ` +
                 `'${className}'`
             );
         }
@@ -189,5 +189,16 @@ export default class Mongodb<TEntity extends Entity<DataObject>> implements IDat
         }
 
         return [item._id.toString(), item];
+    }
+
+    public async delete(factory: Factory<TEntity>, id: EntityIdType): Promise<boolean>
+    {
+        const db = await this.collection(factory);
+
+        const res = await db.deleteOne({
+            _id: new ObjectId(id)
+        });
+
+        return res.deletedCount === 1;
     }
 }

@@ -9,7 +9,8 @@ import TestFileFactory from "../_mock/TestFileFactory";
 
 export type ServiceBindingsTestFull = ServiceBindingsFull & {
     testFile: (fileName: string, uuid?: string) => TestFile,
-    "factory.testFile": () => TestFileFactory
+    "factory.testFile": () => TestFileFactory,
+    rsaKeystore: () => (keys: string[]) => string[]
 }
 
 export function createTestServices(): ServiceContainer<ServiceBindingsTestFull>
@@ -29,6 +30,10 @@ export function createTestServices(): ServiceContainer<ServiceBindingsTestFull>
         return new RsaKeypair_test(
             () => config.get("CONF_CRYPTO_APPKEYS")
         );
+    });
+
+    services.register("rsaKeystore", () => {
+        return RsaKeypair_test.keyValues;
     });
 
     services.register("testFile", (fileName: string, uuid?: string) => {

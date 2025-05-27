@@ -110,4 +110,15 @@ export default class Application extends Entity<ApplicationData>
 
         ips.splice(index, 1);
     }
+
+    public async cleanup(): Promise<void>
+    {
+        if (this.rsa === undefined)
+        {
+            this.rsa = this.services().resolve("rsaKeypair");
+        }
+
+        this.rsa.setName(this.data("uuid"));
+        await this.rsa.delete();
+    }
 }
