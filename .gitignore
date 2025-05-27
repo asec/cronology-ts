@@ -12,3 +12,4 @@ logs-with-teardown
 app-keys
 cli.bat
 dist
+tests
