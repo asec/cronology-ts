@@ -91,7 +91,7 @@ class EnvSetCommand extends CliCommand
 
         try
         {
-            fs.writeFileSync(this.getLocalFileName(), content.join("\n"));
+            this.writeVariables(content);
         }
         catch (e: any)
         {
@@ -112,6 +112,11 @@ class EnvSetCommand extends CliCommand
     private localFileExists(): boolean
     {
         return fs.existsSync(this.getLocalFileName());
+    }
+
+    private writeVariables(content: string[]): void
+    {
+        fs.writeFileSync(this.getLocalFileName(), content.join("\n"));
     }
 
     private extractVariablesFromCurrentEnv(): {[key: string]: string}
