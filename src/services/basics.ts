@@ -1,49 +1,131 @@
-import ServiceContainer from "../lib/service/ServiceContainer.js";
+import {ServiceBindings} from "../lib/service/ServiceContainer.js";
 import AppConfig from "../config/AppConfig.js";
 import Profiler from "../lib/utils/Profiler.js";
 import PackageInfo from "../lib/utils/PackageInfo.js";
-import {program} from "commander";
+import {Command, program} from "commander";
 import WebServer from "../api/WebServer.js";
 import RsaKeypair from "../lib/utils/RsaKeypair.js";
 import {ServiceRegistrar} from "./index.js";
+import ApplicationFactory from "../entities/factory/ApplicationFactory.js";
+import Memorydb from "../lib/database/Memorydb.js";
+import Repository from "../lib/entities/Repository.js";
+import Factory from "../lib/entities/Factory.js";
+import Entity from "../lib/entities/Entity.js";
+import {DataObject} from "../lib/datastructures/DataObject.js";
+import CronologyError from "../lib/error/CronologyError.js";
+import ValidatorFactory from "../lib/validation/ValidatorFactory.js";
+import ApplicationValidator from "../validation/ApplicationValidator.js";
+import Application from "../entities/Application.js";
+import IDatabase from "../lib/database/IDatabase.js";
+import Mongodb from "../lib/database/Mongodb.js";
+import ConnectionPool from "../lib/utils/ConnectionPool.js";
+import {EnvType} from "../lib/config/Config.js";
+import IServer from "../lib/server/IServer.js";
+import uuid, {Uuid} from "../lib/utils/Uuid.js";
 
-const registerServicesBasic: ServiceRegistrar = (services, interfaces): void => {
-    const {IProgram, IProcess, IServer} = interfaces;
+export interface ServiceBindingsBasic extends ServiceBindings
+{
+    config: (envPaths?: Partial<{[K in EnvType]: string}>) => AppConfig,
+    profiler: () => Profiler,
+    packageInfo: () => PackageInfo,
+    program: () => Command,
+    process: () => NodeJS.Process,
+    server: () => IServer,
+    connectionPool: () => ConnectionPool,
+    rsaKeypair: () => RsaKeypair,
+    database: () => IDatabase<Entity<DataObject>>,
+    repository: (factory: Factory<Entity<DataObject>>) => Repository<Entity<DataObject>>,
+    "factory.application": () => ApplicationFactory,
+    validators: () => ValidatorFactory,
+    uuid: () => Uuid
+}
 
-    services.register(AppConfig, () => {
-        return new AppConfig();
-    }, true);
+const registerServicesBasic: ServiceRegistrar = (services): void => {
 
-    services.register(Profiler, () => {
-        return new Profiler();
-    });
+    services.register("config", (envPaths: Partial<{[K in EnvType]: string}> = {}) => new AppConfig(envPaths), true);
 
-    services.register(PackageInfo, () => {
-        return new PackageInfo();
-    });
+    services.register("profiler", () => new Profiler());
 
-    services.register(IProgram, () => {
-        return program;
-    }, true);
+    services.register("packageInfo", () => new PackageInfo());
 
-    services.register(IProcess, () => {
-        return process;
-    }, true);
+    services.register("program", () => program, true);
 
-    services.register(IServer, () => {
+    services.register("process", () => process, true);
+
+    services.register("server", () => {
         return new WebServer(
-            services.resolve(AppConfig),
-            services.resolve(ServiceContainer)
+            services.resolve("config")
         );
     });
 
-    services.register(RsaKeypair, () => {
-        const config = services.resolve(AppConfig);
+    services.register("connectionPool", () => new ConnectionPool(), true);
+
+    services.register("rsaKeypair", () => {
+        const config = services.resolve("config");
 
         return new RsaKeypair(
             () => config.get("CONF_CRYPTO_APPKEYS")
         );
     });
+
+    services.register("database", () => {
+        const config = services.resolve("config");
+
+        let db: IDatabase<any>;
+        switch (config.get("CONF_DB_TYPE"))
+        {
+            case "mongodb":
+                db = new Mongodb(
+                    () => config.get("CONF_MONGO_URI"),
+                    () => config.get("CONF_MONGO_DB"),
+                    services.resolve("connectionPool"),
+                    {
+                        [Application.name]: config.get("CONF_MONGO_TABLE_APPLICATIONS")
+                    },
+                    {
+                        [Application.name]: [
+                            {spec: {name: 1}, options: {unique: true}},
+                            {spec: {uuid: 1}, options: {unique: true}}
+                        ]
+                    }
+                );
+                break;
+            default:
+                db = new Memorydb();
+        }
+
+        return db;
+    }, true);
+
+    services.register("repository", (factory: Factory<Entity<DataObject>>) => {
+        if (!factory || !(factory instanceof Factory))
+        {
+            throw new CronologyError("Service Error: Missing parameter 'factory' for 'Repository' resolution.");
+        }
+
+        return new Repository(
+            factory,
+            services.resolve("database")
+        );
+    });
+
+    services.register("factory.application", () => {
+        return new ApplicationFactory(
+            services.resolve("services")
+        );
+    }, true);
+
+    services.register("validators", () => {
+        const factory = new ValidatorFactory();
+
+        factory.register("application", (app: Application) => {
+            return new ApplicationValidator(app, services.resolve("factory.application").repository());
+        });
+
+        return factory;
+    }, true);
+
+    services.register("uuid", () => uuid)
 };
 
 export default registerServicesBasic;

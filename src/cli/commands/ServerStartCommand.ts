@@ -1,14 +1,7 @@
-import CliCommand from "../../lib/cli/CliCommand.js";
+import CliCommand, {CliDependencies} from "../../lib/cli/CliCommand.js";
 import {EnvType} from "../../lib/config/Config.js";
-import {Command} from "commander";
 import {HttpMethod} from "../../lib/api/Http.js";
-import PingAction from "../../api/actions/ping/PingAction.js";
-import ServiceContainer from "../../lib/service/ServiceContainer.js";
 import IServer from "../../lib/server/IServer.js";
-import AppConfig from "../../config/AppConfig.js";
-import BadResponseAction from "../../api/actions/bad-response/BadResponseAction.js";
-import TestErrorAction from "../../api/actions/test-error/TestErrorAction.js";
-import WaitAction from "../../api/actions/wait/WaitAction.js";
 import WaitActionParamsParserExpress from "../../api/actions/wait/params/WaitActionParamsParserExpress.js";
 
 class ServerStartOptions
@@ -32,14 +25,11 @@ class ServerStartCommand extends CliCommand
     }
 
     public constructor(
-        protected config: AppConfig,
-        protected program: Command,
-        protected process: NodeJS.Process,
+        dependencies: CliDependencies,
         protected server: IServer,
-        protected services: ServiceContainer
     )
     {
-        super(config, program, process, services);
+        super(dependencies);
     }
 
     protected initialise(options: ServerStartOptions)
@@ -49,18 +39,18 @@ class ServerStartCommand extends CliCommand
 
     public async do(options: ServerStartOptions)
     {
-        this.server.defineRoute(HttpMethod.GET, "/", this.services.resolve(PingAction));
+        this.server.defineRoute(HttpMethod.GET, "/", this.services.resolve("api.action.ping"));
         this.server.defineRoute(
             HttpMethod.GET,
             "/wait",
-            this.services.resolve(WaitAction)
+            this.services.resolve("api.action.wait")
                 .use(new WaitActionParamsParserExpress())
         );
 
         if (options.dev)
         {
-            this.server.defineRoute(HttpMethod.GET, "/bad-response", this.services.resolve(BadResponseAction));
-            this.server.defineRoute(HttpMethod.GET, "/test-error", this.services.resolve(TestErrorAction));
+            this.server.defineRoute(HttpMethod.GET, "/bad-response", this.services.resolve("api.action.badResponse"));
+            this.server.defineRoute(HttpMethod.GET, "/test-error", this.services.resolve("api.action.testError"));
         }
 
         this.server.start((error: Error) => this.error(`${error.name}: ${error.message}`));

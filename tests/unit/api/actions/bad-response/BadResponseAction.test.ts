@@ -1,11 +1,10 @@
-import {testServices} from "../../../_services";
-import BadResponseAction from "../../../../../src/api/actions/bad-response/BadResponseAction";
+import {testServices} from "../../../../_services";
 import {HttpStatus} from "../../../../../src/lib/api/Http";
 import ApiResponse from "../../../../../src/lib/api/action/response/ApiResponse";
 import ApiErrorResponse from "../../../../../src/lib/api/action/response/ApiErrorResponse";
 
 it("Runs the action with default parameters", async () => {
-    const action = testServices.resolve(BadResponseAction);
+    const action = testServices.resolve("api.action.badResponse");
     const response = await action.execute(null);
 
     expect(response).toBeInstanceOf(ApiResponse);

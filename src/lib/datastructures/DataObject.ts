@@ -17,7 +17,7 @@ export class DataObject implements IDataObject
     {
         for (const key in data)
         {
-            if (!(key in data))
+            if (!(key in this) || typeof this[key] === "function")
             {
                 continue;
             }

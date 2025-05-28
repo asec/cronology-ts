@@ -6,13 +6,13 @@ export default class PackageInfo
     protected data: {[key:string]: any};
 
     public constructor(
-        protected file: string = "../../../package.json"
+        protected file: string = "./package.json"
     )
     {}
 
     protected async load(): Promise<void>
     {
-        const file = path.resolve("./package.json");
+        const file = path.resolve(this.file);
         this.data = JSON.parse(String(await fs.promises.readFile(file, "utf-8")));
     }
 

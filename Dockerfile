@@ -9,4 +9,6 @@ RUN rm -rf ./docker ./tests
 RUN npx tsc
 RUN rm -rf src
 RUN npm uninstall typescript
-ENTRYPOINT ["node", "./dist/api", "server-start"]
+COPY ./docker/cronology.sh /usr/local/bin/cronology
+RUN chmod 0744 /usr/local/bin/cronology
+ENTRYPOINT ["cronology", "server-start"]

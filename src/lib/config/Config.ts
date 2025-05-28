@@ -20,10 +20,25 @@ export interface IConfig
 export default abstract class Config<TProps extends ConfigProps> implements IConfig
 {
     private data: TProps = <TProps> {};
+    private envPaths: {[K in EnvType]: string} = {
+        [EnvType.Prod]: "./",
+        [EnvType.Dev]: "./",
+        [EnvType.Test]: "./"
+    };
 
-    protected constructor()
+    protected constructor(
+        envPaths: Partial<{[K in EnvType]: string}> = {}
+    )
     {
-        this.extendWith(".env");
+        for (let k in EnvType)
+        {
+            const type = EnvType[k];
+            if (envPaths[type] !== undefined)
+            {
+                this.envPaths[type] = envPaths[type];
+            }
+        }
+        this.reset();
     }
 
     public setEnvironment(env: EnvType)
@@ -31,17 +46,19 @@ export default abstract class Config<TProps extends ConfigProps> implements ICon
         switch (env)
         {
             case EnvType.Test:
-                this.extendWith(".env.test");
+                this.extendWith(this.envPaths[env] + ".env.test");
                 break;
             case EnvType.Dev:
-                this.extendWith(".env.dev");
+                this.extendWith(this.envPaths[env] + ".env.dev");
                 break;
+            default:
+                this.extendWith(this.envPaths[env] + ".env");
         }
     }
 
     public setEnvironmentToCli()
     {
-        this.extendWith(".env.cli");
+        this.extendWith(this.cliFile());
     }
 
     public extendWith(file: string)
@@ -73,5 +90,26 @@ export default abstract class Config<TProps extends ConfigProps> implements ICon
     public isCurrentEnv(env: EnvType): boolean
     {
         return this.get("APP_ENV") === env;
+    }
+
+    public cliFile(): string
+    {
+        let cliFile: string = "";
+        if (this.isCurrentEnv(EnvType.Test))
+        {
+            cliFile = this.envPaths[this.get("APP_ENV")] + ".env.cli.test";
+        }
+        else
+        {
+            cliFile = this.envPaths[this.get("APP_ENV")] + ".env.cli";
+        }
+
+        return cliFile;
+    }
+
+    public reset(): void
+    {
+        this.data = <TProps> {}
+        this.extendWith(".env");
     }
 }

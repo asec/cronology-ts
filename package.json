@@ -9,7 +9,7 @@
     "run dev": "nodemon ./dist/api.js server-start --dev",
     "cli": "node ./dist/api.js",
     "typescript watch": "tsc -w",
-    "test": "jest ./tests/unit",
+    "test": "jest ./tests/unit ./tests/integration",
     "test-docker: node latest": "docker compose --env-file ./docker/test/.env.latest --file ./docker/compose.yaml up && docker compose --env-file ./docker/test/.env.latest --file ./docker/compose.yaml down -v",
     "test-docker: node lts": "docker compose --env-file ./docker/test/.env.lts --file ./docker/compose.yaml up && docker compose --env-file ./docker/test/.env.lts --file ./docker/compose.yaml down -v",
     "test-docker: node v18.16": "docker compose --env-file ./docker/test/.env.n18-16 --file ./docker/compose.yaml up && docker compose --env-file ./docker/test/.env.n18-16 --file ./docker/compose.yaml down -v",

@@ -1,37 +1,38 @@
-import ServiceContainer, {createServiceContainer} from "../lib/service/ServiceContainer.js";
-import registerServicesBasic from "./basics.js";
-import registerServicesCliBasics from "./cli.basics.js";
-import registerServicesCliCommands from "./cli.commands.js";
-import registerServicesCliActions from "./cli.actions.js";
-import registerServicesApiActions from "./api.actions.js";
+import ServiceContainer, {createServiceContainer, ServiceBindings} from "../lib/service/ServiceContainer.js";
+import registerServicesBasic, {ServiceBindingsBasic} from "./basics.js";
+import registerServicesCliBasics, {ServiceBindingsCli} from "./cli.basics.js";
+import registerServicesCliCommands, {ServiceBindingsCliCommands} from "./cli.commands.js";
+import registerServicesCliActions, {ServiceBindingsCliActions} from "./cli.actions.js";
+import registerServicesApiActions, {ServiceBindingsApiActions} from "./api.actions.js";
 
-export interface ServiceInterfaceNames {
-    [key: string]: Symbol,
+export type ServiceBindingsFull = ServiceBindings
+    & ServiceBindingsBasic
+    & ServiceBindingsApiActions
+    & ServiceBindingsCli
+    & ServiceBindingsCliActions
+    & ServiceBindingsCliCommands
+;
 
-    IProgram: Symbol,
-    IProcess: Symbol,
-    IServer: Symbol
+export type ServiceRegistrar = (services: ServiceContainer<ServiceBindingsFull>) => void;
+
+export function createServices(): ServiceContainer<ServiceBindingsFull>
+{
+    const services = createServiceContainer();
+
+    // Basics
+    registerServicesBasic(services);
+
+    // CLI related
+    registerServicesCliBasics(services);
+    registerServicesCliCommands(services);
+    registerServicesCliActions(services);
+
+    // API actions
+    registerServicesApiActions(services);
+
+    return services;
 }
 
-export type ServiceRegistrar = (services: ServiceContainer, interfaces: ServiceInterfaceNames) => void;
 
-const interfaces: ServiceInterfaceNames = {
-    IProgram: Symbol("IProgram"),
-    IProcess: Symbol("IProcess"),
-    IServer: Symbol("IServer")
-};
-
-const services = createServiceContainer();
-
-// Basics
-registerServicesBasic(services, interfaces);
-
-// CLI related
-registerServicesCliBasics(services, interfaces);
-registerServicesCliCommands(services, interfaces);
-registerServicesCliActions(services, interfaces);
-
-// API actions
-registerServicesApiActions(services, interfaces);
-
+const services = createServices();
 export default services;

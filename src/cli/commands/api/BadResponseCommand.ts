@@ -8,6 +8,6 @@ export default class BadResponseCommand extends CliApiAction
 
     protected createAction(...args)
     {
-        return this.createCliCommand(this.services.resolve(BadResponseAction));
+        return this.createCliCommand(this.services.resolve("api.action.badResponse"));
     }
 }

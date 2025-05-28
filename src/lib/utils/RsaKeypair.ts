@@ -88,4 +88,9 @@ export default class RsaKeypair
             format: "pem",
         }));
     }
+
+    public async delete(): Promise<void>
+    {
+        await Promise.all(this.keys().map(file => fs.promises.rm(file)));
+    }
 }

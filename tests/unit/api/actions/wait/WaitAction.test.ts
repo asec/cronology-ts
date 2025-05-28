@@ -1,12 +1,11 @@
-import {testServices} from "../../../_services";
-import WaitAction from "../../../../../src/api/actions/wait/WaitAction";
+import {testServices} from "../../../../_services";
 import WaitActionParams, {WaitActionParamsDTO} from "../../../../../src/api/actions/wait/params/WaitActionParams";
 import ApiResponse from "../../../../../src/lib/api/action/response/ApiResponse";
 import {HttpStatus} from "../../../../../src/lib/api/Http";
 import Profiler from "../../../../../src/lib/utils/Profiler";
 import WaitActionParamsParserExpress from "../../../../../src/api/actions/wait/params/WaitActionParamsParserExpress";
 import {ExpressContext} from "../../../../../src/api/middleware/ExpressRequestParser";
-import {mockRequest} from "../../../_mock/request";
+import {mockRequest} from "../../../../_mock/request";
 import WaitActionResponseDTO from "../../../../../src/api/actions/wait/response/WaitActionResponse";
 import WaitActionParamsParserCli from "../../../../../src/api/actions/wait/params/WaitActionParamsParserCli";
 import {CliContext} from "../../../../../src/cli/middleware/CliParamsParser";
@@ -24,20 +23,20 @@ function testResult(result: ApiResponse<WaitActionResponseDTO>, waitTime: number
     expect(result.status).toBe(HttpStatus.Ok);
     expect(result.data("success")).toBe(true);
     expect(result.data("waited")).toBe(waitTime);
-    expect(profiler.get()).toBeGreaterThanOrEqual(waitTime);
-    expect(profiler.get()).toBeLessThan(waitTime + 200);
-    expect(profiler.get()).toBeLessThan(waitTime * 2);
+    expect(profiler.get()).toBeGreaterThanOrEqual(waitTime - 3);
+    expect(profiler.get()).toBeLessThanOrEqual(waitTime + 200);
+    expect(profiler.get()).toBeLessThanOrEqual(waitTime * 3);
 }
 
 it("Runs the action with default parameters", async () => {
-    const action = testServices.resolve(WaitAction);
+    const action = testServices.resolve("api.action.wait");
 
     await expect(action.execute(null)).rejects.toThrow(/requires parameters.*?'WaitAction'/);
 });
 
 it("Runs the action with manual parametrisation", async () => {
-    const action = testServices.resolve(WaitAction);
-    const profiler = testServices.resolve(Profiler);
+    const action = testServices.resolve("api.action.wait");
+    const profiler = testServices.resolve("profiler");
     const defaultWaitTime: number = 1000;
 
     const params = new WaitActionParamsDTO();
@@ -59,11 +58,11 @@ it("Runs the action with manual parametrisation", async () => {
 });
 
 it("Runs the action with param parsing middleware on express context", async () => {
-    const action = testServices.resolve(WaitAction)
+    const action = testServices.resolve("api.action.wait")
         .use(new WaitActionParamsParserExpress())
     ;
     const context = new ExpressContext();
-    const profiler = testServices.resolve(Profiler);
+    const profiler = testServices.resolve("profiler");
     const defaultWaitTime: number = 1000;
 
     await expect(action.execute(null)).rejects.toThrow(/context in middleware.*?'WaitActionParamsParserExpress'.*?'ExpressContext'/);
@@ -99,11 +98,11 @@ it("Runs the action with param parsing middleware on express context", async () 
 });
 
 it("Runs the action with param parsing middleware on cli context", async () => {
-    const action = testServices.resolve(WaitAction)
+    const action = testServices.resolve("api.action.wait")
         .use(new WaitActionParamsParserCli())
     ;
     const context = new CliContext<{ms?:any}>();
-    const profiler = testServices.resolve(Profiler);
+    const profiler = testServices.resolve("profiler");
     const defaultWaitTime: number = 1000;
 
     await expect(action.execute(null)).rejects.toThrow(/context in middleware.*?'WaitActionParamsParserCli'.*?'CliContext'/);

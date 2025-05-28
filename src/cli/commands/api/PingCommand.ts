@@ -1,5 +1,4 @@
 import CliApiAction from "../../../lib/cli/CliApiAction.js";
-import PingAction from "../../../api/actions/ping/PingAction.js";
 
 class PingCommand extends CliApiAction
 {
@@ -8,7 +7,7 @@ class PingCommand extends CliApiAction
 
     protected createAction(...args)
     {
-        return this.createCliCommand(this.services.resolve(PingAction));
+        return this.createCliCommand(this.services.resolve("api.action.ping"));
     }
 }
 
