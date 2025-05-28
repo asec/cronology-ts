@@ -4,6 +4,7 @@ import {cliContext} from "../../../_mock/clicontext";
 import Config, {EnvType} from "../../../../src/lib/config/Config";
 import ConnectionPool from "../../../../src/lib/utils/ConnectionPool";
 import * as fs from "fs";
+import {spyOnCliSuccess} from "../../../_mock/clitools";
 
 const pool = new ConnectionPool();
 
@@ -117,6 +118,7 @@ it("Tests for invalid params", async () => {
         throw new Error(`process.exit ${errorCode}`);
     });
     const errorSpy = jest.spyOn(process.stderr, "write").mockImplementation();
+    const {} = spyOnCliSuccess();
     const services = createTestServices();
     const path = await establishSeparateEnvironmentForTesting(services, pool);
     const file = path + "/.env.cli.test.local";
@@ -139,9 +141,12 @@ it("Tests for invalid params", async () => {
     // File exists, but cannot be written to
     resetConfig(config);
     await fs.promises.writeFile(file, "");
-    await fs.promises.chmod(file, 0);
     command = services.resolve("cli.command.env-set");
+    const writeVariablesMock = jest.spyOn(command as any, "writeVariables").mockImplementation(() => {
+        throw new Error("Simulated write error");
+    });
     await expect(command.execute(...cliContext([EnvType.Dev]))).rejects.toThrow(/^process\.exit 1$/);
     expect(exitSpy).nthCalledWith(5, 1);
     expect(errorSpy).nthCalledWith(5, expect.stringMatching(/could not be written/));
+    writeVariablesMock.mockRestore();
 });
