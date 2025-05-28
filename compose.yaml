@@ -8,7 +8,11 @@ services:
             -   ${CONF_API_HTTPS_PRIVATEKEY}:/etc/ssl/certs/cronology.key
             -   ${CONF_API_HTTPS_CERTIFICATE}:/etc/ssl/certs/cronology.crt
             -   .env.local-api:/app/.env.local
+            -   app-keys:/app/app-keys
     db:
         image: mongodb/mongodb-community-server:8.0.1-ubi9
         ports:
             -   27018:27017
+
+volumes:
+    app-keys:
