@@ -1,2 +1,2 @@
 #!/bin/sh
-sudo docker compose down -v
+sudo docker rm -f cronology-api-1
