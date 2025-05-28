@@ -13,3 +13,4 @@ app-keys
 cli.bat
 dist
 tests
+.env.local-api
