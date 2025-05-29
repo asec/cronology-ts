@@ -19,9 +19,9 @@ export interface AppConfigProps extends ConfigProps
     CONF_MONGO_DB: string;
     CONF_MONGO_TABLE_APPLICATIONS: string;
 
-    CONF_LOG_DIR: string;
-    CONF_LOG_DISABLED: string;
-    CONF_LOG_SILENT: string
+    CONF_LOG_TYPE: "none" | "console" | "file";
+    CONF_LOG_PROFILED: "true" | "false";
+    CONF_LOG_FILE_DIR: string;
 
     CONF_CRYPTO_APPKEYS: string;
     CONF_CRYPTO_SIGNATURE_TIME_THRESHOLD: string;
@@ -34,35 +34,5 @@ export default class AppConfig extends Config<AppConfigProps>
     )
     {
         super(envPaths);
-    }
-
-    private toggleLogging(state: boolean)
-    {
-        this.set("CONF_LOG_DISABLED", state ? "false" : "true");
-    }
-
-    private toggleSilentLogging(state: boolean)
-    {
-        this.set("CONF_LOG_SILENT", state ? "true" : "false");
-    }
-
-    public enableLogging()
-    {
-        this.toggleLogging(true);
-    }
-
-    public disableLogging()
-    {
-        this.toggleLogging(false);
-    }
-
-    public enableSilentLogging()
-    {
-        this.toggleSilentLogging(true);
-    }
-
-    public disableSilentLogging()
-    {
-        this.toggleSilentLogging(false);
     }
 }

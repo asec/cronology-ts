@@ -1,17 +1,21 @@
 import CliCommand from "./CliCommand.js";
 import {Command, program} from "commander";
 import PackageInfo from "../utils/PackageInfo.js";
+import ILogger, {LogLevel} from "../logger/ILogger.js";
 
 export default class Cli
 {
     public constructor(
         private program: Command,
-        private packageInfo: PackageInfo
+        private packageInfo: PackageInfo,
+        private logger: ILogger
     )
     {}
 
-    public addCommand(command: CliCommand)
+    public async addCommand(command: CliCommand)
     {
+        await this.logger.debug(`Registering command '${command.commandName}'`);
+
         const cmd = program.command(command.commandName);
         cmd.description(command.description);
         command.args.forEach(arg => {
@@ -36,13 +40,17 @@ export default class Cli
             })
         ;
 
-        commands.forEach(command => {
-            this.addCommand(command);
-        });
+        for (let i = 0; i < commands.length; i++)
+        {
+            const command = commands[i];
+            await this.addCommand(command);
+        }
     }
 
-    public start()
+    public async start()
     {
+        await this.logger.info("Starting CLI");
+
         this.program.parse();
     }
 }

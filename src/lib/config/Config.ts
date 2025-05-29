@@ -9,7 +9,7 @@ export enum EnvType
 
 export interface ConfigProps
 {
-    [name: string]: string
+    // [name: string]: string
 
     APP_ENV: string;
 }
@@ -19,7 +19,7 @@ export interface IConfig
 
 export default abstract class Config<TProps extends ConfigProps> implements IConfig
 {
-    private data: TProps = <TProps> {};
+    private data: TProps = <TProps & {[name: string]: string}> {};
     private envPaths: {[K in EnvType]: string} = {
         [EnvType.Prod]: "./",
         [EnvType.Dev]: "./",
@@ -72,12 +72,12 @@ export default abstract class Config<TProps extends ConfigProps> implements ICon
             configDotenv({
                 path: actualFile,
                 override: true,
-                processEnv: this.data
+                processEnv: <TProps & {[name: string]: string}> this.data
             });
         });
     }
 
-    public get(key: keyof TProps): string|undefined
+    public get<Key extends keyof TProps>(key: Key): TProps[Key]|undefined
     {
         return this.data[key];
     }
@@ -94,14 +94,14 @@ export default abstract class Config<TProps extends ConfigProps> implements ICon
 
     public cliFile(): string
     {
-        let cliFile: string = "";
+        let cliFile: string;
         if (this.isCurrentEnv(EnvType.Test))
         {
-            cliFile = this.envPaths[this.get("APP_ENV")] + ".env.cli.test";
+            cliFile = this.envPaths[this.get("APP_ENV") as string] + ".env.cli.test";
         }
         else
         {
-            cliFile = this.envPaths[this.get("APP_ENV")] + ".env.cli";
+            cliFile = this.envPaths[this.get("APP_ENV") as string] + ".env.cli";
         }
 
         return cliFile;

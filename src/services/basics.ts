@@ -22,6 +22,11 @@ import ConnectionPool from "../lib/utils/ConnectionPool.js";
 import {EnvType} from "../lib/config/Config.js";
 import IServer from "../lib/server/IServer.js";
 import uuid, {Uuid} from "../lib/utils/Uuid.js";
+import ILogger from "../lib/logger/ILogger.js";
+import ConsoleLogger from "../lib/logger/ConsoleLogger.js";
+import ProfiledLogger from "../lib/logger/ProfiledLogger.js";
+import NullLogger from "../lib/logger/NullLogger.js";
+import FileLogger from "../lib/logger/FileLogger.js";
 
 export interface ServiceBindingsBasic extends ServiceBindings
 {
@@ -37,7 +42,10 @@ export interface ServiceBindingsBasic extends ServiceBindings
     repository: (factory: Factory<Entity<DataObject>>) => Repository<Entity<DataObject>>,
     "factory.application": () => ApplicationFactory,
     validators: () => ValidatorFactory,
-    uuid: () => Uuid
+    uuid: () => Uuid,
+    logger: (prefix: string) => ILogger,
+    "logger.cli": () => ILogger,
+    "logger.api": () => ILogger
 }
 
 const registerServicesBasic: ServiceRegistrar = (services): void => {
@@ -54,7 +62,8 @@ const registerServicesBasic: ServiceRegistrar = (services): void => {
 
     services.register("server", () => {
         return new WebServer(
-            services.resolve("config")
+            services.resolve("config"),
+            services.resolve("logger.api")
         );
     });
 
@@ -125,7 +134,40 @@ const registerServicesBasic: ServiceRegistrar = (services): void => {
         return factory;
     }, true);
 
-    services.register("uuid", () => uuid)
+    services.register("uuid", () => uuid);
+
+    services.register("logger", (prefix: string): ILogger => {
+        const config = services.resolve("config");
+        let logger: ILogger;
+
+        switch (config.get("CONF_LOG_TYPE"))
+        {
+            case "file":
+                logger = new FileLogger(
+                    () => config.get("CONF_LOG_FILE_DIR"),
+                    prefix
+                );
+                break;
+            case "console":
+                logger = new ConsoleLogger(prefix);
+                break;
+            default:
+                logger = new NullLogger();
+        }
+
+        if (config.get("CONF_LOG_PROFILED") === "true")
+        {
+            logger = new ProfiledLogger(
+                logger,
+                services.resolve("profiler")
+            );
+        }
+        return logger;
+    });
+
+    services.register("logger.cli", () => services.resolve("logger", "log.cli"), true);
+
+    services.register("logger.api", () => services.resolve("logger", "log.api"), true);
 };
 
 export default registerServicesBasic;

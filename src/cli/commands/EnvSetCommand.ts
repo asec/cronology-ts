@@ -25,7 +25,7 @@ class EnvSetCommand extends CliCommand
         "CONF_MONGO_URI",
         "CONF_MONGO_DB",
         "CONF_CRYPTO_APPKEYS",
-        "CONF_LOG_DIR",
+        "CONF_LOG_FILE_DIR",
     ];
 
     public constructor(
