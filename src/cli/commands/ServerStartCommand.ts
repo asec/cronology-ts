@@ -12,17 +12,7 @@ class ServerStartOptions
 class ServerStartCommand extends CliCommand
 {
     public commandName = "server-start";
-    public description = "Starts the API server in production mode.";
-
-    protected registerCliParams()
-    {
-        this.addOption(
-            "-d, --dev",
-            "Starts the server in dev mode. This is useful for integration tests (ie. for the PHP app)." +
-            " This will use the dev database (configured in .env.dev) and makes the test endpoints available for use.",
-            false
-        );
-    }
+    public description = "Starts the API server.";
 
     public constructor(
         dependencies: CliDependencies,
@@ -30,11 +20,6 @@ class ServerStartCommand extends CliCommand
     )
     {
         super(dependencies);
-    }
-
-    protected initialise(options: ServerStartOptions)
-    {
-        this.config.setEnvironment(options.dev ? EnvType.Dev : EnvType.Prod);
     }
 
     public async do(options: ServerStartOptions)

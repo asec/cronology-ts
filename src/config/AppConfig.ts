@@ -2,8 +2,6 @@ import Config, {ConfigProps, EnvType} from "../lib/config/Config.js";
 
 export interface AppConfigProps extends ConfigProps
 {
-    APP_CLI_ENV: string;
-
     CONF_API_PORT: string;
     CONF_API_EXECUTION_TIMEOUT: string;
     CONF_API_USERSESSION_LENGTH: string;
@@ -30,9 +28,9 @@ export interface AppConfigProps extends ConfigProps
 export default class AppConfig extends Config<AppConfigProps>
 {
     public constructor(
-        envPaths: Partial<{[K in EnvType]: string}> = {}
+        envPath?: string
     )
     {
-        super(envPaths);
+        super(envPath);
     }
 }

@@ -11,3 +11,6 @@ services:
         volumes:
             -   ../tests:/app/tests
             -   ../src:/app/src
+            -   certs:/etc/ssl/certs/
+volumes:
+    certs:

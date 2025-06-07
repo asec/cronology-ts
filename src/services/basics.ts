@@ -30,7 +30,7 @@ import FileLogger from "../lib/logger/FileLogger.js";
 
 export interface ServiceBindingsBasic extends ServiceBindings
 {
-    config: (envPaths?: Partial<{[K in EnvType]: string}>) => AppConfig,
+    config: (envPath?: string) => AppConfig,
     profiler: () => Profiler,
     packageInfo: () => PackageInfo,
     program: () => Command,
@@ -50,7 +50,7 @@ export interface ServiceBindingsBasic extends ServiceBindings
 
 const registerServicesBasic: ServiceRegistrar = (services): void => {
 
-    services.register("config", (envPaths: Partial<{[K in EnvType]: string}> = {}) => new AppConfig(envPaths), true);
+    services.register("config", (envPath?: string) => new AppConfig(envPath), true);
 
     services.register("profiler", () => new Profiler());
 

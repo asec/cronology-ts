@@ -1,7 +1,7 @@
 import CliCommand from "./CliCommand.js";
 import {Command, program} from "commander";
 import PackageInfo from "../utils/PackageInfo.js";
-import ILogger, {LogLevel} from "../logger/ILogger.js";
+import ILogger from "../logger/ILogger.js";
 
 export default class Cli
 {

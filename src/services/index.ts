@@ -4,10 +4,12 @@ import registerServicesCliBasics, {ServiceBindingsCli} from "./cli.basics.js";
 import registerServicesCliCommands, {ServiceBindingsCliCommands} from "./cli.commands.js";
 import registerServicesCliActions, {ServiceBindingsCliActions} from "./cli.actions.js";
 import registerServicesApiActions, {ServiceBindingsApiActions} from "./api.actions.js";
+import registerServicesApiActionsMiddleware, {ServiceBindingsApiActionsMiddleware} from "./api.actions.middleware.js";
 
 export type ServiceBindingsFull = ServiceBindings
     & ServiceBindingsBasic
     & ServiceBindingsApiActions
+    & ServiceBindingsApiActionsMiddleware
     & ServiceBindingsCli
     & ServiceBindingsCliActions
     & ServiceBindingsCliCommands
@@ -29,6 +31,7 @@ export function createServices(): ServiceContainer<ServiceBindingsFull>
 
     // API actions
     registerServicesApiActions(services);
+    registerServicesApiActionsMiddleware(services);
 
     return services;
 }

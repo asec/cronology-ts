@@ -4,7 +4,7 @@ import ApiAction from "./ApiAction.js";
 
 type MiddlewareNextFunction = () => Promise<ApiResponse<ApiResponseDTO>> | ApiResponse<ApiResponseDTO>;
 
-export default abstract class Middleware<TContext extends Record<string, any>, TAction extends ApiAction<ApiResponseDTO, ApiParamsDTO>>
+export default abstract class ActionMiddleware<TContext extends Record<string, any>, TAction extends ApiAction<ApiResponseDTO, ApiParamsDTO>>
 {
     protected abstract validate(action: TAction, context: TContext): Promise<void>;
     protected abstract do(action: TAction, context: TContext, next: MiddlewareNextFunction): Promise<ApiResponse<ApiResponseDTO>> | ApiResponse<ApiResponseDTO>

@@ -2,10 +2,10 @@ import {createTestServices, testServices} from "../../../../_services";
 import PingAction from "../../../../../src/api/actions/ping/PingAction";
 import PingActionResponseDTO from "../../../../../src/api/actions/ping/response/PingActionResponse";
 import ApiResponse from "../../../../../src/lib/api/action/response/ApiResponse";
-import Middleware from "../../../../../src/lib/api/action/Middleware";
+import ActionMiddleware from "../../../../../src/lib/api/action/ActionMiddleware";
 import PackageInfo from "../../../../../src/lib/utils/PackageInfo";
 
-class TestMiddleware extends Middleware<null, PingAction>
+class TestMiddleware extends ActionMiddleware<null, PingAction>
 {
     public constructor(
         protected id: number
@@ -41,7 +41,7 @@ class TestMiddlewareAsync extends TestMiddleware
     }
 }
 
-class TestMiddlewareFailing extends Middleware<null, PingAction>
+class TestMiddlewareFailing extends ActionMiddleware<null, PingAction>
 {
     protected validate(action: PingAction, context: null): Promise<void>
     {
@@ -54,7 +54,7 @@ class TestMiddlewareFailing extends Middleware<null, PingAction>
     }
 }
 
-async function testMiddlewareExecutionOrder(createTestMiddleware: (id: number) => Middleware<null, PingAction>)
+async function testMiddlewareExecutionOrder(createTestMiddleware: (id: number) => ActionMiddleware<null, PingAction>)
 {
     const logSpy = jest.spyOn(console, "log").mockImplementation();
     const action = testServices.resolve("api.action.ping");
@@ -104,7 +104,7 @@ it("Runs the action with default parameters",  async () => {
 });
 
 it("Tests middleware execution", async () => {
-    function createTestMiddleware(id: number): Middleware<null, PingAction>
+    function createTestMiddleware(id: number): ActionMiddleware<null, PingAction>
     {
         return new TestMiddleware(id);
     }
@@ -113,7 +113,7 @@ it("Tests middleware execution", async () => {
 });
 
 it("Tests middleware execution order using async middleware", async () => {
-    function createTestMiddleware(id: number): Middleware<null, PingAction>
+    function createTestMiddleware(id: number): ActionMiddleware<null, PingAction>
     {
         return new TestMiddlewareAsync(id);
     }
