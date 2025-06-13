@@ -23,8 +23,8 @@ export default abstract class CliApiAction extends CliCommand
         });
         const result = await command.execute(context);
 
-        this.output(`Status: ${result.status}`, true, false);
-        this.output(result.toObject(), false);
+        await this.output(`Status: ${result.status}`, true, false);
+        await this.output(result.toObject(), false);
     }
 
     protected async createCliCommand<TOptions extends Record<string, any>, TResponseDTO extends ApiResponseDTO, TActionParamsDTO extends ApiParamsDTO>(

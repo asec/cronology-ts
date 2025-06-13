@@ -1,5 +1,6 @@
 import {testServices} from "../../../_services";
 import {msgKeysGenerated} from "../../../_mock/utils/RsaKeypair";
+import {cliContext} from "../../../_mock/clicontext";
 
 it("Instantiates and runs the command", async () => {
     const logSpy = jest.spyOn(console, "log").mockImplementation();
@@ -13,58 +14,58 @@ it("Instantiates and runs the command", async () => {
 
     expect(logSpy).not.toHaveBeenCalled();
 
-    await command.execute(appName);
+    await command.execute(...cliContext([appName]));
 
-    expect(logSpy).nthCalledWith(
+    expect(logSpy).toHaveBeenNthCalledWith(
         1,
         expect.stringMatching(/api-cli/),
         expect.stringMatching(new RegExp(`application: '${appName}'`)),
         ""
     );
-    expect(logSpy).nthCalledWith(
+    expect(logSpy).toHaveBeenNthCalledWith(
         2,
         expect.stringMatching(
             new RegExp("^" + msgKeysGenerated([".+?", ".+"]).replace("^", "\\^") + "$")
         )
     );
-    expect(logSpy).nthCalledWith(
+    expect(logSpy).toHaveBeenNthCalledWith(
         3,
         expect.stringMatching(/api-cli/),
         expect.stringMatching(/keys:/),
         "\n"
     );
 
-    await expect(command.execute(appName)).rejects.toThrow(/^process exit 1$/);
-    expect(stdErrSpy).nthCalledWith(1, expect.stringMatching(/argument: 'app-name'.*?unique\./));
+    await expect(command.execute(...cliContext([appName]))).rejects.toThrow(/^process exit 1$/);
+    expect(stdErrSpy).toHaveBeenNthCalledWith(1, expect.stringMatching(/argument: 'app-name'.*?unique\./));
 
     let appName2 = "TEST";
-    await expect(command.execute(appName2)).rejects.toThrow(/^process exit 1$/);
-    expect(stdErrSpy).nthCalledWith(2, expect.stringMatching(/argument: 'app-name'.*?at least 3/));
+    await expect(command.execute(...cliContext([appName2]))).rejects.toThrow(/^process exit 1$/);
+    expect(stdErrSpy).toHaveBeenNthCalledWith(2, expect.stringMatching(/argument: 'app-name'.*?at least 3/));
 
     appName2 = "t";
-    await expect(command.execute(appName2)).rejects.toThrow(/^process exit 1$/);
-    expect(stdErrSpy).nthCalledWith(2, expect.stringMatching(/argument: 'app-name'.*?at least 3/));
+    await expect(command.execute(...cliContext([appName2]))).rejects.toThrow(/^process exit 1$/);
+    expect(stdErrSpy).toHaveBeenNthCalledWith(3, expect.stringMatching(/argument: 'app-name'.*?at least 3/));
 
     appName2 = "t.est";
-    await expect(command.execute(appName2)).rejects.toThrow(/^process exit 1$/);
-    expect(stdErrSpy).nthCalledWith(2, expect.stringMatching(/argument: 'app-name'.*?at least 3/));
+    await expect(command.execute(...cliContext([appName2]))).rejects.toThrow(/^process exit 1$/);
+    expect(stdErrSpy).toHaveBeenNthCalledWith(4, expect.stringMatching(/argument: 'app-name'.*?at least 3/));
 
     appName2 = "test-2";
-    await command.execute(appName2);
+    await command.execute(...cliContext([appName2]));
 
-    expect(logSpy).nthCalledWith(
+    expect(logSpy).toHaveBeenNthCalledWith(
         4,
         expect.stringMatching(/api-cli/),
         expect.stringMatching(new RegExp(`application: '${appName2}'`)),
         ""
     );
-    expect(logSpy).nthCalledWith(
+    expect(logSpy).toHaveBeenNthCalledWith(
         5,
         expect.stringMatching(
             new RegExp("^" + msgKeysGenerated([".+?", ".+"]).replace("^", "\\^") + "$")
         )
     );
-    expect(logSpy).nthCalledWith(
+    expect(logSpy).toHaveBeenNthCalledWith(
         6,
         expect.stringMatching(/api-cli/),
         expect.stringMatching(/keys:/),

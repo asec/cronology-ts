@@ -67,12 +67,6 @@ export default abstract class Config<TProps extends ConfigProps> implements ICon
         }
     }
 
-    public setEnvironmentToCli()
-    {
-        // NOOP for now
-        //this.extendWith(this.cliFile());
-    }
-
     private extendWith(file: string)
     {
         this.extendConfiguration([file, file + ".local"])

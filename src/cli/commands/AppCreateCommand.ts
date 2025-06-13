@@ -34,12 +34,12 @@ export default class AppCreateCommand extends CliCommand
         const validator = this.validatorFactory.create("application", app);
         await validator.validate();
 
-        this.output(`Creating application: '${app.data("name")}' (${app.data("uuid")})`, true, false);
+        await this.output(`Creating application: '${app.data("name")}' (${app.data("uuid")})`, true, false);
 
         const repo = this.factory.repository();
         await repo.store(app);
         await app.generateKeys();
 
-        this.output(`Created keys: \n\t${(await app.keys()).join("\n\t")}`, false);
+        await this.output(`Created keys: \n\t${(await app.keys()).join("\n\t")}`, false);
     }
 }

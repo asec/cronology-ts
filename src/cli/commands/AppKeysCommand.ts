@@ -37,7 +37,7 @@ export default class AppKeysCommand extends CliCommand
         const [_, app] = await this.factory.repository().getOneByKey("name", name);
         if (app === null)
         {
-            this.error(`The application does not exists: '${name}'`);
+            await this.error(`The application does not exists: '${name}'`);
         }
 
         let keysGenerated: boolean = false;
@@ -49,11 +49,11 @@ export default class AppKeysCommand extends CliCommand
         }
 
         const keys = await app.keys();
-        this.output(`Application: '${app.data("name")}'`, true, false);
+        await this.output(`Application: '${app.data("name")}'`, true, false);
         if (keysGenerated)
         {
-            this.output("-- Keys have been regenerated --", false, false);
+            await this.output("-- Keys have been regenerated --", false, false);
         }
-        this.output(`Keys: ${keys.length === 0 ? '\x1b[31mnone\x1b[0m' : ('\n\t' + keys.join("\n\t"))}`, false);
+        await this.output(`Keys: ${keys.length === 0 ? '\x1b[31mnone\x1b[0m' : ('\n\t' + keys.join("\n\t"))}`, false);
     }
 }

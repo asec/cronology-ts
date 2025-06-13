@@ -4,11 +4,11 @@
         "emitDecoratorMetadata": true,
         "resolveJsonModule": true,
         "esModuleInterop": true,
-        "module": "NodeNext",
+        "module": "ESNext",
         "target": "ESNext",
-        "moduleResolution": "NodeNext",
+        "moduleResolution": "node",
         "outDir": "./dist",
-        "rootDir": "./src",
+        "rootDirs": ["./src", "./tests"],
         "allowSyntheticDefaultImports": true
     },
     "include": ["./src/**/*"]

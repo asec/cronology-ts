@@ -38,7 +38,7 @@ class EnvSetCommand extends CliCommand
         const possibleEnvValues = Object.values(EnvType);
         if (possibleEnvValues.indexOf(env) === -1)
         {
-            this.error(`Invalid parameter: 'env'. The possible values are: ${Object.values(EnvType).join(", ")}.`);
+            await this.error(`Invalid parameter: 'env'. The possible values are: ${Object.values(EnvType).join(", ")}.`);
         }
 
         this.config.setEnvironment(env);
@@ -63,7 +63,7 @@ class EnvSetCommand extends CliCommand
             }
             catch (e: any)
             {
-                this.error(`The target file exists but could not be read: ${this.getLocalFileName()}`);
+                await this.error(`The target file exists but could not be read: ${this.getLocalFileName()}`);
             }
 
             const varsFound: string[] = [];
@@ -91,12 +91,12 @@ class EnvSetCommand extends CliCommand
         }
         catch (e: any)
         {
-            this.error(`The target file could not be written: ${this.getLocalFileName()}`);
+            await this.error(`The target file could not be written: ${this.getLocalFileName()}`);
         }
 
         this.config.setEnvironment();
 
-        this.output(
+        await this.output(
             `CLI environment set to \x1b[32m${env}\x1b[0m. The necessary environment variables have been copied` +
             ` / updated.`
         );

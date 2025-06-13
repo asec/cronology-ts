@@ -57,7 +57,7 @@ export default class AppIpCommand extends CliCommand
         const [id, app] = await this.factory.repository().getOneByKey("name", name);
         if (app === null)
         {
-            this.error(`The application does not exists: '${name}'`);
+            await this.error(`The application does not exists: '${name}'`);
             return;
         }
 
@@ -89,7 +89,7 @@ export default class AppIpCommand extends CliCommand
 
         const ips = (app.data("ip") ?? []).map(value => `\x1b[32m${value}\x1b[0m`);
 
-        this.output(`Application: ${app.data("name")}`, true, false);
-        this.output(`IPs whitelisted: ${ips.length === 0 ? '\x1b[31mnone\x1b[0m' : ips.join(", ")}`, false);
+        await this.output(`Application: ${app.data("name")}`, true, false);
+        await this.output(`IPs whitelisted: ${ips.length === 0 ? '\x1b[31mnone\x1b[0m' : ips.join(", ")}`, false);
     }
 }
