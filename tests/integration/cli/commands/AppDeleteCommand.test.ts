@@ -12,14 +12,14 @@ it("Tests with non-existent applications", async () => {
     let command = testServices.resolve("cli.command.app-delete");
     await expect(command.execute(...cliContext())).rejects.toThrow(/^process\.exit 1$/);
 
-    expect(exitSpy).nthCalledWith(1, 1);
-    expect(errorSpy).nthCalledWith(1, expect.stringMatching(/does not exists/));
+    expect(exitSpy).toHaveBeenNthCalledWith(1, 1);
+    expect(errorSpy).toHaveBeenNthCalledWith(1, expect.stringMatching(/does not exists/));
 
     command = testServices.resolve("cli.command.app-delete");
     await expect(command.execute(...cliContext(["test"]))).rejects.toThrow(/^process\.exit 1$/);
 
-    expect(exitSpy).nthCalledWith(3, 1);
-    expect(errorSpy).nthCalledWith(3, expect.stringMatching(/does not exists.*?'test'/));
+    expect(exitSpy).toHaveBeenNthCalledWith(3, 1);
+    expect(errorSpy).toHaveBeenNthCalledWith(3, expect.stringMatching(/does not exists.*?'test'/));
 });
 
 it("Tests the basic command flow", async () => {
@@ -44,7 +44,7 @@ it("Tests the basic command flow", async () => {
     let appDeleteCommand = testServices.resolve("cli.command.app-delete");
     await appDeleteCommand.execute(...cliContext([appName]));
 
-    expect(logSpy).nthCalledWith(
+    expect(logSpy).toHaveBeenNthCalledWith(
         7,
         expect.stringMatching(/api-cli/),
         expect.stringMatching(new RegExp(`deleted.*?${appName}.*?${app.data("uuid")}`, "i")),
