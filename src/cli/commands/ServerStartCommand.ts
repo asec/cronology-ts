@@ -38,6 +38,7 @@ class ServerStartCommand extends CliCommand
             this.server.defineRoute(HttpMethod.GET, "/test-error", this.services.resolve("api.action.testError"));
         }
 
+        this.server.create();
         this.server.start(async (error: Error) => await this.error(`${error.name}: ${error.message}`));
     }
 }
