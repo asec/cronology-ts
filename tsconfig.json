@@ -4,9 +4,8 @@
         "emitDecoratorMetadata": true,
         "resolveJsonModule": true,
         "esModuleInterop": true,
-        "module": "ESNext",
+        "module": "NodeNext",
         "target": "ESNext",
-        "moduleResolution": "node",
         "outDir": "./dist",
         "rootDirs": ["./src", "./tests"],
         "allowSyntheticDefaultImports": true
