@@ -14,22 +14,26 @@ import HttpError from "../lib/error/HttpError.js";
 import {ApiParamsDTO} from "../lib/api/action/params/ApiActionParams.js";
 import {ExpressContext} from "./middleware/ExpressRequestParser.js";
 import ILogger from "../lib/logger/ILogger.js";
+import CronologyError from "../lib/error/CronologyError.js";
 
 export default class WebServer implements IServer
 {
     private app: Express = express();
-    private readonly server: Server;
+    private server: Server;
 
     public constructor(
         private config: AppConfig,
         private logger: ILogger
     )
-    {
-        this.server = this.createServer();
-    }
+    {}
 
-    private createServer()
+    public create()
     {
+        if (this.server !== undefined)
+        {
+            throw new CronologyError("Cannot recreate server. Server already created.");
+        }
+
         const app = this.app;
         const credentials = {
             key: fs.readFileSync(this.config.get("CONF_API_HTTPS_PRIVATEKEY"), 'utf8'),
@@ -81,7 +85,7 @@ export default class WebServer implements IServer
             next();
         });
 
-        return server;
+        this.server = server;
     }
 
     private createRequestHandler<TRequest extends Request, TResponseDTO extends ApiResponseDTO, TParamsDTO extends ApiParamsDTO>(
@@ -145,6 +149,10 @@ export default class WebServer implements IServer
     public start(errorHandler?: (error: Error) => void)
     {
         const server = this.server;
+        if (server === undefined)
+        {
+            throw new CronologyError("Cannot start server. Server not created.");
+        }
 
         server.listen(this.config.get("CONF_API_PORT"), async () => {
             console.log("[api-server]", "info", {message: `Server started on https://localhost:${this.config.get("CONF_API_PORT")}`});

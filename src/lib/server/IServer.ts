@@ -8,6 +8,7 @@ export type ParamsParserClass<TRequest extends Request, TParamsContent extends A
 
 export default interface IServer
 {
+    create(): void;
     start(errorHandler?: (error: Error) => void): void;
     defineRoute(method: HttpMethod, endpoint: string, action: ApiAction<any, any>, paramsParserClass?: ParamsParserClass<Request, ApiParamsDTO>): void;
 }
