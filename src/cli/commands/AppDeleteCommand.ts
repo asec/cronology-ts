@@ -28,12 +28,12 @@ export default class AppDeleteCommand extends CliCommand
         const [id, app] = await this.factory.repository().getOneByKey("name", name);
         if (app === null)
         {
-            this.error(`The application does not exists: '${name}'`);
+            await this.error(`The application does not exists: '${name}'`);
             return;
         }
 
         await this.factory.repository().delete(id);
 
-        this.output(`Application deleted: ${app.data("name")} (${app.data("uuid")})`);
+        await this.output(`Application deleted: ${app.data("name")} (${app.data("uuid")})`);
     }
 }

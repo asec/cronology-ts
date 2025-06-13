@@ -1,4 +1,5 @@
 import {configDotenv} from "dotenv";
+import CronologyError from "../error/CronologyError.js";
 
 export enum EnvType
 {
@@ -9,9 +10,9 @@ export enum EnvType
 
 export interface ConfigProps
 {
-    [name: string]: string
+    // [name: string]: string
 
-    APP_ENV: string;
+    APP_ENV: EnvType;
 }
 
 export interface IConfig
@@ -19,49 +20,54 @@ export interface IConfig
 
 export default abstract class Config<TProps extends ConfigProps> implements IConfig
 {
-    private data: TProps = <TProps> {};
-    private envPaths: {[K in EnvType]: string} = {
-        [EnvType.Prod]: "./",
-        [EnvType.Dev]: "./",
-        [EnvType.Test]: "./"
-    };
+    private data: TProps = <TProps & {[name: string]: string}> {};
+    private readonly envPath: string = ".";
 
     protected constructor(
-        envPaths: Partial<{[K in EnvType]: string}> = {}
+        envPath?: string
     )
     {
-        for (let k in EnvType)
+        if (envPath !== undefined)
         {
-            const type = EnvType[k];
-            if (envPaths[type] !== undefined)
-            {
-                this.envPaths[type] = envPaths[type];
-            }
+            this.envPath = envPath;
         }
-        this.reset();
+
+        this.setEnvironment();
     }
 
-    public setEnvironment(env: EnvType)
+    public setEnvironment(env?: EnvType)
+    {
+        this.reset();
+        this.loadDefaultConfig();
+        if (env === undefined)
+        {
+            this.extendWithEnvironment(this.getCurrentEnv());
+        }
+        else
+        {
+            this.extendWithEnvironment(env);
+        }
+    }
+
+    private extendWithEnvironment(env: EnvType)
     {
         switch (env)
         {
             case EnvType.Test:
-                this.extendWith(this.envPaths[env] + ".env.test");
+                this.extendWith(this.envPath + "/.env.test");
                 break;
             case EnvType.Dev:
-                this.extendWith(this.envPaths[env] + ".env.dev");
+                this.extendWith(this.envPath + "/.env.dev");
+                break;
+            case EnvType.Prod:
+                this.extendWith(this.envPath + "/.env");
                 break;
             default:
-                this.extendWith(this.envPaths[env] + ".env");
+                throw new CronologyError("Invalid value in config field 'APP_ENV'");
         }
     }
 
-    public setEnvironmentToCli()
-    {
-        this.extendWith(this.cliFile());
-    }
-
-    public extendWith(file: string)
+    private extendWith(file: string)
     {
         this.extendConfiguration([file, file + ".local"])
     }
@@ -72,12 +78,12 @@ export default abstract class Config<TProps extends ConfigProps> implements ICon
             configDotenv({
                 path: actualFile,
                 override: true,
-                processEnv: this.data
+                processEnv: <TProps & {[name: string]: string}> this.data
             });
         });
     }
 
-    public get(key: keyof TProps): string|undefined
+    public get<Key extends keyof TProps>(key: Key): TProps[Key]|undefined
     {
         return this.data[key];
     }
@@ -89,27 +95,26 @@ export default abstract class Config<TProps extends ConfigProps> implements ICon
 
     public isCurrentEnv(env: EnvType): boolean
     {
-        return this.get("APP_ENV") === env;
+        return this.getCurrentEnv() === env;
     }
 
-    public cliFile(): string
+    public getCurrentEnv(): EnvType
     {
-        let cliFile: string = "";
-        if (this.isCurrentEnv(EnvType.Test))
-        {
-            cliFile = this.envPaths[this.get("APP_ENV")] + ".env.cli.test";
-        }
-        else
-        {
-            cliFile = this.envPaths[this.get("APP_ENV")] + ".env.cli";
-        }
-
-        return cliFile;
+        return this.get("APP_ENV");
     }
 
-    public reset(): void
+    private reset(): void
     {
-        this.data = <TProps> {}
-        this.extendWith(".env");
+        this.data = <TProps> {};
+    }
+
+    private loadDefaultConfig(): void
+    {
+        if (Object.keys(this.data).length !== 0)
+        {
+            throw new CronologyError("You need to reset the configuration before loading the defaults.");
+        }
+
+        this.extendWith(this.envPath + "/.env");
     }
 }

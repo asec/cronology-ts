@@ -1,20 +1,20 @@
 import ApiResponse, {ApiResponseDTO} from "./response/ApiResponse.js";
 import ApiActionParams, {ApiParamsDTO} from "./params/ApiActionParams.js";
 import CronologyError from "../../error/CronologyError.js";
-import Middleware from "./Middleware.js";
+import ActionMiddleware from "./ActionMiddleware.js";
 
 // Command pattern - interface Command
 interface Command<TResponseDTO extends ApiResponseDTO, TParamsDTO extends ApiParamsDTO>
 {
     setParams(params: ApiActionParams<TParamsDTO>): void;
     execute(context: unknown): Promise<ApiResponse<TResponseDTO>> | ApiResponse<TResponseDTO>;
-    use(middleware: Middleware<unknown, ApiAction<TResponseDTO, TParamsDTO>>): this;
+    use(middleware: ActionMiddleware<unknown, ApiAction<TResponseDTO, TParamsDTO>>): this;
 }
 
 export default abstract class ApiAction<TResponseDTO extends ApiResponseDTO, TParamsDTO extends ApiParamsDTO> implements Command<TResponseDTO, TParamsDTO>
 {
     protected params: ApiActionParams<TParamsDTO>;
-    protected middlewares: Middleware<unknown, this>[] = [];
+    protected middlewares: ActionMiddleware<unknown, this>[] = [];
 
     public setParams(params: ApiActionParams<TParamsDTO>)
     {
@@ -47,7 +47,7 @@ export default abstract class ApiAction<TResponseDTO extends ApiResponseDTO, TPa
         return dispatch(0);
     }
 
-    public use(middleware: Middleware<unknown, this>): this
+    public use(middleware: ActionMiddleware<unknown, this>): this
     {
         this.middlewares.push(middleware);
         return this;

@@ -1,6 +1,6 @@
 import express, {Express, Request, Response} from "express";
 import * as fs from "fs";
-import {createServer} from "https";
+import {createServer, Server} from "https";
 import cors from "cors";
 import bodyParser from "body-parser";
 import ApiAction from "../lib/api/action/ApiAction.js";
@@ -13,15 +13,20 @@ import AppConfig from "../config/AppConfig.js";
 import HttpError from "../lib/error/HttpError.js";
 import {ApiParamsDTO} from "../lib/api/action/params/ApiActionParams.js";
 import {ExpressContext} from "./middleware/ExpressRequestParser.js";
+import ILogger from "../lib/logger/ILogger.js";
 
 export default class WebServer implements IServer
 {
     private app: Express = express();
+    private readonly server: Server;
 
     public constructor(
-        private config: AppConfig
+        private config: AppConfig,
+        private logger: ILogger
     )
-    {}
+    {
+        this.server = this.createServer();
+    }
 
     private createServer()
     {
@@ -33,6 +38,48 @@ export default class WebServer implements IServer
         const server = createServer(credentials, app);
         app.use(cors());
         app.use(bodyParser.json());
+        app.use(async (req, res, next) => {
+            const chunks: string[] = [];
+            const originalSend = res.send;
+
+            res.send = (body: any) => {
+                if (typeof body === "object")
+                {
+                    try
+                    {
+                        chunks.push(JSON.stringify(body));
+                    }
+                    catch
+                    {
+                        chunks.push("Error: unserializable json");
+                    }
+                }
+                else if (typeof body === "string")
+                {
+                    chunks.push(body);
+                }
+                else
+                {
+                    chunks.push("Error: un-loggable body");
+                }
+
+                return originalSend.call(res, body);
+            };
+
+            await this.logger.info(`Request: ${req.method} ${req.path}`, {
+                query: req.query,
+                params: req.params,
+                body: req.body
+            });
+            res.on("finish", async () => {
+                await this.logger.info(`Response: ${res.statusCode}`, {
+                    headers: res.getHeaders(),
+                    body: chunks.join("")
+                });
+            });
+
+            next();
+        });
 
         return server;
     }
@@ -97,16 +144,18 @@ export default class WebServer implements IServer
 
     public start(errorHandler?: (error: Error) => void)
     {
-        const server = this.createServer();
+        const server = this.server;
 
-        server.listen(this.config.get("CONF_API_PORT"), () => {
+        server.listen(this.config.get("CONF_API_PORT"), async () => {
             console.log("[api-server]", "info", {message: `Server started on https://localhost:${this.config.get("CONF_API_PORT")}`});
+            await this.logger.info(`Server started on https://localhost:${this.config.get("CONF_API_PORT")}`);
         });
 
         if (typeof errorHandler !== "undefined")
         {
-            server.on("error", (err: Error) => {
+            server.on("error", async (err: Error) => {
                 errorHandler(err);
+                await this.logger.error("Server error", {error: err});
             });
         }
     }

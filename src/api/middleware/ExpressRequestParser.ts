@@ -3,7 +3,7 @@ import express from "express";
 import {ApiResponseDTO} from "../../lib/api/action/response/ApiResponse.js";
 import {ApiParamsDTO} from "../../lib/api/action/params/ApiActionParams.js";
 import {DataObject} from "../../lib/datastructures/DataObject.js";
-import Middleware from "../../lib/api/action/Middleware.js";
+import ActionMiddleware from "../../lib/api/action/ActionMiddleware.js";
 import CronologyError from "../../lib/error/CronologyError.js";
 
 export class ExpressContext extends DataObject
@@ -11,7 +11,7 @@ export class ExpressContext extends DataObject
     public request: express.Request
 }
 
-export default abstract class ExpressRequestParser extends Middleware<ExpressContext, ApiAction<ApiResponseDTO, ApiParamsDTO>>
+export default abstract class ExpressRequestParser extends ActionMiddleware<ExpressContext, ApiAction<ApiResponseDTO, ApiParamsDTO>>
 {
     protected validate(action: ApiAction<ApiResponseDTO, ApiParamsDTO>, context: ExpressContext): Promise<void>
     {

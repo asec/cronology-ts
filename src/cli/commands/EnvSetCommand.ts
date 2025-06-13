@@ -10,8 +10,6 @@ class EnvSetCommand extends CliCommand
     public description = `Sets the CLI environment to one of the following: ${Object.values(EnvType).join(", ")}.` +
         ` This affects (among other things possibly) which db it will use.`;
 
-    protected localFileName: string;
-
     protected registerCliParams()
     {
         this.addArgument(
@@ -22,18 +20,14 @@ class EnvSetCommand extends CliCommand
 
     protected envKeysToCopy: (keyof AppConfigProps)[] = [
         "APP_ENV",
-        "CONF_MONGO_URI",
-        "CONF_MONGO_DB",
-        "CONF_CRYPTO_APPKEYS",
-        "CONF_LOG_DIR",
     ];
 
     public constructor(
-        dependencies: CliDependencies
+        dependencies: CliDependencies,
+        protected localFileName: string = ".env.local"
     )
     {
         super(dependencies);
-        this.localFileName = this.config.cliFile() + ".local";
     }
 
     protected initialise(env: EnvType)
@@ -44,12 +38,14 @@ class EnvSetCommand extends CliCommand
         const possibleEnvValues = Object.values(EnvType);
         if (possibleEnvValues.indexOf(env) === -1)
         {
-            this.error(`Invalid parameter: 'env'. The possible values are: ${Object.values(EnvType).join(", ")}.`);
+            await this.error(`Invalid parameter: 'env'. The possible values are: ${Object.values(EnvType).join(", ")}.`);
         }
 
         this.config.setEnvironment(env);
 
         const variables = this.extractVariablesFromCurrentEnv();
+        variables["APP_ENV"] = env;
+
         let content: string[] = [];
 
         if (!this.localFileExists())
@@ -67,7 +63,7 @@ class EnvSetCommand extends CliCommand
             }
             catch (e: any)
             {
-                this.error(`The target file exists but could not be read: ${this.getLocalFileName()}`);
+                await this.error(`The target file exists but could not be read: ${this.getLocalFileName()}`);
             }
 
             const varsFound: string[] = [];
@@ -83,8 +79,8 @@ class EnvSetCommand extends CliCommand
                 }
             });
             const varNames: string[] = Object.keys(variables);
-            const nonExistentVars: string[] = varNames.filter(varName => varsFound.indexOf(varName) === -1);
-            nonExistentVars.forEach(varName => {
+            const otherVars: string[] = varNames.filter(varName => varsFound.indexOf(varName) === -1);
+            otherVars.forEach(varName => {
                 content.push(this.makeVariableString(varName, variables[varName]));
             });
         }
@@ -95,10 +91,12 @@ class EnvSetCommand extends CliCommand
         }
         catch (e: any)
         {
-            this.error(`The target file could not be written: ${this.getLocalFileName()}`);
+            await this.error(`The target file could not be written: ${this.getLocalFileName()}`);
         }
 
-        this.output(
+        this.config.setEnvironment();
+
+        await this.output(
             `CLI environment set to \x1b[32m${env}\x1b[0m. The necessary environment variables have been copied` +
             ` / updated.`
         );

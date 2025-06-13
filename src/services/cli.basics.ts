@@ -14,7 +14,8 @@ const registerServicesCliBasics: ServiceRegistrar = (services) => {
     services.register("cli", () => {
         return new Cli(
             services.resolve("program"),
-            services.resolve("packageInfo")
+            services.resolve("packageInfo"),
+            services.resolve("logger.cli")
         );
     });
 

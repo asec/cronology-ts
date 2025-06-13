@@ -17,8 +17,8 @@ export function createTestServices(): ServiceContainer<ServiceBindingsTestFull>
 {
     const services: ServiceContainer<ServiceBindingsTestFull> = createServices();
 
-    services.register("config", (envPaths: Partial<{[K in EnvType]: string}> = {}) => {
-        const config = new AppConfig(envPaths);
+    services.register("config", (envPath?: string) => {
+        const config = new AppConfig(envPath);
         config.setEnvironment(EnvType.Test);
 
         return config;

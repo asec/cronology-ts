@@ -2,29 +2,28 @@ import {ServiceBindingsTestFull} from "../_services";
 import ConnectionPool from "../../src/lib/utils/ConnectionPool";
 import ServiceContainer from "../../src/lib/service/ServiceContainer";
 
-interface FileList
+type FileOptions = "copy"|"create"|"none"|"copy-none"|"copy-create";
+
+export interface FileList
 {
-    [key: string]: "copy"|"create"|"none"|"copy-none"|"copy-create"
+    ".env": FileOptions,
+    ".env.local": FileOptions,
+    ".env.dev": FileOptions,
+    ".env.test": FileOptions
 }
 
 export async function establishSeparateEnvironmentForTesting(
     services: ServiceContainer<ServiceBindingsTestFull>,
-    pool: ConnectionPool
+    pool: ConnectionPool,
+    fileList: Partial<FileList> = {
+        ".env": "copy",
+        ".env.dev": "copy",
+        ".env.test": "copy"
+    }
 ): Promise<string>
 {
     const files = services.resolve("factory.testFile");
     pool.add(files);
-
-    const fileList: FileList = {
-        ".env": "copy",
-        // ".env.local": "copy-none",
-        ".env.dev": "copy",
-        // ".env.dev.local": "copy-none",
-        ".env.test": "copy",
-        // ".env.test.local": "copy-none",
-        ".env.cli.test": "copy",
-        ".env.cli.test.local": "none"
-    };
 
     let path: string = null;
     for (let fileName in fileList)
@@ -60,11 +59,7 @@ export async function establishSeparateEnvironmentForTesting(
         }
     }
 
-    services.resolve("config", {
-        prod: path + "/",
-        dev: path + "/",
-        test: path + "/"
-    });
+    services.resolve("config", path);
 
     return path;
 }

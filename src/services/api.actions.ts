@@ -4,6 +4,7 @@ import BadResponseAction from "../api/actions/bad-response/BadResponseAction.js"
 import TestErrorAction from "../api/actions/test-error/TestErrorAction.js";
 import WaitAction from "../api/actions/wait/WaitAction.js";
 import {ServiceBindings} from "../lib/service/ServiceContainer.js";
+import ApiAction from "../lib/api/action/ApiAction.js";
 
 export interface ServiceBindingsApiActions extends ServiceBindings
 {
@@ -15,25 +16,32 @@ export interface ServiceBindingsApiActions extends ServiceBindings
 
 const registerServicesApiActions: ServiceRegistrar = (services) => {
 
+    function registerMiddleware<TAction extends ApiAction<any, any>>(action: TAction): TAction
+    {
+        action.use(services.resolve("api.action.middleware.logger"));
+
+        return action;
+    }
+
     services.register("api.action.ping", () => {
-        return new PingAction(
+        return registerMiddleware(new PingAction(
             services.resolve("config"),
             services.resolve("packageInfo")
-        );
+        ));
     });
 
     services.register("api.action.badResponse", () => {
-        return new BadResponseAction();
+        return registerMiddleware(new BadResponseAction());
     });
 
     services.register("api.action.testError", () => {
-        return new TestErrorAction();
+        return registerMiddleware(new TestErrorAction());
     });
 
     services.register("api.action.wait", () => {
-        return new WaitAction(
+        return registerMiddleware(new WaitAction(
             services.resolve("profiler")
-        );
+        ));
     });
 };
 
