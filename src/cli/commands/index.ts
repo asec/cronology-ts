@@ -13,7 +13,7 @@ const commandList: CliCommand[] = [
     services.resolve("cli.action.ping"),
     services.resolve("cli.action.wait"),
     services.resolve("cli.action.badResponse"),
-    services.resolve("cli.action.testError")
+    services.resolve("cli.action.testError"),
 ];
 
 export default commandList;
