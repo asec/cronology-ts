@@ -88,25 +88,27 @@ export default abstract class CliCommand
             index = i;
             const middleware = this.middleware[i];
 
-            if (middleware) {
-                switch (middlewareType) {
-                    case 'execute':
+            if (middleware)
+            {
+                switch (middlewareType)
+                {
+                    case "execute":
                         return middleware.execute(
                             this,
                             context as MiddlewareContextType["execute"],
                             () => dispatch(i + 1)
                         );
-                    case 'output':
+                    case "output":
                         return middleware.output(
                             context as MiddlewareContextType["output"],
                             () => dispatch(i + 1)
                         );
-                    case 'error':
+                    case "error":
                         return middleware.error(
                             context as MiddlewareContextType["error"],
                             () => dispatch(i + 1)
                         );
-                    case 'input':
+                    case "input":
                         return middleware.input(
                             context as MiddlewareContextType["input"],
                             () => dispatch(i + 1)
@@ -134,7 +136,7 @@ export default abstract class CliCommand
             options: commander.opts()
         });
 
-        return this.dispatchMiddleware('execute', context, async () => {
+        return this.dispatchMiddleware("execute", context, async () => {
             try
             {
                 this.initialise(...args);
@@ -232,7 +234,7 @@ export default abstract class CliCommand
             extraLineAfter
         };
 
-        return this.dispatchMiddleware('output', context, () => {
+        return this.dispatchMiddleware("output", context, () => {
             console.log(`${extraLineBefore ? "\n" : ""}[api-cli]`, output, extraLineAfter ? "\n" : "");
         });
     }
@@ -243,7 +245,7 @@ export default abstract class CliCommand
             message
         };
 
-        return this.dispatchMiddleware('error', context, () => {
+        return this.dispatchMiddleware("error", context, () => {
             this.program.error(message);
         });
     }
