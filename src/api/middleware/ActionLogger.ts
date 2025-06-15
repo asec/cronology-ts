@@ -1,4 +1,4 @@
-import ActionMiddleware from "../../lib/api/action/ActionMiddleware.js";
+import ActionMiddleware, {ActionMiddlewareNextFunction} from "../../lib/api/action/ActionMiddleware.js";
 import ApiAction from "../../lib/api/action/ApiAction.js";
 import {ApiResponseDTO} from "../../lib/api/action/response/ApiResponse.js";
 import {ApiParamsDTO} from "../../lib/api/action/params/ApiActionParams.js";
@@ -20,7 +20,11 @@ export default class ActionLogger extends ActionMiddleware<Record<string, any>, 
         super();
     }
 
-    protected async do(action: ApiAction<ApiResponseDTO, ApiParamsDTO>, context: Record<string, any>, next)
+    protected async do(
+        action: ApiAction<ApiResponseDTO,ApiParamsDTO>,
+        context: Record<string, any>,
+        next: ActionMiddlewareNextFunction
+    )
     {
         const actionId = this.uuidGenerator();
         let logger: ILogger = null;
@@ -47,9 +51,9 @@ export default class ActionLogger extends ActionMiddleware<Record<string, any>, 
             throw new CronologyError(`Logger not defined for context: ${contextName}`);
         }
 
-        await logger.debug(`Entering action: ${action.constructor.name}`, {actionId, context: contextName});
+        await logger.info(`Entering action: ${action.constructor.name}`, {actionId, context: contextName});
         const result = await next();
-        await logger.debug(`Finished action: ${action.constructor.name}`, {actionId, result});
+        await logger.info(`Finished action: ${action.constructor.name}`, {actionId, result});
 
         return result;
     }

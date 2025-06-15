@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "run": "node ./dist/api.js server-start",
-    "run dev": "nodemon ./dist/api.js server-start --dev",
+    "run dev": "nodemon ./dist/api.js server-start",
     "cli": "node ./dist/api.js",
     "typescript watch": "tsc -w",
     "test": "jest ./tests/unit ./tests/integration",

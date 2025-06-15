@@ -19,7 +19,7 @@ export interface ServiceBindingsCliCommands extends ServiceBindings
     "cli.command.app-keys": () => AppKeysCommand,
     "cli.command.app-ip": () => AppIpCommand,
     "cli.command.app-delete": () => AppDeleteCommand,
-    "cli.command.app-list": () => AppListCommand
+    "cli.command.app-list": () => AppListCommand,
 }
 
 const registerServicesCliCommands: ServiceRegistrar = (services) => {

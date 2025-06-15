@@ -4,9 +4,17 @@ import AppConfig from "../../config/AppConfig.js";
 import {EnvType} from "../config/Config.js";
 import ConnectionPool from "../utils/ConnectionPool.js";
 import ServiceContainer from "../service/ServiceContainer.js";
-import CliMiddleware from "./CliMiddleware.js";
+import CliMiddleware, {ErrorContext, InputContext, OutputContext} from "./CliMiddleware.js";
 import {CliContext} from "../../cli/middleware/CliParamsParser.js";
 import CronologyError from "../error/CronologyError.js";
+
+interface MiddlewareContextType
+{
+    execute: CliContext,
+    output: OutputContext,
+    error: ErrorContext,
+    input: InputContext
+}
 
 export type CliCommandArgument = {
     name: string,
@@ -48,16 +56,73 @@ export default abstract class CliCommand
         this.registerCliParams();
     }
 
-    protected registerCliParams()
+    protected registerCliParams(): void
     {}
 
-    protected initialise(...args: unknown[])
+    protected initialise(...args: unknown[]): void
     {}
 
     public use(middleware: CliMiddleware): CliCommand
     {
         this.middleware.push(middleware);
         return this;
+    }
+
+    private async dispatchMiddleware<K extends keyof MiddlewareContextType>(
+        middlewareType: K,
+        context: MiddlewareContextType[K],
+        handler: () => Promise<void> | void
+    ): Promise<void>
+    {
+        let index = -1;
+
+        const dispatch = async (i: number): Promise<void> => {
+            if (index >= i)
+            {
+                throw new CronologyError(
+                    `Middleware error in '${this.constructor.name}'. Function 'next()' is possibly called ` +
+                    `multiple times in '${middlewareType}'`
+                );
+            }
+
+            index = i;
+            const middleware = this.middleware[i];
+
+            if (middleware) {
+                switch (middlewareType) {
+                    case 'execute':
+                        return middleware.execute(
+                            this,
+                            context as MiddlewareContextType["execute"],
+                            () => dispatch(i + 1)
+                        );
+                    case 'output':
+                        return middleware.output(
+                            context as MiddlewareContextType["output"],
+                            () => dispatch(i + 1)
+                        );
+                    case 'error':
+                        return middleware.error(
+                            context as MiddlewareContextType["error"],
+                            () => dispatch(i + 1)
+                        );
+                    case 'input':
+                        return middleware.input(
+                            context as MiddlewareContextType["input"],
+                            () => dispatch(i + 1)
+                        );
+                    default:
+                        throw new CronologyError(
+                            `Middleware error in '${this.constructor.name}'. ` +
+                            `Unknown middleware type '${middlewareType}'`
+                        );
+                }
+            }
+
+            return handler();
+        };
+
+        return dispatch(0);
     }
 
     public async execute(...args: unknown[])
@@ -69,57 +134,38 @@ export default abstract class CliCommand
             options: commander.opts()
         });
 
-        let index = -1;
-        const dispatch = async (i: number) => {
-            if (index >= i)
+        return this.dispatchMiddleware('execute', context, async () => {
+            try
             {
-                throw new CronologyError(
-                    `Middleware error in '${this.constructor.name}'. Function 'next()' is possibly called ` +
-                    `multiple times in 'execute'`
-                );
+                this.initialise(...args);
+                await this.do(...args);
             }
-            index = i;
-            const middleware = this.middleware[i];
-            if (middleware)
+            catch (e: unknown)
             {
-                return middleware.execute(this, context, () => dispatch(i + 1));
+                const error = <Error> e;
+                let errorMsg = `${error.name}: ${error.message}`;
+                if (!this.config.isCurrentEnv(EnvType.Prod))
+                {
+                    errorMsg += `\n${error.stack}`;
+                }
+                await this.error(errorMsg);
             }
 
-            return (async () => {
-                try
+            try
+            {
+                await this.connectionPool.release();
+            }
+            catch (e: unknown)
+            {
+                const error = <Error> e;
+                let errorMsg = `${error.name}: ${error.message}`;
+                if (!this.config.isCurrentEnv(EnvType.Prod))
                 {
-                    this.initialise(...args);
-                    await this.do(...args);
+                    errorMsg += `\n${error.stack}`;
                 }
-                catch (e: unknown)
-                {
-                    const error = <Error> e;
-                    let errorMsg = `${error.name}: ${error.message}`;
-                    if (!this.config.isCurrentEnv(EnvType.Prod))
-                    {
-                        errorMsg += `\n${error.stack}`;
-                    }
-                    await this.error(errorMsg);
-                }
-
-                try
-                {
-                    await this.connectionPool.release();
-                }
-                catch (e: unknown)
-                {
-                    const error = <Error> e;
-                    let errorMsg = `${error.name}: ${error.message}`;
-                    if (!this.config.isCurrentEnv(EnvType.Prod))
-                    {
-                        errorMsg += `\n${error.stack}`;
-                    }
-                    await this.error(errorMsg);
-                }
-            })();
-        };
-
-        return dispatch(0);
+                await this.error(errorMsg);
+            }
+        });
     }
 
     protected async do(...args: unknown[])
@@ -145,78 +191,61 @@ export default abstract class CliCommand
         });
     }
 
-    protected inputChar(): string
+    protected async inputChar(): Promise<string>
     {
-        this.process.stdin.setRawMode(true);
-        let buffer = Buffer.alloc(1);
-        let read = 0;
-        do
-        {
-            try
-            {
-                read = fs.readSync(0, buffer, 0, 1, null);
-            }
-            catch (e)
-            {
-                if (e.code === "EAGAIN")
-                {
-                    continue;
-                }
-                throw e;
-            }
+        const context: InputContext = {
+            input: null
+        };
 
-        }
-        while (read <= 0);
-        return buffer.toString("utf8");
+        await this.dispatchMiddleware("input", context, () => {
+            this.process.stdin.setRawMode(true);
+            let buffer = Buffer.alloc(1);
+            let read = 0;
+            do
+            {
+                try
+                {
+                    read = fs.readSync(0, buffer, 0, 1, null);
+                }
+                catch (e)
+                {
+                    if (e.code === "EAGAIN")
+                    {
+                        continue;
+                    }
+                    throw e;
+                }
+
+            }
+            while (read <= 0);
+            context.input = buffer.toString("utf8");
+        });
+
+        return context.input;
     }
 
     protected async output(output: any, extraLineBefore: boolean = true, extraLineAfter: boolean = true): Promise<void>
     {
-        let index = -1;
-        const dispatch = async (i: number) => {
-            if (index >= i)
-            {
-                throw new CronologyError(
-                    `Middleware error in '${this.constructor.name}'. Function 'next()' is possibly called ` +
-                    `multiple times in 'output'`
-                );
-            }
-            index = i;
-            const middleware = this.middleware[i];
-            if (middleware)
-            {
-                return middleware.output({
-                    output,
-                    extraLineBefore,
-                    extraLineAfter
-                }, () => dispatch(i + 1));
-            }
-
-            return (() => {
-                console.log(`${extraLineBefore ? "\n" : ""}[api-cli]`, output, extraLineAfter ? "\n" : "");
-            })();
+        const context = {
+            output,
+            extraLineBefore,
+            extraLineAfter
         };
 
-        return dispatch(0);
+        return this.dispatchMiddleware('output', context, () => {
+            console.log(`${extraLineBefore ? "\n" : ""}[api-cli]`, output, extraLineAfter ? "\n" : "");
+        });
     }
 
     protected async error(message: string): Promise<void>
     {
-        const dispatch = async (i: number) => {
-            const middleware = this.middleware[i];
-            if (middleware)
-            {
-                return middleware.error({
-                    message
-                }, () => dispatch(i + 1));
-            }
-
-            return (() => {
-                this.program.error(message);
-            })();
+        const context = {
+            message
         };
 
-        return dispatch(0);
+        return this.dispatchMiddleware('error', context, () => {
+            this.program.error(message);
+        });
     }
 
     protected red(message: string): string
