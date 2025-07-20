@@ -4,7 +4,7 @@ stages:
     - deploy
 
 variables:
-    DOCKER_IMAGE_NAME: cronology:api-2.0.0
+    DOCKER_IMAGE_NAME: cronology:api-$APP_VERSION
 
 services:
     - docker:dind
