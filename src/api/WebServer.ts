@@ -16,6 +16,13 @@ import {ExpressContext} from "./middleware/ExpressRequestParser.js";
 import ILogger from "../lib/logger/ILogger.js";
 import CronologyError from "../lib/error/CronologyError.js";
 
+/**
+ * The WebServer class is responsible for setting up, managing, and starting an HTTPS web server
+ * using Express framework. It provides functionality to configure middleware, define routes,
+ * handle HTTP requests/responses, and log request/response details.
+ *
+ * This class implements the IServer interface.
+ */
 export default class WebServer implements IServer
 {
     private app: Express = express();
