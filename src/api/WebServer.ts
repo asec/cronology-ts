@@ -16,6 +16,10 @@ import {ExpressContext} from "./middleware/ExpressRequestParser.js";
 import ILogger from "../lib/logger/ILogger.js";
 import CronologyError from "../lib/error/CronologyError.js";
 
+/**
+ * Class responsible for managing and running a web server.
+ * Implements the `IServer` interface.
+ */
 export default class WebServer implements IServer
 {
     private app: Express = express();
