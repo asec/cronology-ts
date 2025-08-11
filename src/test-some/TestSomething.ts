@@ -4,6 +4,6 @@ export class TestSomething
 
     public hello(): string
     {
-        return `Hello ${this.name}!`;
+        return `Hello2 ${this.name}!`;
     }
 }
